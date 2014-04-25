@@ -140,10 +140,6 @@
     <Compile Include="_native\wdm.h.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="VERSION-HISTORY.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="COPYING.txt" />
     <None Include="Ghostscript.NET.nupkg" />
     <None Include="Ghostscript.NET.snk" />
   </ItemGroup>
