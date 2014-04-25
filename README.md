@@ -19,4 +19,4 @@
 
  Ghostscript.NET is distributed under the GNU Affero General Public License (see COPYING file).
 
-Josip Habjan
+Josip Habjan (habjan@gmail.com)
