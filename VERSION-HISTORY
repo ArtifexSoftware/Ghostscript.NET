@@ -14,7 +14,9 @@ HISTORY of the Ghostscript.NET library
 
 1.1.7.         2014-04-??
 -------------------------
-
+- implemented Ghostscript native library verification with a friendly error message 
+  that will clear out the confusion when used native Ghostscript library is not 
+  compatibile with the running process
 
 1.1.6.         2014-04-23
 -------------------------
