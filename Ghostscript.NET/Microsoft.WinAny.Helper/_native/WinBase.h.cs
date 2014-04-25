@@ -46,7 +46,6 @@ namespace Microsoft.WinAny
         [DllImport("kernel32.dll")]
         public static extern bool VirtualProtect(IntPtr lpAddress, uint dwSize, uint flNewProtect, uint* lpflOldProtect);
 
-
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
 

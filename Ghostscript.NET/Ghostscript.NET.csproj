@@ -30,7 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -98,6 +98,7 @@
     <Compile Include="gs\ierrors.h.helper.cs" />
     <Compile Include="Helpers\FileCleanupHelper.cs" />
     <Compile Include="Helpers\ImageMemoryHelper.cs" />
+    <Compile Include="Helpers\NativeLibraryHelper.cs" />
     <Compile Include="Helpers\StreamHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Interpreter\GhostscriptInterpreter.cs" />

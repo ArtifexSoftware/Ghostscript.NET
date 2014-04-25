@@ -59,6 +59,13 @@ namespace Ghostscript.NET
                 throw new ArgumentNullException("library");
             }
 
+            // check if library is compatibile with a running process
+            if (Environment.Is64BitProcess != NativeLibraryHelper.Is64BitLibrary(library))
+            {
+                // throw friendly gsdll incompatibility message
+                this.ThrowIncompatibileNativeGhostscriptLibraryException();
+            }
+
             // create DynamicNativeLibrary instance from the memory buffer
             _library = new DynamicNativeLibrary(library);
 
@@ -108,11 +115,19 @@ namespace Ghostscript.NET
             _version = version;
             _loadedFromMemory = fromMemory;
 
+            // check if library is compatibile with a running process
+            if (Environment.Is64BitProcess != NativeLibraryHelper.Is64BitLibrary(version.DllPath))
+            {
+                // throw friendly gsdll incompatibility message
+                this.ThrowIncompatibileNativeGhostscriptLibraryException();
+            }
+
             // check wether we need to load Ghostscript native library from the memory or a disk
             if (fromMemory)
             {
                 // load native Ghostscript library into the memory
                 byte[] buffer = File.ReadAllBytes(version.DllPath);
+
                 // create DynamicNativeLibrary instance from the memory buffer
                 _library = new DynamicNativeLibrary(buffer);
             }
@@ -217,6 +232,22 @@ namespace Ghostscript.NET
             this.gsapi_run_string = _library.GetDelegateForFunction<gsapi_run_string>("gsapi_run_string");
             this.gsapi_run_file = _library.GetDelegateForFunction<gsapi_run_file>("gsapi_run_file");
             this.gsapi_exit = _library.GetDelegateForFunction<gsapi_exit>("gsapi_exit");
+        }
+
+        #endregion
+
+        #region ThrowIncompatibileNativeGhostscriptLibraryException
+
+        /// <summary>
+        /// Throws friendly gsdll incompatibility message.
+        /// </summary>
+        private void ThrowIncompatibileNativeGhostscriptLibraryException()
+        {
+            throw new BadImageFormatException((Environment.Is64BitProcess ?
+                                    "You are using native Ghostscript library (gsdll32.dll) compiled for 32bit systems in a 64bit process. You need to use gsdll64.dll. " +
+                                    "64bit native Ghostscript library can be downloaded from http://www.ghostscript.com/download/gsdnld.html" :
+                                    "You are using native Ghostscript library (gsdll64.dll) compiled for 64bit systems in a 32bit process. You need to use gsdll32.dll. " +
+                                    "32bit native Ghostscript library can be downloaded from http://www.ghostscript.com/download/gsdnld.html"));
         }
 
         #endregion

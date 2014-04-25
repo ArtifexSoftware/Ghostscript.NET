@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ghostscript.NET.DisplayTest
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ghostscript.NET.Viewer", "Ghostscript.NET.Viewer\Ghostscript.NET.Viewer.csproj", "{C099EB3A-B4D7-4379-AFAB-4FCD4DF4F003}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{3AA07E8A-8E52-4E60-A6BB-A5991B5F829F}"
+	ProjectSection(SolutionItems) = preProject
+		COPYING = COPYING
+		VERSION-HISTORY = VERSION-HISTORY
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

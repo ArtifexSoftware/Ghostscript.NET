@@ -35,7 +35,7 @@ namespace Ghostscript.NET
 {
 
     /// <summary>
-    /// Various information about the PDF file.
+    /// Class that helps us to get various information about the PDF file.
     /// </summary>
     public class GhostscriptPdfInfo
     {

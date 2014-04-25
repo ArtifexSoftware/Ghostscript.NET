@@ -47,6 +47,8 @@ namespace Ghostscript.NET.Viewer
         {
             InitializeComponent();
 
+            _gsVersion = new GhostscriptVersionInfo(@"C:\Program Files (x86)\gs\gs9.09\bin\gsdll32.dll");
+
             this.Text = Program.NAME;
 
             pbPage.Width = 100;
@@ -98,7 +100,7 @@ namespace Ghostscript.NET.Viewer
             {
                 mnuFileClose_Click(this, null);
 
-                _viewer.Open(ofd.FileName, _gsVersion, false);
+                _viewer.Open(ofd.FileName, _gsVersion, true);
                 this.Text = System.IO.Path.GetFileName(ofd.FileName) + " - " + Program.NAME;
             }
         }

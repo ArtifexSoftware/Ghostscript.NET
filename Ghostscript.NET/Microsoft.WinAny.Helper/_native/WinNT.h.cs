@@ -218,6 +218,40 @@ namespace Microsoft.WinAny
         public const uint DLL_THREAD_DETACH                   = 3;    
         public const uint DLL_PROCESS_DETACH                  = 0;
 
+        /* These are the settings of the Machine field. */
+        public const ushort IMAGE_FILE_MACHINE_UNKNOWN = 0;
+        public const ushort IMAGE_FILE_MACHINE_I860 = 0x014d;
+        public const ushort IMAGE_FILE_MACHINE_I386 = 0x014c;
+        public const ushort IMAGE_FILE_MACHINE_R3000 = 0x0162;
+        public const ushort IMAGE_FILE_MACHINE_R4000 = 0x0166;
+        public const ushort IMAGE_FILE_MACHINE_R10000 = 0x0168;
+        public const ushort IMAGE_FILE_MACHINE_WCEMIPSV2 = 0x0169;
+        public const ushort IMAGE_FILE_MACHINE_ALPHA = 0x0184;
+        public const ushort IMAGE_FILE_MACHINE_SH3 = 0x01a2;
+        public const ushort IMAGE_FILE_MACHINE_SH3DSP = 0x01a3;
+        public const ushort IMAGE_FILE_MACHINE_SH3E = 0x01a4;
+        public const ushort IMAGE_FILE_MACHINE_SH4 = 0x01a6;
+        public const ushort IMAGE_FILE_MACHINE_SH5 = 0x01a8;
+        public const ushort IMAGE_FILE_MACHINE_ARM = 0x01c0;
+        public const ushort IMAGE_FILE_MACHINE_THUMB = 0x01c2;
+        public const ushort IMAGE_FILE_MACHINE_ARMNT = 0x01c4;
+        public const ushort IMAGE_FILE_MACHINE_ARM64 = 0xaa64;
+        public const ushort IMAGE_FILE_MACHINE_AM33 = 0x01d3;
+        public const ushort IMAGE_FILE_MACHINE_POWERPC = 0x01f0;
+        public const ushort IMAGE_FILE_MACHINE_POWERPCFP = 0x01f1;
+        public const ushort IMAGE_FILE_MACHINE_IA64 = 0x0200;
+        public const ushort IMAGE_FILE_MACHINE_MIPS16 = 0x0266;
+        public const ushort IMAGE_FILE_MACHINE_ALPHA64 = 0x0284;
+        public const ushort IMAGE_FILE_MACHINE_MIPSFPU = 0x0366;
+        public const ushort IMAGE_FILE_MACHINE_MIPSFPU16 = 0x0466;
+        public const ushort IMAGE_FILE_MACHINE_AXP64 = IMAGE_FILE_MACHINE_ALPHA64;
+        public const ushort IMAGE_FILE_MACHINE_TRICORE = 0x0520;
+        public const ushort IMAGE_FILE_MACHINE_CEF = 0x0cef;
+        public const ushort IMAGE_FILE_MACHINE_EBC = 0x0ebc;
+        public const ushort IMAGE_FILE_MACHINE_AMD64 = 0x8664;
+        public const ushort IMAGE_FILE_MACHINE_M32R = 0x9041;
+        public const ushort IMAGE_FILE_MACHINE_CEE = 0xc0ee;
+
         #endregion
 
         #region Structures

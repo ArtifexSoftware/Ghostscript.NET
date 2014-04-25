@@ -12,6 +12,10 @@
 
 HISTORY of the Ghostscript.NET library
 
+1.1.7.         2014-04-??
+-------------------------
+
+
 1.1.6.         2014-04-23
 -------------------------
 - simplified GetInstalledVersions and GetLastInstalledVersion functions
