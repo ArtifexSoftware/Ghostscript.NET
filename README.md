@@ -1,6 +1,6 @@
 **Ghostscript.NET** - (written in C#) is the most completed managed wrapper library around the Ghostscript library (32-bit & 64-bit), an interpreter for the PostScript language, PDF, related software and documentation.
 
-**NuGet: PM> Install-Package Ghostscript.NET**
+[**NuGet: PM> Install-Package Ghostscript.NET**](http://nuget.org/packages/Ghostscript.NET/)
 
 **Contains**
  * GhostscriptViewer - View PDF, EPS or multi-page PostScript files on the screen
@@ -15,8 +15,22 @@
  * allows you to run multiple Ghostscript instances simultaneously within a single process.
  * compatible with 32-bit and 64-bit Ghostscript native library.
 
+Used in the [**Ghostscript Studio** (Ghostscript IDE)
+<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><img src="https://download-codeplex.sec.s-msft.com/Download?ProjectName=ghostscriptstudio&amp;DownloadId=731788&amp;Build=20779" alt="" width="200" height="50" />](https://ghostscriptstudio.codeplex.com)  
+
 **LICENSE**
 
  Ghostscript.NET is distributed under the GNU Affero General Public License (see COPYING file).
 
 Josip Habjan (habjan@gmail.com)
+
+
+**Samples built on the top of the Ghostscript.NET library**
+
+Ghostscript.NET.Viewer (supports viewing of the PDF, EPS and multi-page PS files):
+
+![Ghostscript.NET.Viewer](http://a.fsdn.com/con/app/proj/ghostscriptnet/screenshots/gs-net-render.png)
+
+Direct postscript interpretation via Ghostscript.NET:
+
+![Ghostscript.NET.Display](http://imageshack.us/a/img706/6463/es84.png)
