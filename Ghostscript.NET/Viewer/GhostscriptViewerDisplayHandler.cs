@@ -153,12 +153,12 @@ namespace Ghostscript.NET.Viewer
 
                 _destImage.Lock();
 
-                IntPtr tempTile = Marshal.AllocCoTaskMem(_destImage.Stride * _destImage.Height);
+                IntPtr tempTile = Marshal.AllocHGlobal(_destImage.Stride * _destImage.Height);
 
                 ImageMemoryHelper.CopyImagePartFrom(_srcImage, tempTile, 0, 0, _destImage.Width, _destImage.Height, _srcStride, bytesPerPixel);
                 ImageMemoryHelper.FlipImageVertically(tempTile, _destImage.Scan0, _destImage.Height, _destImage.Stride);
 
-                Marshal.FreeCoTaskMem(tempTile);
+                Marshal.FreeHGlobal(tempTile);
 
                 _destImage.Unlock();
             }
@@ -206,8 +206,8 @@ namespace Ghostscript.NET.Viewer
 
                         return 0;
                     }
-
-                    IntPtr tempTile = Marshal.AllocCoTaskMem(tileStride * h);
+                    
+                    IntPtr tempTile = Marshal.AllocHGlobal(tileStride * h);
 
                     ImageMemoryHelper.CopyImagePartFrom(_srcImage, tempTile, x, y, w, h, _srcStride, bytesPerPixel);
 
@@ -217,7 +217,7 @@ namespace Ghostscript.NET.Viewer
 
                     ImageMemoryHelper.CopyImagePartTo(_destImage.Scan0, tempTile, x, tileMirrorY, w, h, destStrideSize, bytesPerPixel);
 
-                    Marshal.FreeCoTaskMem(tempTile);
+                    Marshal.FreeHGlobal(tempTile);
 
                     _destImage.Unlock();
 
