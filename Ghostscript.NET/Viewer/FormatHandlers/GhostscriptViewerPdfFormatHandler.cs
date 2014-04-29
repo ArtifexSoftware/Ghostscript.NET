@@ -163,6 +163,33 @@ namespace Ghostscript.NET.Viewer
                         }
                     case PDF_ROTATE_TAG:
                         {
+                            int rotate = int.Parse(rest);
+
+                            while (rotate < 0)
+                            {
+                                rotate += 360;
+                            }
+
+                            while (rotate >= 360)
+                            {
+                                rotate -= 360;
+                            }
+                                
+                            switch (rotate)
+                            {
+                                case 90:
+                                    this.PageOrientation = GhostscriptPageOrientation.Landscape;
+                                    break;
+                                case 180:
+                                    this.PageOrientation = GhostscriptPageOrientation.UpsideDown;
+                                    break;
+                                case 270:
+                                    this.PageOrientation = GhostscriptPageOrientation.Seascape;
+                                    break;
+                                default:
+                                    this.PageOrientation = GhostscriptPageOrientation.Portrait;
+                                    break;
+                            }
 
                             break;
                         }

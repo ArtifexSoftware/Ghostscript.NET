@@ -503,6 +503,8 @@ namespace Ghostscript.NET.Viewer
             this.Interpreter.Run(string.Format("/GraphicsAlphaBits {0}\n", _graphicsAlphaBits));
             this.Interpreter.Run(string.Format("/TextAlphaBits {0}\n", _textAlphaBits));
 
+            this.Interpreter.Run(string.Format("/Orientation {0}\n", (int)this.CurrentPageOrientation));
+
             this.Interpreter.Run(">> setpagedevice\n");
 
             this.Interpreter.Run(
@@ -979,6 +981,25 @@ namespace Ghostscript.NET.Viewer
             set
             {
                 _epsClip = value;
+            }
+        }
+
+        #endregion
+
+        #region CurrentPageOrientation
+
+        public GhostscriptPageOrientation CurrentPageOrientation
+        {
+            get
+            {
+                if (this.IsEverythingInitialized)
+                {
+                    return _formatHandler.PageOrientation;
+                }
+                else
+                {
+                    return GhostscriptPageOrientation.Landscape;
+                }
             }
         }
 

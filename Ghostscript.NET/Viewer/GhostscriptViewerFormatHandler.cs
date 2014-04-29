@@ -42,6 +42,7 @@ namespace Ghostscript.NET.Viewer
         private GhostscriptRectangle _mediaBox = GhostscriptRectangle.Empty;
         private GhostscriptRectangle _boundingBox = GhostscriptRectangle.Empty;
         private GhostscriptRectangle _cropBox = GhostscriptRectangle.Empty;
+        private GhostscriptPageOrientation _pageOrientation = GhostscriptPageOrientation.Portrait;
         private bool _showPagePostScriptCommandInvoked = false;
 
         #endregion
@@ -208,6 +209,16 @@ namespace Ghostscript.NET.Viewer
         public bool IsCropBoxSet
         {
             get { return _cropBox != GhostscriptRectangle.Empty; }
+        }
+
+        #endregion
+
+        #region PageOrientation
+
+        public GhostscriptPageOrientation PageOrientation
+        {
+            get { return _pageOrientation; }
+            set { _pageOrientation = value; }
         }
 
         #endregion

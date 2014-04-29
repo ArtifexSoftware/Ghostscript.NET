@@ -89,6 +89,7 @@
     <Compile Include="GhostscriptDisplayDeviceHandler.cs" />
     <Compile Include="GhostscriptLibrary.cs" />
     <Compile Include="GhostscriptLicense.cs" />
+    <Compile Include="GhostscriptPageOrientation.cs" />
     <Compile Include="GhostscriptPdfInfo.cs" />
     <Compile Include="GhostscriptPipedOutput.cs" />
     <Compile Include="GhostscriptRectangle.cs" />
