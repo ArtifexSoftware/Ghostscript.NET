@@ -157,7 +157,7 @@ namespace Ghostscript.NET
             BinaryReader reader = new BinaryReader(_pipe);
 
             // allocate memory space for the incoming output data
-            byte[] buffer = new byte[1];
+            byte[] buffer = new byte[_pipe.InBufferSize];
 
             int readCount = 0;
 
