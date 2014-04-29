@@ -97,13 +97,16 @@ namespace Ghostscript.NET
                 {
                     if (_pipe != null)
                     {
-                        // check if the pipe is connected
-                        if (_pipe.IsConnected)
-                        {
-                            // dispose it's client handle
-                            _pipe.DisposeLocalCopyOfClientHandle();
-                        }
+                        // _pipe.DisposeLocalCopyOfClientHandle();
 
+                        // for some reason at this point the handle is invalid for real.
+                        // DisposeLocalCopyOfClientHandle should be called instead, but it 
+                        // throws an exception saying that the handle is invalid pointing to 
+                        // CloseHandle method in the dissasembled code.
+                        // this is a workaround, if we don't set the handle as invalid, when
+                        // garbage collector tries to dispose this handle, exception is thrown
+                        _pipe.ClientSafePipeHandle.SetHandleAsInvalid();
+                        
                         _pipe.Dispose(); _pipe = null;
                     }
 
@@ -135,7 +138,10 @@ namespace Ghostscript.NET
         /// </summary>
         public string ClientHandle
         {
-            get { return _pipe.GetClientHandleAsString(); }
+            get 
+            {
+                return _pipe.GetClientHandleAsString();
+            }
         }
 
         #endregion
@@ -151,7 +157,7 @@ namespace Ghostscript.NET
             BinaryReader reader = new BinaryReader(_pipe);
 
             // allocate memory space for the incoming output data
-            byte[] buffer = new byte[_pipe.InBufferSize];
+            byte[] buffer = new byte[1];
 
             int readCount = 0;
 
