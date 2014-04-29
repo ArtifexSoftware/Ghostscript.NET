@@ -12,11 +12,14 @@
 
 HISTORY of the Ghostscript.NET library
 
-1.1.7.         2014-04-??
+1.1.7.         2014-04-29
 -------------------------
 - implemented Ghostscript native library verification with a friendly error message 
   that will clear out the confusion when used native Ghostscript library is not 
-  compatibile with the running process
+  compatibile with the running process.
+- fixed the pipe client handle disposal bug when the GhostscriptPipedOutput is used.
+- fixed problem with the applying PDF page orientation for the GhostscriptViewer and 
+  the GhostscriptRasterizer.
 
 1.1.6.         2014-04-23
 -------------------------
