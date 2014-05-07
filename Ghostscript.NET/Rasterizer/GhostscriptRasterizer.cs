@@ -61,7 +61,7 @@ namespace Ghostscript.NET.Rasterizer
         {
             if (viewerInstance == null)
             {
-                throw new ArgumentNullException("viewerInstance", "Cannot be null.");
+                throw new ArgumentNullException("viewerInstance");
             }
 
             _viewer = viewerInstance;
@@ -129,7 +129,7 @@ namespace Ghostscript.NET.Rasterizer
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream", "Cannot be null.");
+                throw new ArgumentNullException("stream");
             }
 
             this.Open(stream, GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL), false);
@@ -157,12 +157,12 @@ namespace Ghostscript.NET.Rasterizer
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream", "Cannot be null.");
+                throw new ArgumentNullException("stream");
             }
 
             if (versionInfo == null)
             {
-                throw new ArgumentNullException("versionInfo", "Cannot be null.");
+                throw new ArgumentNullException("versionInfo");
             }
 
             if (_gsViewState == null)
@@ -184,7 +184,7 @@ namespace Ghostscript.NET.Rasterizer
 
             if (versionInfo == null)
             {
-                throw new ArgumentNullException("versionInfo", "Cannot be null.");
+                throw new ArgumentNullException("versionInfo");
             }
 
             if (_gsViewState == null)
@@ -195,45 +195,45 @@ namespace Ghostscript.NET.Rasterizer
 
         #endregion
 
-        #region Open - stream, gsDll
+        #region Open - stream, library
 
-        public void Open(MemoryStream stream, byte[] gsDll)
+        public void Open(MemoryStream stream, byte[] library)
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream", "Cannot be null.");
+                throw new ArgumentNullException("stream");
             }
 
-            if (gsDll == null)
+            if (library == null)
             {
-                throw new ArgumentNullException("gsDll", "Cannot be null.");
+                throw new ArgumentNullException("library");
             }
 
             if (_gsViewState == null)
             {
-                _viewer.Open(stream, gsDll);
+                _viewer.Open(stream, library);
             }
         }
 
         #endregion
 
-        #region Open - path, gsDll
+        #region Open - path, library
 
-        public void Open(string path, byte[] gsDll)
+        public void Open(string path, byte[] library)
         {
             if (!File.Exists(path))
             {
-                throw new FileNotFoundException("Could not find input file.", path);
+                throw new FileNotFoundException("Couldn't find input file.", path);
             }
 
-            if (gsDll == null)
+            if (library == null)
             {
-                throw new ArgumentNullException("gsDll", "Cannot be null.");
+                throw new ArgumentNullException("library");
             }
 
             if (_gsViewState == null)
             {
-                _viewer.Open(path, gsDll);
+                _viewer.Open(path, library);
             }
         }
 

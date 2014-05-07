@@ -165,7 +165,7 @@ namespace Ghostscript.NET.Viewer
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream", "Cannot be null.");
+                throw new ArgumentNullException("stream");
             }
 
             string path = StreamHelper.WriteToTemporaryFile(stream);
@@ -197,12 +197,12 @@ namespace Ghostscript.NET.Viewer
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream", "Cannot be null.");
+                throw new ArgumentNullException("stream");
             }
 
             if (versionInfo == null)
             {
-                throw new ArgumentNullException("versionInfo", "Cannot be null.");
+                throw new ArgumentNullException("versionInfo");
             }
 
             string path = StreamHelper.WriteToTemporaryFile(stream);
@@ -225,7 +225,7 @@ namespace Ghostscript.NET.Viewer
 
             if (versionInfo == null)
             {
-                throw new ArgumentNullException("versionInfo", "Cannot be null.");
+                throw new ArgumentNullException("versionInfo");
             }
 
             this.Close();
@@ -239,43 +239,43 @@ namespace Ghostscript.NET.Viewer
 
         #endregion
 
-        #region Open - stream, gsDll
+        #region Open - stream, library
 
-        public void Open(Stream stream, byte[] gsDll)
+        public void Open(Stream stream, byte[] library)
         {
             if (stream == null)
             {
-                throw new ArgumentNullException("stream", "Cannot be null.");
+                throw new ArgumentNullException("stream");
             }
 
             string path = StreamHelper.WriteToTemporaryFile(stream);
 
             _fileCleanupHelper.Add(path);
 
-            this.Open(path, gsDll);
+            this.Open(path, library);
         }
 
         #endregion
 
-        #region Open - path, gsDll
+        #region Open - path, library
 
-        public void Open(string path, byte[] gsDll)
+        public void Open(string path, byte[] library)
         {
             if (!File.Exists(path))
             {
                 throw new FileNotFoundException("Could not find input file.", path);
             }
 
-            if (gsDll == null)
+            if (library == null)
             {
-                throw new ArgumentNullException("gsDll", "Cannot be null.");
+                throw new ArgumentNullException("library");
             }
 
             this.Close();
 
             _filePath = path;
 
-            _interpreter = new GhostscriptInterpreter(gsDll);
+            _interpreter = new GhostscriptInterpreter(library);
 
             this.Open();
         }
@@ -288,7 +288,7 @@ namespace Ghostscript.NET.Viewer
         {
             if (versionInfo == null)
             {
-                throw new ArgumentNullException("versionInfo", "Cannot be null.");
+                throw new ArgumentNullException("versionInfo");
             }
 
             this.Close();
@@ -302,20 +302,20 @@ namespace Ghostscript.NET.Viewer
 
         #endregion
 
-        #region Open - gsDll
+        #region Open - library
 
-        public void Open(byte[] gsDll)
+        public void Open(byte[] library)
         {
-            if (gsDll == null)
+            if (library == null)
             {
-                throw new ArgumentNullException("gsDll", "Cannot be null.");
+                throw new ArgumentNullException("library");
             }
 
             this.Close();
 
             _filePath = string.Empty;
 
-            _interpreter = new GhostscriptInterpreter(gsDll);
+            _interpreter = new GhostscriptInterpreter(library);
 
             this.Open();
         }

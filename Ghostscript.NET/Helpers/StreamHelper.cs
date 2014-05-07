@@ -37,7 +37,7 @@ namespace Ghostscript.NET
         {
             if (stream.Length < 4)
             {
-                throw new InvalidDataException();
+                throw new InvalidDataException("Less than 4 bytes found in stream.");
             }
 
             stream.Position = 0;

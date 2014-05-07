@@ -262,7 +262,7 @@ namespace Ghostscript.NET
         {
             if (ghostscriptVersion == null)
             {
-                throw new ArgumentNullException("ghostscriptVersion", "Cannot be null.");
+                throw new ArgumentNullException("ghostscriptVersion");
             }
 
             using (GhostscriptProcessor processor = new GhostscriptProcessor(ghostscriptVersion, fromMemory))

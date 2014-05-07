@@ -119,16 +119,16 @@ namespace Ghostscript.NET.Processor
 
         #endregion
 
-        #region Constructor - gsDll
+        #region Constructor - library
 
-        public GhostscriptProcessor(byte[] gsDll)
+        public GhostscriptProcessor(byte[] library)
         {
-            if (gsDll == null)
+            if (library == null)
             {
-                throw new ArgumentNullException("gsDll", "Cannot be null.");
+                throw new ArgumentNullException("library");
             }
 
-            _gs = new GhostscriptLibrary(gsDll);
+            _gs = new GhostscriptLibrary(library);
         }
 
         #endregion
@@ -146,7 +146,7 @@ namespace Ghostscript.NET.Processor
         {
             if (version == null)
             {
-                throw new ArgumentNullException("version", "Cannot be null.");
+                throw new ArgumentNullException("version");
             }
 
             _gs = new GhostscriptLibrary(version, fromMemory);
@@ -200,7 +200,7 @@ namespace Ghostscript.NET.Processor
         {
             if (device == null)
             {
-                throw new ArgumentNullException("device", "Cannot be null.");
+                throw new ArgumentNullException("device");
             }
 
             this.StartProcessing(device.GetSwitches(), stdIO_callback);
@@ -219,12 +219,12 @@ namespace Ghostscript.NET.Processor
         {
             if (args == null)
             {
-                throw new ArgumentNullException("args", "Cannot be null.");
+                throw new ArgumentNullException("args");
             }
 
             if (args.Length < 3)
             {
-                throw new ArgumentOutOfRangeException("args", "Switches count seems to low.");
+                throw new ArgumentOutOfRangeException("args");
             }
 
             for (int i = 0; i < args.Length; i++)

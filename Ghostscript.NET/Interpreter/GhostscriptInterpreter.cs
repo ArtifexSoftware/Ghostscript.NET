@@ -65,7 +65,7 @@ namespace Ghostscript.NET.Interpreter
 
         #endregion
 
-        #region Constructor - gsDll
+        #region Constructor - library
 
         /// <summary>
         /// Initializes a new instance of the Ghostscript.NET.GhostscriptInterpreter class.
