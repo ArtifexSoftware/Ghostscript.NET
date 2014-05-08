@@ -58,10 +58,14 @@ namespace Ghostscript.NET.Samples
 
             _rasterizer = new GhostscriptRasterizer();
 
-            //byte[] b = File.ReadAllBytes(inputPdfPath);
-            //MemoryStream ms = new MemoryStream(b);
+            /* MemoryStream usage sample
+              
+            byte[] buffer = File.ReadAllBytes(inputPdfPath);
+            MemoryStream ms = new MemoryStream(buffer);
 
-            //_rasterizer.Open(ms);
+            _rasterizer.Open(ms);
+
+            */
 
             _rasterizer.Open(inputPdfPath, _lastInstalledVersion, false);
 

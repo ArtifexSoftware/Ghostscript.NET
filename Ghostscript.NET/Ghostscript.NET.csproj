@@ -33,6 +33,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Debug\Ghostscript.NET.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -44,6 +45,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Release\Ghostscript.NET.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -142,7 +144,6 @@
     <Compile Include="_native\wdm.h.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Ghostscript.NET.nupkg" />
     <None Include="Ghostscript.NET.snk" />
   </ItemGroup>
   <ItemGroup />

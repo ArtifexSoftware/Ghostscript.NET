@@ -12,6 +12,14 @@
 
 HISTORY of the Ghostscript.NET library
 
+1.1.8.         2014-05-08
+-------------------------
+- fixed incompatibility problem with 'gsapi_set_arg_encoding' function in Ghostscript 
+  releases prior to 9.10. (this function was introduced in 9.10 release)
+- fixed older versions incompatibility problem with '-dMaxBitmap=1g' switch bugfix 
+  which in some cases turns on text antialiasing for Ghostscript 9.14
+- added better initialization checking
+
 1.1.7.         2014-04-29
 -------------------------
 - implemented Ghostscript native library verification with a friendly error message 
