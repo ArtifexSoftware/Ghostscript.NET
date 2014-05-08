@@ -277,8 +277,11 @@ namespace Ghostscript.NET.Interpreter
         /// </summary>
         public void InitArgs(string[] args)
         {
-            // set the encoding to UTF8
-            int rc_enc = _gs.gsapi_set_arg_encoding(_gs_instance, GS_ARG_ENCODING.UTF8);
+            if (_gs.is_gsapi_set_arg_encoding_supported)
+            {
+                // set the encoding to UTF8
+                int rc_enc = _gs.gsapi_set_arg_encoding(_gs_instance, GS_ARG_ENCODING.UTF8);
+            }
 
             // GSAPI: initialize the interpreter
             int rc_init = _gs.gsapi_init_with_args(_gs_instance, args.Length, args);
@@ -377,6 +380,15 @@ namespace Ghostscript.NET.Interpreter
             {
                 throw new GhostscriptAPICallException("gsapi_run_file", rc_run);
             }
+        }
+
+        #endregion
+
+        #region LibraryRevision
+
+        public int LibraryRevision
+        {
+            get { return _gs.Revision; }
         }
 
         #endregion

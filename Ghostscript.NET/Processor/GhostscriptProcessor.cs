@@ -276,7 +276,10 @@ namespace Ghostscript.NET.Processor
 
                 _stopProcessing = false;
 
-                int rc_enc = _gs.gsapi_set_arg_encoding(instance, GS_ARG_ENCODING.UTF8);
+                if (_gs.is_gsapi_set_arg_encoding_supported)
+                {
+                    int rc_enc = _gs.gsapi_set_arg_encoding(instance, GS_ARG_ENCODING.UTF8);
+                }
 
                 int rc_init = _gs.gsapi_init_with_args(instance, args.Length, args);
 

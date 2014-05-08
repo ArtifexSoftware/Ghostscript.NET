@@ -42,6 +42,7 @@ namespace Ghostscript.NET
         private DynamicNativeLibrary _library;
         private GhostscriptVersionInfo _version;
         private bool _loadedFromMemory = false;
+        private int _revision;
 
         #endregion
 
@@ -224,6 +225,12 @@ namespace Ghostscript.NET
             if (this.gsapi_revision == null)
                 throw new GhostscriptException(string.Format(symbolMappingError, "gsapi_revision"));
 
+            gsapi_revision_s rev = new gsapi_revision_s();
+            if (this.gsapi_revision(ref rev, System.Runtime.InteropServices.Marshal.SizeOf(rev)) == 0)
+            {
+                _revision = rev.revision;
+            }
+
             this.gsapi_new_instance = _library.GetDelegateForFunction<gsapi_new_instance>("gsapi_new_instance");
 
             if (this.gsapi_new_instance == null)
@@ -249,10 +256,13 @@ namespace Ghostscript.NET
             if (this.gsapi_set_display_callback == null)
                 throw new GhostscriptException(string.Format(symbolMappingError, "gsapi_set_display_callback"));
 
-            this.gsapi_set_arg_encoding = _library.GetDelegateForFunction<gsapi_set_arg_encoding>("gsapi_set_arg_encoding");
+            if (is_gsapi_set_arg_encoding_supported)
+            {
+                this.gsapi_set_arg_encoding = _library.GetDelegateForFunction<gsapi_set_arg_encoding>("gsapi_set_arg_encoding");
 
-            if (this.gsapi_set_arg_encoding == null)
-                throw new GhostscriptException(string.Format(symbolMappingError, "gsapi_set_arg_encoding"));
+                if (this.gsapi_set_arg_encoding == null)
+                    throw new GhostscriptException(string.Format(symbolMappingError, "gsapi_set_arg_encoding"));
+            }
 
             this.gsapi_init_with_args = _library.GetDelegateForFunction<gsapi_init_with_args>("gsapi_init_with_args");
 
@@ -310,6 +320,34 @@ namespace Ghostscript.NET
                                     "64bit native Ghostscript library can be downloaded from http://www.ghostscript.com/download/gsdnld.html" :
                                     "You are using native Ghostscript library (gsdll64.dll) compiled for 64bit systems in a 32bit process. You need to use gsdll32.dll. " +
                                     "32bit native Ghostscript library can be downloaded from http://www.ghostscript.com/download/gsdnld.html"));
+        }
+
+        #endregion
+
+        #region Revision
+
+        public int Revision
+        {
+            get { return _revision; }
+        }
+
+        #endregion
+
+        #region is_gsapi_set_arg_encoding
+
+        public bool is_gsapi_set_arg_encoding_supported
+        {
+            get
+            {
+                if (_revision >= 910)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         #endregion

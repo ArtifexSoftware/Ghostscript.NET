@@ -37,10 +37,10 @@ namespace Ghostscript.NET
     [StructLayout(LayoutKind.Sequential)]
     public struct gsapi_revision_s
     {
-        public string product;
-        public string copyright;
-        public Int32 revision;
-        public Int32 revisiondate;
+        public IntPtr product;
+        public IntPtr copyright;
+        public int revision;
+        public int revisiondate;
     }
 
     #endregion
@@ -60,7 +60,7 @@ namespace Ghostscript.NET
     /// <param name="len"></param>
     /// <returns></returns>
     [UnmanagedFunctionPointer(CallingConvention.Winapi)]
-    public delegate int gsapi_revision(out gsapi_revision_s pr, Int32 len);
+    public delegate int gsapi_revision(ref gsapi_revision_s pr, Int32 len);
 
     /// <summary>
     /// Create a new instance of Ghostscript.

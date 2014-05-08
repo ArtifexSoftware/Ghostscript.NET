@@ -376,7 +376,11 @@ namespace Ghostscript.NET.Viewer
 
             args.Add("-dDOINTERPOLATE");
 
-            args.Add("-dMaxBitmap=1g");
+            // fixes bug: http://bugs.ghostscript.com/show_bug.cgi?id=695180
+            if (_interpreter.LibraryRevision > 910)
+            {
+                args.Add("-dMaxBitmap=1g");
+            }
 
             _interpreter.InitArgs(args.ToArray());
 
