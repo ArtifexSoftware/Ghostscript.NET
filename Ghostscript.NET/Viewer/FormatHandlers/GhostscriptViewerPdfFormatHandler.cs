@@ -101,6 +101,10 @@ namespace Ghostscript.NET.Viewer
 
             // flush stdout and then send PDF page marker to stdout where we capture the page numbers via callback
             this.Execute(string.Format("flush ({0}) print exch =only ( ) print =only (\n) print flush", PDF_PAGES_TAG));
+
+            // fixes problem with the invisible layers
+            // if we don't run that code, then optional content groups will be left unmarked and always processed
+            this.Execute("process_trailer_attrs\n");
         }
 
         #endregion
