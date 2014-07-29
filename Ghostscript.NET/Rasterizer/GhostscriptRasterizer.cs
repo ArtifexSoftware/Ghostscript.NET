@@ -125,7 +125,7 @@ namespace Ghostscript.NET.Rasterizer
 
         #region Open - stream
 
-        public void Open(MemoryStream stream)
+        public void Open(Stream stream)
         {
             if (stream == null)
             {
@@ -153,7 +153,7 @@ namespace Ghostscript.NET.Rasterizer
 
         #region Open - stream, versionInfo, dllFromMemory
 
-        public void Open(MemoryStream stream, GhostscriptVersionInfo versionInfo, bool dllFromMemory)
+        public void Open(Stream stream, GhostscriptVersionInfo versionInfo, bool dllFromMemory)
         {
             if (stream == null)
             {
@@ -197,7 +197,7 @@ namespace Ghostscript.NET.Rasterizer
 
         #region Open - stream, library
 
-        public void Open(MemoryStream stream, byte[] library)
+        public void Open(Stream stream, byte[] library)
         {
             if (stream == null)
             {
