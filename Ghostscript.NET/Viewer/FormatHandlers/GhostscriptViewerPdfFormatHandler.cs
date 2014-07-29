@@ -94,8 +94,8 @@ namespace Ghostscript.NET.Viewer
         public override void Open(string filePath)
         {           
             // open PDF file
-            this.Execute(string.Format("({0}) (r) file pdfopen begin", filePath.Replace("\\", "/")));
-
+            this.Execute(string.Format("({0}) (r) file runpdfbegin", filePath.Replace("\\", "/")));
+            
             this.Execute("/FirstPage where { pop FirstPage } { 1 } ifelse");
             this.Execute("/LastPage where { pop LastPage } { pdfpagecount } ifelse");
 
