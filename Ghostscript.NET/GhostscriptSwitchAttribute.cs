@@ -31,7 +31,7 @@ namespace Ghostscript.NET
     /// <summary>
     /// Represents a GhostscriptSwitch attribute.
     /// </summary>
-    public class GhostscriptSwitchAttribute : Attribute
+    public sealed class GhostscriptSwitchAttribute : Attribute
     {
 
         #region Private variables
@@ -69,8 +69,8 @@ namespace Ghostscript.NET
 
     /// <summary>
     /// Represents a GhostscriptSwitchValue attribute.
-    /// </summary
-    public class GhostscriptSwitchValueAttribute : Attribute
+    /// </summary>
+    public sealed class GhostscriptSwitchValueAttribute : Attribute
     {
 
         #region Private variables
