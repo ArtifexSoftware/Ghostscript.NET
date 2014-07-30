@@ -328,6 +328,14 @@ namespace Ghostscript.NET.Viewer
         {
             string extension = Path.GetExtension(_filePath).ToLower();
 
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                using (FileStream srm = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    extension = StreamHelper.GetStreamExtension(srm);
+                }
+            }
+
             switch (extension)
             {
                 case ".pdf":

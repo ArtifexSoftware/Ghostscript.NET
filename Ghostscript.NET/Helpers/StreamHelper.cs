@@ -31,9 +31,10 @@ namespace Ghostscript.NET
 {
     internal class StreamHelper
     {
-        #region WriteToTemporaryFile
 
-        public static string WriteToTemporaryFile(Stream stream)
+        #region GetStreamExtension
+
+        public static string GetStreamExtension(Stream stream)
         {
             if (stream.Length < 4)
             {
@@ -81,6 +82,19 @@ namespace Ghostscript.NET
             {
                 throw new FormatException("Stream format is not valid! Please make sure it's PDF, PS or EPS.");
             }
+
+            return extension;
+        }
+
+        #endregion
+
+        #region WriteToTemporaryFile
+
+        public static string WriteToTemporaryFile(Stream stream)
+        {
+            string extension = GetStreamExtension(stream);
+
+            stream.Position = 0;
 
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
 
