@@ -94,8 +94,6 @@ namespace Ghostscript.NET
         {
             string extension = GetStreamExtension(stream);
 
-            stream.Position = 0;
-
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
 
             stream.Position = 0;

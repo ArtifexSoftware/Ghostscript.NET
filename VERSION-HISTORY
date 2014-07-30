@@ -12,6 +12,16 @@
 
 HISTORY of the Ghostscript.NET library
 
+1.1.9.         2014-07-30
+-------------------------
+- fixed problem with the PDF invisible layers (the optional content groups which will 
+  be left unmarked if process_trailer_attrs is not executed).
+- fixed text rasterization problem for some pdf's, it seems that the 'pdfopen begin' 
+  did not initialize everything required to render pdf properly so we replaced it with
+  the 'runpdfopen' method which corrects everything (problem reported by "xatabhk").
+- changed GhostscriptRasterizer methods to support Stream insted of the MemoryStream.
+- fixed handling files without the extension in GhostscriptViewer and Rasterizer.
+
 1.1.8.         2014-05-08
 -------------------------
 - fixed incompatibility problem with 'gsapi_set_arg_encoding' function in Ghostscript 
