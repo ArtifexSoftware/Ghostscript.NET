@@ -328,7 +328,7 @@ namespace Ghostscript.NET.Viewer
         {
             string extension = Path.GetExtension(_filePath).ToLower();
 
-            if (string.IsNullOrWhiteSpace(extension))
+            if (!string.IsNullOrWhiteSpace(_filePath) && string.IsNullOrWhiteSpace(extension))
             {
                 using (FileStream srm = new FileStream(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
