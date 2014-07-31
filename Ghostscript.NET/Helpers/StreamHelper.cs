@@ -80,6 +80,28 @@ namespace Ghostscript.NET
             }
             else
             {
+                // try to search for pdf signature once again
+                // this time look into all first 32 bytes as I run into pdf's that has extra bytes 
+                // at the beginning of the pdf file before the actual signature
+
+                stream.Position = 0;
+
+                if (stream.Length > 32)
+                {
+                    test = new byte[32];
+                    stream.Read(test, 0, 32);
+
+                    stream.Position = 0;
+
+                    if (BufferHelper.IndexOf(test, new byte[] { 0x25, 0x50, 0x44, 0x46}) > -1)
+                    {
+                        extension = ".pdf";
+                    }
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(extension))
+            {
                 throw new FormatException("Stream format is not valid! Please make sure it's PDF, PS or EPS.");
             }
 

@@ -99,11 +99,11 @@
     <Compile Include="GhostscriptSwitchAttribute.cs" />
     <Compile Include="gs\ierrors.h.cs" />
     <Compile Include="gs\ierrors.h.helper.cs" />
+    <Compile Include="Helpers\BufferHelper.cs" />
     <Compile Include="Helpers\FileCleanupHelper.cs" />
     <Compile Include="Helpers\ImageMemoryHelper.cs" />
     <Compile Include="Helpers\NativeLibraryHelper.cs" />
     <Compile Include="Helpers\StreamHelper.cs" />
-    <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Interpreter\GhostscriptInterpreter.cs" />
     <Compile Include="Microsoft.WinAny.Helper\Interop\DynamicNativeLibrary.cs" />
     <Compile Include="Microsoft.WinAny.Helper\_native\memory.cs" />
