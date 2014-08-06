@@ -44,7 +44,6 @@ namespace Ghostscript.NET.Samples
     public class RasterizerSample : ISample
     {
         private GhostscriptVersionInfo _lastInstalledVersion = null;
-        private GhostscriptRasterizer _rasterizer = null;
 
         public void Start()
         {
@@ -56,27 +55,28 @@ namespace Ghostscript.NET.Samples
 
             _lastInstalledVersion = GhostscriptVersionInfo.GetLastInstalledVersion();
 
-            _rasterizer = new GhostscriptRasterizer();
-
-            /* MemoryStream usage sample
-              
-            byte[] buffer = File.ReadAllBytes(inputPdfPath);
-            MemoryStream ms = new MemoryStream(buffer);
-
-            _rasterizer.Open(ms);
-
-            */
-
-            _rasterizer.Open(inputPdfPath, _lastInstalledVersion, false);
-
-            for (int pageNumber = 1; pageNumber <= _rasterizer.PageCount; pageNumber++)
+            using (GhostscriptRasterizer rasterizer = new GhostscriptRasterizer())
             {
-                string pageFilePath = Path.Combine(outputPath, "Page-" + pageNumber.ToString() + ".png");
+                /* MemoryStream usage sample
+              
+                byte[] buffer = File.ReadAllBytes(inputPdfPath);
+                MemoryStream ms = new MemoryStream(buffer);
 
-                Image img = _rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
-                img.Save(pageFilePath, ImageFormat.Png);
-                
-                Console.WriteLine(pageFilePath);
+                _rasterizer.Open(ms);
+
+                */
+
+                rasterizer.Open(inputPdfPath, _lastInstalledVersion, false);
+
+                for (int pageNumber = 1; pageNumber <= rasterizer.PageCount; pageNumber++)
+                {
+                    string pageFilePath = Path.Combine(outputPath, "Page-" + pageNumber.ToString() + ".png");
+
+                    Image img = rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
+                    img.Save(pageFilePath, ImageFormat.Png);
+
+                    Console.WriteLine(pageFilePath);
+                }
             }
         }
     }
