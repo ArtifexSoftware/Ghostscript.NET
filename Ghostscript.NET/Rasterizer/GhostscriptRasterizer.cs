@@ -241,6 +241,9 @@ namespace Ghostscript.NET.Rasterizer
 
         #region Close
 
+        /// <summary>
+        /// Close the GhostscriptRasterizer.
+        /// </summary>
         public void Close()
         {
             if (_gsViewState == null)
@@ -253,6 +256,9 @@ namespace Ghostscript.NET.Rasterizer
 
         #region PageCount
 
+        /// <summary>
+        /// Gets PDF page count.
+        /// </summary>
         public int PageCount
         {
             get { return _viewer.LastPageNumber; }
@@ -262,6 +268,13 @@ namespace Ghostscript.NET.Rasterizer
 
         #region GetPage
 
+        /// <summary>
+        /// Gets PDF page as System.Drawing.Image.
+        /// </summary>
+        /// <param name="xDpi">Desired x DPI.</param>
+        /// <param name="yDpi">Desired y DPI.</param>
+        /// <param name="pageNumber">The page number.</param>
+        /// <returns>PDF page represented as System.Drawing.Image.</returns>
         public Image GetPage(int xDpi, int yDpi, int pageNumber)
         {
             _viewer.ZoomXDpi = xDpi;
@@ -276,7 +289,10 @@ namespace Ghostscript.NET.Rasterizer
 
         void _viewer_DisplayPage(object sender, GhostscriptViewerViewEventArgs e)
         {
-            _lastRasterizedImage = e.Image;
+            if (e.Image != null)
+            {
+                _lastRasterizedImage = e.Image.Clone() as Image;
+            }
         }
 
         #endregion
