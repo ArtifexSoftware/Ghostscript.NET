@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2014 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -191,6 +191,42 @@ namespace Ghostscript.NET.Processor
         }
 
         #endregion
+
+        #endregion
+
+        #region Process - device
+
+        public void Process(GhostscriptDevice device)
+        {
+            this.Process(device, null);
+        }
+
+        #endregion
+
+        #region Process - args
+
+        public void Process(string[] args)
+        {
+            this.Process(args, null);
+        }
+
+        #endregion
+
+        #region Process - device, stdIO_callback
+
+        public void Process(GhostscriptDevice device, GhostscriptStdIO stdIO_callback)
+        {
+            this.StartProcessing(device, stdIO_callback);
+        }
+
+        #endregion
+
+        #region Process - args, stdIO_callback
+
+        public void Process(string[] args, GhostscriptStdIO stdIO_callback)
+        {
+            this.StartProcessing(args, stdIO_callback);
+        }
 
         #endregion
 

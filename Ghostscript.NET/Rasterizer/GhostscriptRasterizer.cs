@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2014 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -25,9 +25,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Drawing;
 using Ghostscript.NET.Viewer;
-using System.IO;
+using System.Collections.Generic;
 
 namespace Ghostscript.NET.Rasterizer
 {
@@ -328,6 +329,22 @@ namespace Ghostscript.NET.Rasterizer
             set
             {
                 _viewer.EPSClip = value;
+            }
+        }
+
+        #endregion
+
+        #region CustomSwitches
+
+        public List<string> CustomSwitches
+        {
+            get
+            {
+                return _viewer.CustomSwitches;
+            }
+            set
+            {
+                _viewer.CustomSwitches = value;
             }
         }
 

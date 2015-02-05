@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET.Samples project
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2014 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -41,7 +41,7 @@ namespace Ghostscript.NET.Samples
     /// memory. If you want Ghostscript to store files on the disk use GhostscriptProcessor
     /// or one of the GhostscriptDevices (GhostscriptPngDevice, GhostscriptJpgDevice).
     /// </summary>
-    public class RasterizerSample : ISample
+    public class RasterizerSample2 : ISample
     {
         private GhostscriptVersionInfo _lastInstalledVersion = null;
 
@@ -53,20 +53,21 @@ namespace Ghostscript.NET.Samples
             string inputPdfPath = @"E:\gss_test\test.pdf";
             string outputPath = @"E:\gss_test\output\";
 
+
             _lastInstalledVersion = GhostscriptVersionInfo.GetLastInstalledVersion();
 
             using (GhostscriptRasterizer rasterizer = new GhostscriptRasterizer())
             {
-                /* MemoryStream usage sample
-              
+                /* custom switches can be added before the file is opened
+                
+                rasterizer.CustomSwitches.Add("-dPrinted");
+                 
+                */
+
                 byte[] buffer = File.ReadAllBytes(inputPdfPath);
                 MemoryStream ms = new MemoryStream(buffer);
 
-                _rasterizer.Open(ms);
-
-                */
-
-                rasterizer.Open(inputPdfPath, _lastInstalledVersion, false);
+                rasterizer.Open(ms);
 
                 for (int pageNumber = 1; pageNumber <= rasterizer.PageCount; pageNumber++)
                 {

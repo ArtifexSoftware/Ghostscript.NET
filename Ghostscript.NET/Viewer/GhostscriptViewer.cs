@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2014 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -51,6 +51,7 @@ namespace Ghostscript.NET.Viewer
         private int _graphicsAlphaBits = 4;
         private int _textAlphaBits = 4;
         private bool _epsClip = true;
+        private List<string> _customSwitches = new List<string>();
 
         #endregion
 
@@ -388,6 +389,11 @@ namespace Ghostscript.NET.Viewer
             if (_interpreter.LibraryRevision > 910)
             {
                 args.Add("-dMaxBitmap=1g");
+            }
+
+            foreach(string customSwitch in _customSwitches)
+            {
+                args.Add(customSwitch);
             }
 
             _interpreter.InitArgs(args.ToArray());
@@ -1012,6 +1018,22 @@ namespace Ghostscript.NET.Viewer
                 {
                     return GhostscriptPageOrientation.Landscape;
                 }
+            }
+        }
+
+        #endregion
+
+        #region CustomSwitches
+
+        public List<string> CustomSwitches
+        {
+            get
+            {
+                return _customSwitches;
+            }
+            set
+            {
+                _customSwitches = value;
             }
         }
 

@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET.Samples project
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2014 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -44,15 +44,18 @@ namespace Ghostscript.NET.Samples
             ISample sample;
 
             //sample = new GetInkCoverageSample();
-            //sample = new ProcessorSample();
+            //sample = new ProcessorSample1();
+            //sample = new ProcessorSample2();
             //sample = new FindInstalledGhostscriptVersionsSample();
             //sample = new RunMultipleInstancesSample();
             //sample = new ViewerSample();
-            sample = new RasterizerSample();
+            sample = new RasterizerSample1();
+            //sample = new RasterizerSample2();
             //sample = new AddWatermarkSample();
             //sample = new DeviceUsageSample();
             //sample = new PipedOutputSample();
-            
+            //sample = new SendToPrinterSample();
+
             sample.Start();
 
             Console.ReadLine();

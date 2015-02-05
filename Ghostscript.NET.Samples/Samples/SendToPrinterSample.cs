@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET.Samples project
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2014 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -30,52 +30,31 @@ using Ghostscript.NET.Processor;
 
 namespace Ghostscript.NET.Samples
 {
-    public class ProcessorSample : ISample
+    public class SendToPrinterSample : ISample
     {
         public void Start()
         {
-            string inputFile = @"E:\gss_test\test.pdf";
-            string outputFile = @"E:\gss_test\output\page-%03d.png";
+            // YOU NEED TO HAVE ADMINISTRATOR RIGHTS TO RUN THIS CODE
 
-            //string inputFile = @"E:\gss_test\multipage.ps";
-            //string outputFile = @"E:\gss_test\output\multipage.pdf";
+            string printerName = "YourPrinterName";
+            string inputFile = @"E:\__test_data\test.pdf";
 
-            int pageFrom = 1;
-            int pageTo = 50;
-
-            GhostscriptVersionInfo gv = GhostscriptVersionInfo.GetLastInstalledVersion();
-
-            using (GhostscriptProcessor processor = new GhostscriptProcessor(gv, true))
+            using (GhostscriptProcessor processor = new GhostscriptProcessor())
             {
-                processor.Processing += new GhostscriptProcessorProcessingEventHandler(processor_Processing);
-
                 List<string> switches = new List<string>();
                 switches.Add("-empty");
-                switches.Add("-dSAFER");
+                switches.Add("-dPrinted");
                 switches.Add("-dBATCH");
                 switches.Add("-dNOPAUSE");
-                switches.Add("-dNOPROMPT");
-                switches.Add(@"-sFONTPATH=" + System.Environment.GetFolderPath(System.Environment.SpecialFolder.Fonts));
-                switches.Add("-dFirstPage=" + pageFrom.ToString());
-                switches.Add("-dLastPage=" + pageTo.ToString());
-                switches.Add("-sDEVICE=png16m");
-                switches.Add("-r96");
-                switches.Add("-dTextAlphaBits=4");
-                switches.Add("-dGraphicsAlphaBits=4");
-
-                //switches.Add("-sDEVICE=pdfwrite");
-
-                switches.Add(@"-sOutputFile=" + outputFile);
-                switches.Add(@"-f");
+                switches.Add("-dNOSAFER");
+                switches.Add("-dNumCopies=1");
+                switches.Add("-sDEVICE=mswinpr2");
+                switches.Add("-sOutputFile=%printer%" + printerName);
+                switches.Add("-f");
                 switches.Add(inputFile);
 
                 processor.StartProcessing(switches.ToArray(), null);
             }
-        }
-
-        void processor_Processing(object sender, GhostscriptProcessorProcessingEventArgs e)
-        {
-            Console.WriteLine(e.CurrentPage.ToString() + " / " + e.CurrentPage.ToString());
         }
     }
 }

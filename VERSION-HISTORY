@@ -8,9 +8,18 @@
 //
 // License: Affero General Public License (AGPL) http://www.gnu.org/licenses/agpl.html
 // 
-// Copyright (c) 2013-2014 by Josip Habjan 
+// Copyright (c) 2013-2015 by Josip Habjan 
 
 HISTORY of the Ghostscript.NET library
+
+1.2.0.         2015-02-05
+-------------------------
+- fixed problem with checking for pdf file header signature in pdf files that has 
+  extra bytes at the beginning of the file before the actual signature.
+- fixed problem with the page rasterized to Image object which is kept in memory 
+  being disposed after the GhostscriptRasterizer is closed.
+- added ability to set custom switches for GhostscriptRasterizer and GhostscriptViewer.
+- added more usage examples.
 
 1.1.9.         2014-07-30
 -------------------------
