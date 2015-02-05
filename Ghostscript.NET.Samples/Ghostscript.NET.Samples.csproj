@@ -77,10 +77,10 @@
     <Compile Include="Samples\DeviceUsageSample.cs" />
     <Compile Include="Samples\PipedOutputSample.cs" />
     <Compile Include="Samples\ProcessorSample1.cs" />
+    <Compile Include="Samples\RasterizerSample1.cs" />
     <Compile Include="Samples\RasterizerSample2.cs" />
     <Compile Include="Samples\SendToPrinterSample.cs" />
     <Compile Include="Samples\ProcessorSample2.cs" />
-    <Compile Include="Samples\RasterizerSample1.cs" />
     <Compile Include="Samples\ViewerSample.cs" />
     <Compile Include="Samples\FindInstalledGhostscriptVersionsSample.cs" />
     <Compile Include="Samples\RunMultipleInstancesSample.cs" />
