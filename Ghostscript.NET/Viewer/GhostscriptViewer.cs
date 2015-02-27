@@ -611,7 +611,7 @@ namespace Ghostscript.NET.Viewer
 
         #region Zoom
 
-        private bool Zoom(float scale, bool test)
+        public bool Zoom(float scale, bool test)
         {
             int tmpZoopX = (int)(_zoom_xDpi * scale + 0.5);
             int tmpZoomY = (int)(_zoom_yDpi * scale + 0.5);
