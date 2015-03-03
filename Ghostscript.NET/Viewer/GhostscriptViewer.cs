@@ -384,6 +384,7 @@ namespace Ghostscript.NET.Viewer
                         (int)DISPLAY_FORMAT_FIRSTROW.DISPLAY_BOTTOMFIRST).ToString());
 
             args.Add("-dDOINTERPOLATE");
+            args.Add("-dGridFitTT=0");
 
             // fixes bug: http://bugs.ghostscript.com/show_bug.cgi?id=695180
             if (_interpreter.LibraryRevision > 910)
@@ -611,7 +612,7 @@ namespace Ghostscript.NET.Viewer
 
         #region Zoom
 
-        public bool Zoom(float scale, bool test)
+        public bool Zoom(float scale, bool test = false)
         {
             int tmpZoopX = (int)(_zoom_xDpi * scale + 0.5);
             int tmpZoomY = (int)(_zoom_yDpi * scale + 0.5);
@@ -1039,19 +1040,19 @@ namespace Ghostscript.NET.Viewer
 
         #endregion
 
-        #endregion
-
-        #region Internal properties
-
         #region ShowPageAfterOpen
 
-        internal bool ShowPageAfterOpen
+        public bool ShowPageAfterOpen
         {
             get { return _showPageAfterOpen; }
             set { _showPageAfterOpen = value; }
         }
 
         #endregion
+
+        #endregion
+
+        #region Internal properties
 
         #region FormatHandler
 
