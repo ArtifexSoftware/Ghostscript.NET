@@ -46,12 +46,22 @@ namespace Ghostscript.NET.Rasterizer
 
         #region Constructor
 
-        public GhostscriptRasterizer()
+        public GhostscriptRasterizer(GhostscriptStdIO stdIo)
         {
             _viewer = new GhostscriptViewer();
             _viewer.ShowPageAfterOpen = false;
             _viewer.ProgressiveUpdate = false;
             _viewer.DisplayPage += new GhostscriptViewerViewEventHandler(_viewer_DisplayPage);
+
+            if (stdIo != null)
+            {
+                _viewer.AttachStdIO(stdIo);
+            }
+        }
+
+        public GhostscriptRasterizer()
+            : this(default(GhostscriptStdIO))
+        {
         }
 
         #endregion

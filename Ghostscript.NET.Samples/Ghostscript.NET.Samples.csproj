@@ -88,6 +88,7 @@
     <Compile Include="ISample.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StdIOHandlers\DelegateStdIOHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj">
