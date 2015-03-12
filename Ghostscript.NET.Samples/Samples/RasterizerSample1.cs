@@ -24,18 +24,17 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+// required Ghostscript.NET namespaces
 using System;
-using System.Drawing;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
-
-// required Ghostscript.NET namespaces
-using Ghostscript.NET;
 using Ghostscript.NET.Rasterizer;
+using Ghostscript.NET.Samples.StdIOHandlers;
 
 namespace Ghostscript.NET.Samples
 {
-
     /// <summary>
     /// GhostscriptRasterizer allows you to rasterize pdf and postscript files into the 
     /// memory. If you want Ghostscript to store files on the disk use GhostscriptProcessor
@@ -43,23 +42,25 @@ namespace Ghostscript.NET.Samples
     /// </summary>
     public class RasterizerSample1 : ISample
     {
+        private GhostscriptVersionInfo _lastInstalledVersion = null;
+
         public void Start()
         {
-            int desired_x_dpi = 300;
-            int desired_y_dpi = 300;
+            int desired_x_dpi = 96;
+            int desired_y_dpi = 96;
 
-            string inputPdfPath = @"E:\__test_data\test2.pdf";
-            string outputPath = @"E:\__test_data\output\";
+            string inputPdfPath = @"E:\gss_test\test.pdf";
+            string outputPath = @"E:\gss_test\output\";
 
-            using (GhostscriptRasterizer rasterizer = new GhostscriptRasterizer())
+            using (var rasterizer = new GhostscriptRasterizer(output))
             {
                 rasterizer.Open(inputPdfPath);
 
-                for (int pageNumber = 1; pageNumber <= rasterizer.PageCount; pageNumber++)
+                for (var pageNumber = 1; pageNumber <= rasterizer.PageCount; pageNumber++)
                 {
-                    string pageFilePath = Path.Combine(outputPath, "Page-" + pageNumber.ToString() + ".png");
+                    var pageFilePath = Path.Combine(outputPath, string.Format("Page-{0}.png", pageNumber));
 
-                    Image img = rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
+                    var img = rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
                     img.Save(pageFilePath, ImageFormat.Png);
 
                     Console.WriteLine(pageFilePath);
@@ -68,4 +69,3 @@ namespace Ghostscript.NET.Samples
         }
     }
 }
-
