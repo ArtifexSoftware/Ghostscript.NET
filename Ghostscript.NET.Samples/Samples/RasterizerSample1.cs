@@ -42,15 +42,48 @@ namespace Ghostscript.NET.Samples
     /// </summary>
     public class RasterizerSample1 : ISample
     {
-        private GhostscriptVersionInfo _lastInstalledVersion = null;
-
         public void Start()
+        {
+            Sample1();
+            Sample2();
+        }
+
+        public void Sample1()
         {
             int desired_x_dpi = 96;
             int desired_y_dpi = 96;
 
             string inputPdfPath = @"E:\gss_test\test.pdf";
             string outputPath = @"E:\gss_test\output\";
+
+            using (var rasterizer = new GhostscriptRasterizer())
+            {
+                rasterizer.Open(inputPdfPath);
+
+                for (var pageNumber = 1; pageNumber <= rasterizer.PageCount; pageNumber++)
+                {
+                    var pageFilePath = Path.Combine(outputPath, string.Format("Page-{0}.png", pageNumber));
+
+                    var img = rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
+                    img.Save(pageFilePath, ImageFormat.Png);
+
+                    Console.WriteLine(pageFilePath);
+                }
+            }
+        }
+
+        public void Sample2()
+        {
+            int desired_x_dpi = 96;
+            int desired_y_dpi = 96;
+
+            string inputPdfPath = @"E:\gss_test\test.pdf";
+            string outputPath = @"E:\gss_test\output\";
+
+            var output = new DelegateStdIOHandler(
+                stdOut: Console.WriteLine,
+                stdErr: Console.WriteLine
+                );
 
             using (var rasterizer = new GhostscriptRasterizer(output))
             {

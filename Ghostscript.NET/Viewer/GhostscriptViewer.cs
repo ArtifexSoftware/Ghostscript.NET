@@ -1040,6 +1040,24 @@ namespace Ghostscript.NET.Viewer
 
         #endregion
 
+        #region DPI
+
+        public int Dpi
+        {
+            get { return ZoomXDpi; }
+            set
+            {
+                ZoomXDpi = value;
+                ZoomYDpi = value;
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Internal properties
+
         #region ShowPageAfterOpen
 
         public bool ShowPageAfterOpen
