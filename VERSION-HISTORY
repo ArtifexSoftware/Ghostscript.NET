@@ -12,6 +12,17 @@
 
 HISTORY of the Ghostscript.NET library
 
+1.2.1.         2015-03-??
+-------------------------
+- GhostscriptRasterizer - added a constructor to allow capture of IO using GhostscriptStdIO
+  (Rasterizer samples updated with example of using GhostscriptStdIO)
+- GhostscriptViewer - added GridFitTT=0 to improve text quality.
+- GhostscriptViewer - added public setter for DPI settings in viewer.
+- GhostscriptViewre - change zoom method to public.
+- GhostscriptViewer - set test to false by default in Zoom method.
+- GhostscriptViewer - changed ShowAfterOpen to public to set parameters without having 
+  to generate a pdf
+
 1.2.0.         2015-02-05
 -------------------------
 - fixed problem with checking for pdf file header signature in pdf files that has 

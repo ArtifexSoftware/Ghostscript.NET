@@ -43,8 +43,6 @@ namespace Ghostscript.NET.Samples
     /// </summary>
     public class RasterizerSample2 : ISample
     {
-        private GhostscriptVersionInfo _lastInstalledVersion = null;
-
         public void Start()
         {
             int desired_x_dpi = 96;
@@ -52,9 +50,6 @@ namespace Ghostscript.NET.Samples
 
             string inputPdfPath = @"E:\gss_test\test.pdf";
             string outputPath = @"E:\gss_test\output\";
-
-
-            _lastInstalledVersion = GhostscriptVersionInfo.GetLastInstalledVersion();
 
             using (GhostscriptRasterizer rasterizer = new GhostscriptRasterizer())
             {

@@ -41,7 +41,7 @@ namespace Ghostscript.NET.Samples
     /// memory. If you want Ghostscript to store files on the disk use GhostscriptProcessor
     /// or one of the GhostscriptDevices (GhostscriptPngDevice, GhostscriptJpgDevice).
     /// </summary>
-    public class RasterizerSample1 : ISample
+    public class RasterizerCropSample : ISample
     {
         public void Start()
         {
@@ -53,6 +53,11 @@ namespace Ghostscript.NET.Samples
 
             using (GhostscriptRasterizer rasterizer = new GhostscriptRasterizer())
             {
+                rasterizer.CustomSwitches.Add("-dUseCropBox");
+                rasterizer.CustomSwitches.Add("-c");
+                rasterizer.CustomSwitches.Add("[/CropBox [24 72 559 794] /PAGES pdfmark");
+                rasterizer.CustomSwitches.Add("-f");
+
                 rasterizer.Open(inputPdfPath);
 
                 for (int pageNumber = 1; pageNumber <= rasterizer.PageCount; pageNumber++)

@@ -49,12 +49,13 @@ namespace Ghostscript.NET.Samples
             //sample = new FindInstalledGhostscriptVersionsSample();
             //sample = new RunMultipleInstancesSample();
             //sample = new ViewerSample();
-            sample = new RasterizerSample1();
+            //sample = new RasterizerSample1();
             //sample = new RasterizerSample2();
             //sample = new AddWatermarkSample();
             //sample = new DeviceUsageSample();
-            //sample = new PipedOutputSample();
+            sample = new PipedOutputSample();
             //sample = new SendToPrinterSample();
+            //sample = new RasterizerCropSample();
 
             sample.Start();
 

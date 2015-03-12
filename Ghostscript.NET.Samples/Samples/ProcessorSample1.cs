@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 using Ghostscript.NET.Processor;
+using System.IO;
+using System.Drawing;
 
 namespace Ghostscript.NET.Samples
 {
@@ -34,6 +36,9 @@ namespace Ghostscript.NET.Samples
     {
         public void Start()
         {
+            Start2();
+            return;
+
             string inputFile = @"E:\gss_test\test.pdf";
             string outputFile = @"E:\gss_test\output\page-%03d.png";
 
@@ -67,6 +72,63 @@ namespace Ghostscript.NET.Samples
         void ghostscript_Processing(object sender, GhostscriptProcessorProcessingEventArgs e)
         {
             Console.WriteLine(e.CurrentPage.ToString() + " / " + e.CurrentPage.ToString());
+        }
+
+        private void Start2()
+        {
+            string inputFile = @"E:\__test_data\i1.pdf";
+            string outputFile = @"E:\gss_test\output\page-%03d.png";
+
+            GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
+
+            string outputPipeHandle = "%handle%" + int.Parse(gsPipedOutput.ClientHandle).ToString("X2");
+
+            using (GhostscriptProcessor processor = new GhostscriptProcessor())
+            {
+                //"C:\Program Files\gs\gs9.15\bin\gswin64.exe" -sDEVICE=tiff24nc -r300 -dNOPAUSE -dBATCH -sOutputFile="Invoice 1_%03ld.tiff" "Invoice 1.pdf"
+            
+                List<string> switches = new List<string>();
+                switches.Add("-empty");
+                switches.Add("-dQUIET");
+                switches.Add("-dSAFER");
+                switches.Add("-dBATCH");
+                switches.Add("-dNOPAUSE");
+                switches.Add("-dNOPROMPT");
+                switches.Add("-dPrinted");
+                switches.Add("-sDEVICE=pdfwrite");
+                //switches.Add("-sDEVICE=tiffsep1");
+                switches.Add("-sOutputFile=" + outputPipeHandle);
+                //switches.Add("-q");
+                switches.Add("-f");
+                switches.Add(inputFile);
+
+                try
+                {
+                    processor.Process(switches.ToArray());
+
+                    byte[] rawDocumentData = gsPipedOutput.Data;
+                    var memStream = new MemoryStream(rawDocumentData);
+                    //var image = new Bitmap(memStream);
+                    //image.Save(@"Invocie 1.tiff");
+                    //if (writeToDatabase)
+                    //{
+                    //    Database.ExecSP("add_document", rawDocumentData);
+                    //}
+                    //else if (writeToDisk)
+                    //{
+                    //    File.WriteAllBytes(@"E:\gss_test\output\test_piped_output.pdf", rawDocumentData);
+                    //}
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    gsPipedOutput.Dispose();
+                    gsPipedOutput = null;
+                }
+            }
         }
     }
 }
