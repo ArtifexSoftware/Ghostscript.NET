@@ -15,9 +15,9 @@
  * allows you to run multiple Ghostscript instances simultaneously within a single process.
  * compatible with 32-bit and 64-bit Ghostscript native library.
  
-[If you have found **Ghostscript.NET** useful and has contributed to your project **consider donating**. Donating helps support **Ghostscript.NET**.](https://pledgie.com/campaigns/27837)
+[If you have found **Ghostscript.NET** useful and has contributed to your project **consider donating**. Donating helps support **Ghostscript.NET**.](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GS6S7RCAB7KAQ)
 
-[<img src="https://pledgie.com/campaigns/27837.png?skin_name=chrome" alt="Click here to lend your support to: Ghostscript.NET and make a donation at pledgie.com !" />](https://pledgie.com/campaigns/27837)
+[<img src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" alt="Click here to lend your support to: Ghostscript.NET and make a donation at pledgie.com !" />](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GS6S7RCAB7KAQ)
 
 
 Used in the [**Ghostscript Studio** (Ghostscript IDE)
