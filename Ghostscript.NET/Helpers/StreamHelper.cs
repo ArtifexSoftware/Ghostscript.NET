@@ -36,6 +36,13 @@ namespace Ghostscript.NET
 
         public static string GetStreamExtension(Stream stream)
         {
+            // https://github.com/awslabs/aws-sdk-xamarin/blob/master/AWS.XamarinSDK/AWSSDK_Core/Amazon.Runtime/Internal/Util/HashStream.cs
+            // Amazon.Runtime.Internal.Util.HashStream.Position {set; get;} throw NotSupportedException. First check CanSeek and default to PDF file extension
+            if (!stream.CanSeek)
+            {
+                return ".pdf";
+            }
+
             if (stream.Length < 4)
             {
                 throw new InvalidDataException("Less than 4 bytes found in stream.");
@@ -118,7 +125,12 @@ namespace Ghostscript.NET
 
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + extension);
 
-            stream.Position = 0;
+            // https://github.com/awslabs/aws-sdk-xamarin/blob/master/AWS.XamarinSDK/AWSSDK_Core/Amazon.Runtime/Internal/Util/HashStream.cs
+            // Amazon.Runtime.Internal.Util.HashStream.Position {set; get;} throw NotSupportedException.
+            if (stream.CanSeek)
+            {
+                stream.Position = 0;
+            }
 
             using (FileStream fs = File.Create(path))
             {
