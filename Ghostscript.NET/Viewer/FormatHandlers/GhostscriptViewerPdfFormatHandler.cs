@@ -127,7 +127,7 @@ namespace Ghostscript.NET.Viewer
                 int startPos = message.IndexOf(PDF_TAG);
                 int endPos = message.IndexOf(": ");
 
-                string tag = message.Substring(startPos, endPos + 2);
+                string tag = message.Substring(startPos, endPos - startPos + 2);
                 string rest = message.Substring(endPos + 2, message.Length - endPos - 2);
 
                 switch (tag)
