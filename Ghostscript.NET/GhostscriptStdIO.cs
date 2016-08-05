@@ -144,7 +144,7 @@ namespace Ghostscript.NET
             }
 
             // remove written data out from the cached input
-            _input = _input.Remove(0, count);
+            _input = _input.Remove(0, position);
 
             // return number of bytes written
             return position;
