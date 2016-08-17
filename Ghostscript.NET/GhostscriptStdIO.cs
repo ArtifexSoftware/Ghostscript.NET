@@ -104,7 +104,7 @@ namespace Ghostscript.NET
                 this.StdIn(out input, count);
 
                 // check if we have input
-                if (!string.IsNullOrWhiteSpace(input))
+                if (!string.IsNullOrEmpty(input))
                 {
                     // add the input to the local cache
                     _input.Append(input);
