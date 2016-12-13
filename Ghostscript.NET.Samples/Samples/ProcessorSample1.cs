@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET.Samples project
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -36,9 +36,6 @@ namespace Ghostscript.NET.Samples
     {
         public void Start()
         {
-            Start2();
-            return;
-
             string inputFile = @"E:\gss_test\test.pdf";
             string outputFile = @"E:\gss_test\output\page-%03d.png";
 
@@ -77,7 +74,6 @@ namespace Ghostscript.NET.Samples
         private void Start2()
         {
             string inputFile = @"E:\__test_data\i1.pdf";
-            string outputFile = @"E:\gss_test\output\page-%03d.png";
 
             GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
 
@@ -95,10 +91,9 @@ namespace Ghostscript.NET.Samples
                 switches.Add("-dNOPAUSE");
                 switches.Add("-dNOPROMPT");
                 switches.Add("-dPrinted");
-                switches.Add("-sDEVICE=pdfwrite");
-                //switches.Add("-sDEVICE=tiffsep1");
+                //switches.Add("-sDEVICE=pdfwrite");
+                switches.Add("-sDEVICE=tiff24nc");
                 switches.Add("-sOutputFile=" + outputPipeHandle);
-                //switches.Add("-q");
                 switches.Add("-f");
                 switches.Add(inputFile);
 

@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -283,8 +283,15 @@ namespace Ghostscript.NET.Interpreter
                 int rc_enc = _gs.gsapi_set_arg_encoding(_gs_instance, GS_ARG_ENCODING.UTF8);
             }
 
+            string[] utf8args = new string[args.Length];
+
+            for(int i = 0; i < args.Length; i++)
+            {
+                utf8args[i] = StringHelper.ToUtf8String(args[i]);
+            }
+            
             // GSAPI: initialize the interpreter
-            int rc_init = _gs.gsapi_init_with_args(_gs_instance, args.Length, args);
+            int rc_init = _gs.gsapi_init_with_args(_gs_instance, utf8args.Length, utf8args);
 
             // check if the interpreter is initialized correctly
             if (ierrors.IsError(rc_init))
@@ -300,7 +307,7 @@ namespace Ghostscript.NET.Interpreter
         /// <summary>
         /// Runs a string.
         /// </summary>
-        public void Run(string str)
+        public int Run(string str)
         {
             lock (this)
             {
@@ -316,6 +323,8 @@ namespace Ghostscript.NET.Interpreter
                     {
                         throw new GhostscriptAPICallException("gsapi_run_string", rc_run);
                     }
+
+                    return rc_run;
                 }
                 else // we need to split a string into chunks
                 {
@@ -353,6 +362,8 @@ namespace Ghostscript.NET.Interpreter
                     {
                         throw new GhostscriptAPICallException("gsapi_run_string_end", rc_run_end);
                     }
+
+                    return rc_run_end;
                 }
             }
         }

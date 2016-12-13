@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan= habjan@gmail.com, http://www.linkedin.com/in/habjan; 
-// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
 //
 // Author ported parts of this code from AFPL Ghostscript. 
 //

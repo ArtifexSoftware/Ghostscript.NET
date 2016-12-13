@@ -104,6 +104,7 @@
     <Compile Include="Helpers\ImageMemoryHelper.cs" />
     <Compile Include="Helpers\NativeLibraryHelper.cs" />
     <Compile Include="Helpers\StreamHelper.cs" />
+    <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="Interpreter\GhostscriptInterpreter.cs" />
     <Compile Include="Microsoft.WinAny.Helper\Interop\DynamicNativeLibrary.cs" />
     <Compile Include="Microsoft.WinAny.Helper\_native\memory.cs" />

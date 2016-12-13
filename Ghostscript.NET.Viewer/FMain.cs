@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET.Viewer project
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -99,6 +99,7 @@ namespace Ghostscript.NET.Viewer
                 mnuFileClose_Click(this, null);
 
                 _viewer.Open(ofd.FileName, _gsVersion, false);
+
                 this.Text = System.IO.Path.GetFileName(ofd.FileName) + " - " + Program.NAME;
             }
         }

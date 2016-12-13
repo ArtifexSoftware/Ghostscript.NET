@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
 //
 // Author ported some parts of this code from GSView. 
 //
@@ -28,6 +28,7 @@
 
 using System;
 using System.Drawing;
+using System.Globalization;
 
 namespace Ghostscript.NET.Viewer
 {
@@ -92,10 +93,17 @@ namespace Ghostscript.NET.Viewer
         #region Open
 
         public override void Open(string filePath)
-        {           
+        {
+            filePath = StringHelper.ToUtf8String(filePath);
+
             // open PDF file
-            this.Execute(string.Format("({0}) (r) file runpdfbegin", filePath.Replace("\\", "/")));
-            
+            int res = this.Execute(string.Format("({0}) (r) file runpdfbegin", filePath.Replace("\\", "/")));
+
+            if(res == ierrors.e_ioerror)
+            {
+                throw new GhostscriptException("IO error for file: '" + filePath + "'", ierrors.e_ioerror);
+            }
+
             this.Execute("/FirstPage where { pop FirstPage } { 1 } ifelse");
             this.Execute("/LastPage where { pop LastPage } { pdfpagecount } ifelse");
 
@@ -135,64 +143,93 @@ namespace Ghostscript.NET.Viewer
                     case PDF_PAGES_TAG:
                         {
                             string[] pages = rest.Split(new char[] { ' ' });
-                            this.FirstPageNumber = int.Parse(pages[0]);
-                            this.LastPageNumber = int.Parse(pages[1]);
+
+                            int first, last;
+
+                            if (pages.Length >= 2 && int.TryParse(pages[0], out first) && int.TryParse(pages[1], out last))
+                            {
+                                this.FirstPageNumber = first;
+                                this.LastPageNumber = last;
+                            }
+
+                            break;
                         }
-                        break;
                     case PDF_PAGE_TAG:
                         {
-                            this.CurrentPageNumber = int.Parse(rest);
+                            int number;
+
+                            if (int.TryParse(rest, out number))
+                            {
+                                this.CurrentPageNumber = number;
+                            }
+
                             break;
                         }
                     case PDF_MEDIA_TAG:
                         {
                             string[] mb = rest.Split(new char[] { ' ' });
-                            this.MediaBox = new GhostscriptRectangle(
-                                    float.Parse(mb[0].TrimStart('['), System.Globalization.CultureInfo.InvariantCulture), 
-                                    float.Parse(mb[1], System.Globalization.CultureInfo.InvariantCulture), 
-                                    float.Parse(mb[2], System.Globalization.CultureInfo.InvariantCulture), 
-                                    float.Parse(mb[3].TrimEnd(']'), System.Globalization.CultureInfo.InvariantCulture));
+
+                            float llx, lly, urx, ury;
+
+                            if (mb.Length >= 4 &&
+                                float.TryParse(mb[0].TrimStart('['), NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out llx) &&
+                                float.TryParse(mb[1], NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out lly) &&
+                                float.TryParse(mb[2], NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out urx) &&
+                                float.TryParse(mb[3].TrimEnd(']'), NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out ury))
+                            {
+                                this.MediaBox = new GhostscriptRectangle(llx, lly, urx, ury);
+                            }
+
                             break;
                         }
                     case PDF_CROP_TAG:
                         {
                             string[] cb = rest.Split(new char[] { ' ' });
-                            this.CropBox = new GhostscriptRectangle(
-                                    float.Parse(cb[0].TrimStart('['), System.Globalization.CultureInfo.InvariantCulture),
-                                    float.Parse(cb[1], System.Globalization.CultureInfo.InvariantCulture),
-                                    float.Parse(cb[2], System.Globalization.CultureInfo.InvariantCulture),
-                                    float.Parse(cb[3].TrimEnd(']'), System.Globalization.CultureInfo.InvariantCulture));
+
+                            float llx, lly, urx, ury;
+
+                            if (cb.Length >= 4 &&
+                                float.TryParse(cb[0].TrimStart('['), NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out llx) &&
+                                float.TryParse(cb[1], NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out lly) &&
+                                float.TryParse(cb[2], NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out urx) &&
+                                float.TryParse(cb[3].TrimEnd(']'), NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out ury))
+                            {
+                                this.CropBox = new GhostscriptRectangle(llx, lly, urx, ury);
+                            }
 
                             break;
                         }
                     case PDF_ROTATE_TAG:
                         {
-                            int rotate = int.Parse(rest);
+                            int rotate;
 
-                            while (rotate < 0)
+                            if (int.TryParse(rest, out rotate))
                             {
-                                rotate += 360;
-                            }
+                                while (rotate < 0)
+                                {
+                                    rotate += 360;
+                                }
 
-                            while (rotate >= 360)
-                            {
-                                rotate -= 360;
-                            }
-                                
-                            switch (rotate)
-                            {
-                                case 90:
-                                    this.PageOrientation = GhostscriptPageOrientation.Landscape;
-                                    break;
-                                case 180:
-                                    this.PageOrientation = GhostscriptPageOrientation.UpsideDown;
-                                    break;
-                                case 270:
-                                    this.PageOrientation = GhostscriptPageOrientation.Seascape;
-                                    break;
-                                default:
-                                    this.PageOrientation = GhostscriptPageOrientation.Portrait;
-                                    break;
+                                while (rotate >= 360)
+                                {
+                                    rotate -= 360;
+                                }
+
+                                switch (rotate)
+                                {
+                                    case 90:
+                                        this.PageOrientation = GhostscriptPageOrientation.Landscape;
+                                        break;
+                                    case 180:
+                                        this.PageOrientation = GhostscriptPageOrientation.UpsideDown;
+                                        break;
+                                    case 270:
+                                        this.PageOrientation = GhostscriptPageOrientation.Seascape;
+                                        break;
+                                    default:
+                                        this.PageOrientation = GhostscriptPageOrientation.Portrait;
+                                        break;
+                                }
                             }
 
                             break;

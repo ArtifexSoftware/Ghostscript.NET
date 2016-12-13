@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -473,7 +473,7 @@ namespace Ghostscript.NET.Processor
             else if (line.StartsWith("Page"))
             {
                 string[] chunks = line.Split(EMPTY_SPACE_SPLIT);
-                int currentPage = int.Parse(chunks[chunks.Length - 1]);
+                int currentPage = int.Parse(chunks[1]);
 
                 this.OnProcessing(new GhostscriptProcessorProcessingEventArgs(currentPage, _totalPages));
             }

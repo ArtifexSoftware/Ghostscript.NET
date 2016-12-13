@@ -5,15 +5,27 @@
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
 //
 // Development files: http://ghostscriptnet.codeplex.com
+// Development files: https://github.com/jhabjan/Ghostscript.NET
 //
 // License: Affero General Public License (AGPL) http://www.gnu.org/licenses/agpl.html
 // 
-// Copyright (c) 2013-2015 by Josip Habjan 
+// Copyright (c) 2013-2016 by Josip Habjan 
 
 HISTORY of the Ghostscript.NET library
 
-1.2.1.         2015-03-??
+1.2.1.         2016-12-30
 -------------------------
+- fixed offset error in StdIn buffering.
+- fixed problem with keeping whitespace return from the StdIn callbacks.
+- fixed problem with GhostscriptProcessor and current page handling event.
+- fixed problem with PDF signature/marker not beeing within first 32 bytes.
+- fixed problem with System.ArgumentOutOfRangeException when StdOut message does not 
+  occur at beginning of the line.
+- fixed problem with Amazon.Runtime.Internal.Util.HashStream.Position throw 
+  NotSupportedException.
+- added ability to allow keeping native ghostscript instance within 
+  GhostscriptProcessor instance and reuse it avoiding multiple library load/free especially
+  when loaded from memory.
 - GhostscriptRasterizer - added a constructor to allow capture of IO using GhostscriptStdIO
   (Rasterizer samples updated with example of using GhostscriptStdIO)
 - GhostscriptViewer - added GridFitTT=0 to improve text quality.

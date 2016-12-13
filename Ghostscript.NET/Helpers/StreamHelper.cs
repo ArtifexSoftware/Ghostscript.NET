@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2015 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -101,6 +101,20 @@ namespace Ghostscript.NET
                     stream.Position = 0;
 
                     if (BufferHelper.IndexOf(test, new byte[] { 0x25, 0x50, 0x44, 0x46}) > -1)
+                    {
+                        extension = ".pdf";
+                    }
+                }
+                
+                if(string.IsNullOrWhiteSpace(extension))
+                {
+                    // we didn't find pdf marker within first 32 bytes, read whole stream and search for pdf marker anywhere
+                    BinaryReader reader = new BinaryReader(stream);
+                    test = reader.ReadBytes((int)stream.Length);
+
+                    stream.Position = 0;
+
+                    if (BufferHelper.IndexOf(test, new byte[] { 0x25, 0x50, 0x44, 0x46 }) > -1)
                     {
                         extension = ".pdf";
                     }
