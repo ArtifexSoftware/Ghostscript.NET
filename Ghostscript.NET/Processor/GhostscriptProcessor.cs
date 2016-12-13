@@ -42,6 +42,7 @@ namespace Ghostscript.NET.Processor
         #region Private variables
 
         private bool _disposed = false;
+        private bool _processorOwnsLibrary = true;
         private GhostscriptLibrary _gs;
         private GhostscriptStdIO _stdIO_Callback;
         private GhostscriptProcessorInternalStdIOHandler _internalStdIO_Callback;
@@ -121,6 +122,16 @@ namespace Ghostscript.NET.Processor
 
         #region Constructor - library
 
+        public GhostscriptProcessor(GhostscriptLibrary library, bool processorOwnsLibrary = false)
+        {
+            if (library == null)
+            {
+                throw new ArgumentNullException("library");
+            }
+            _processorOwnsLibrary = processorOwnsLibrary;
+            _gs = library;
+        }
+        
         public GhostscriptProcessor(byte[] library)
         {
             if (library == null)
@@ -183,7 +194,10 @@ namespace Ghostscript.NET.Processor
             {
                 if (disposing)
                 {
-                    _gs.Dispose();
+                    if (_processorOwnsLibrary)
+                    {
+                        _gs.Dispose();
+                    }
                 }
 
                 _disposed = true;
