@@ -148,10 +148,29 @@ namespace Ghostscript.NET
 
             using (FileStream fs = File.Create(path))
             {
-                stream.CopyTo(fs);
+                CopyStream(stream, fs);
             }
 
             return path;
+        }
+
+        #endregion
+
+        #region CopyStream
+
+        public static void CopyStream(Stream input, Stream output)
+        {
+            int size = (input.CanSeek) ? Math.Min((int)(input.Length - input.Position), 0x2000) : 0x2000;
+
+            byte[] buffer = new byte[size];
+
+            int n;
+
+            do
+            {
+                n = output.Read(buffer, 0, buffer.Length);
+                output.Write(buffer, 0, n);
+            } while (n != 0);
         }
 
         #endregion
