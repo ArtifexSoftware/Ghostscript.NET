@@ -33,5 +33,8 @@ namespace Ghostscript.NET
     {
         [DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory")]
         public static extern void MoveMemory(IntPtr destination, IntPtr source, uint length);
+
+        [DllImport("kernel32.dll", EntryPoint = "CopyMemory")]
+        public static extern void CopyMemory(IntPtr destination, IntPtr source, uint count);
     }
 }

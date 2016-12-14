@@ -383,6 +383,8 @@ namespace Ghostscript.NET.Viewer
                         (int)DISPLAY_FORMAT_ENDIAN.DISPLAY_LITTLEENDIAN |
                         (int)DISPLAY_FORMAT_FIRSTROW.DISPLAY_BOTTOMFIRST).ToString());
 
+
+
             args.Add("-dDOINTERPOLATE");
             args.Add("-dGridFitTT=0");
 
@@ -514,9 +516,30 @@ namespace Ghostscript.NET.Viewer
 
             if (mediaBox != GhostscriptRectangle.Empty && _formatHandler.GetType() != typeof(GhostscriptViewerPsFormatHandler))
             {
-                this.Interpreter.Run(string.Format("/PageOffset  [{0} {1}]\n",
-                                        (-mediaBox.llx).ToString("0.00", CultureInfo.InvariantCulture),
-                                        (-mediaBox.lly).ToString("0.00", CultureInfo.InvariantCulture)));
+                if (_formatHandler.PageOrientation == GhostscriptPageOrientation.Portrait)
+                {
+                    this.Interpreter.Run(string.Format("/PageOffset  [{0} {1}]\n",
+                                            (-mediaBox.llx).ToString("0.00", CultureInfo.InvariantCulture),
+                                            (-mediaBox.lly).ToString("0.00", CultureInfo.InvariantCulture)));
+                }
+                else if (_formatHandler.PageOrientation == GhostscriptPageOrientation.Landscape)
+                {
+                    this.Interpreter.Run(string.Format("/PageOffset  [{0} {1}]\n",
+                                            (-mediaBox.lly).ToString("0.00", CultureInfo.InvariantCulture),
+                                            (mediaBox.llx).ToString("0.00", CultureInfo.InvariantCulture)));
+                }
+                else if (_formatHandler.PageOrientation == GhostscriptPageOrientation.UpsideDown)
+                {
+                    this.Interpreter.Run(string.Format("/PageOffset  [{0} {1}]\n",
+                                            (mediaBox.llx).ToString("0.00", CultureInfo.InvariantCulture),
+                                            (mediaBox.lly).ToString("0.00", CultureInfo.InvariantCulture)));
+                }
+                else if (_formatHandler.PageOrientation == GhostscriptPageOrientation.Seascape)
+                {
+                    this.Interpreter.Run(string.Format("/PageOffset  [{0} {1}]\n",
+                                            (mediaBox.lly).ToString("0.00", CultureInfo.InvariantCulture),
+                                            (-mediaBox.llx).ToString("0.00", CultureInfo.InvariantCulture)));
+                }
             }
 
             this.Interpreter.Run(string.Format("/GraphicsAlphaBits {0}\n", _graphicsAlphaBits));

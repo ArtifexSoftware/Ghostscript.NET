@@ -42,6 +42,9 @@ namespace Ghostscript.NET.Viewer
     {
         private GhostscriptViewer _viewer;
         private GhostscriptVersionInfo _gsVersion = GhostscriptVersionInfo.GetLastInstalledVersion();
+        private StringBuilder _stdOut = new StringBuilder();
+        private StringBuilder _stdErr = new StringBuilder();
+        private bool _supressPageNumberChangeEvent = false;
 
         public FMain()
         {
@@ -53,6 +56,7 @@ namespace Ghostscript.NET.Viewer
             pbPage.Height = 100;
 
             _viewer = new GhostscriptViewer();
+            _viewer.AttachStdIO(new GhostscriptStdIOHandler(_stdOut, _stdErr));
 
             _viewer.DisplaySize += new GhostscriptViewerViewEventHandler(_viewer_DisplaySize);
             _viewer.DisplayUpdate += new GhostscriptViewerViewEventHandler(_viewer_DisplayUpdate);
@@ -75,7 +79,10 @@ namespace Ghostscript.NET.Viewer
             pbPage.Invalidate();
             pbPage.Update();
 
+            _supressPageNumberChangeEvent = true;
             tbPageNumber.Text = _viewer.CurrentPageNumber.ToString();
+            _supressPageNumberChangeEvent = false;
+
             tbTotalPages.Text = " / " + _viewer.LastPageNumber.ToString();
         }
 
@@ -98,6 +105,8 @@ namespace Ghostscript.NET.Viewer
             {
                 mnuFileClose_Click(this, null);
 
+                _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> OPEN");
+
                 _viewer.Open(ofd.FileName, _gsVersion, false);
 
                 this.Text = System.IO.Path.GetFileName(ofd.FileName) + " - " + Program.NAME;
@@ -107,6 +116,10 @@ namespace Ghostscript.NET.Viewer
         private void mnuFileClose_Click(object sender, EventArgs e)
         {
             _viewer.Close();
+
+            _stdOut.Clear();
+            _stdErr.Clear();
+
             pbPage.Image = null;
             this.Text = Program.NAME;
             tbPageNumber.Text = string.Empty;
@@ -121,21 +134,25 @@ namespace Ghostscript.NET.Viewer
 
         private void tbPageFirst_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW FIRST PAGE");
             _viewer.ShowFirstPage();
         }
 
         private void tbPagePrevious_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW PREVIOUS PAGE");
             _viewer.ShowPreviousPage();
         }
 
         private void tbPageNext_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW NEXT PAGE");
             _viewer.ShowNextPage();
         }
 
         private void tbPageLast_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW LAST PAGE");
             _viewer.ShowLastPage();
         }
 
@@ -143,9 +160,13 @@ namespace Ghostscript.NET.Viewer
         {
             try
             {
-                if (tbPageNumber.Text.Length > 0)
+                if (!_supressPageNumberChangeEvent)
                 {
-                    _viewer.ShowPage(int.Parse(tbPageNumber.Text));
+                    if (tbPageNumber.Text.Length > 0)
+                    {
+                        _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW PAGE " + tbPageNumber.Text);
+                        _viewer.ShowPage(int.Parse(tbPageNumber.Text));
+                    }
                 }
             }
             catch { }
@@ -158,32 +179,54 @@ namespace Ghostscript.NET.Viewer
 
         private void mnuNext_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW NEXT PAGE");
             _viewer.ShowNextPage();
         }
 
         private void mnuPrev_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW PREVIOUS PAGE");
             _viewer.ShowPreviousPage();
         }
 
         private void mnuFirst_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW LAST PAGE");
             _viewer.ShowFirstPage();
         }
 
         private void mnuLast_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> SHOW LAST PAGE");
             _viewer.ShowLastPage();
         }
 
         private void tpZoomIn_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> ZOOM IN");
             _viewer.ZoomIn();
         }
 
         private void tpZoomOut_Click(object sender, EventArgs e)
         {
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> ZOOM OUT");
             _viewer.ZoomOut();
+        }
+
+        private void tbDebug_Click(object sender, EventArgs e)
+        {
+
+            FDebug debug = new FDebug();
+            debug.txtDebug.AppendText("StdOut:\r\n");
+            debug.txtDebug.AppendText("---------------------------------------------------------------------------\r\n");
+            debug.txtDebug.AppendText(_stdOut.ToString() + "\r\n");
+            debug.txtDebug.AppendText("===========================================================================\r\n");
+            debug.txtDebug.AppendText("StdErr:\r\n");
+            debug.txtDebug.AppendText("---------------------------------------------------------------------------\r\n");
+            debug.txtDebug.AppendText(_stdErr.ToString() + "\r\n");
+            debug.txtDebug.AppendText("===========================================================================\r\n");
+            debug.ShowDialog(this);
+            debug.Dispose();
         }
     }
 }

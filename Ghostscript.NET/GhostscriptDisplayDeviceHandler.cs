@@ -145,9 +145,9 @@ namespace Ghostscript.NET
 
         #region display_memalloc
 
-        private IntPtr display_memalloc(IntPtr handle, IntPtr device, UInt32 size)
+        private void display_memalloc(IntPtr handle, IntPtr device, UInt32 size)
         {
-            return IntPtr.Zero;
+            
         }
 
         #endregion

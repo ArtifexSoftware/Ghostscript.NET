@@ -61,6 +61,9 @@
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.tpZoomOut = new System.Windows.Forms.ToolStripButton();
             this.tpZoomIn = new System.Windows.Forms.ToolStripButton();
+            this.toolStripLabel4 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbDebug = new System.Windows.Forms.ToolStripButton();
             this.panGDN = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -88,7 +91,7 @@
             this.mnuHelp});
             this.mnuMain.Location = new System.Drawing.Point(0, 0);
             this.mnuMain.Name = "mnuMain";
-            this.mnuMain.Size = new System.Drawing.Size(346, 24);
+            this.mnuMain.Size = new System.Drawing.Size(515, 24);
             this.mnuMain.TabIndex = 0;
             this.mnuMain.Text = "menuStrip1";
             // 
@@ -190,9 +193,9 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblSystemInformation,
             this.lblGsVersion});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 500);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 580);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(619, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(788, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -217,7 +220,7 @@
             this.panTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panTop.Location = new System.Drawing.Point(0, 0);
             this.panTop.Name = "panTop";
-            this.panTop.Size = new System.Drawing.Size(619, 56);
+            this.panTop.Size = new System.Drawing.Size(788, 56);
             this.panTop.TabIndex = 2;
             // 
             // panMenuAndToolbar
@@ -228,7 +231,7 @@
             this.panMenuAndToolbar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panMenuAndToolbar.Location = new System.Drawing.Point(0, 0);
             this.panMenuAndToolbar.Name = "panMenuAndToolbar";
-            this.panMenuAndToolbar.Size = new System.Drawing.Size(346, 56);
+            this.panMenuAndToolbar.Size = new System.Drawing.Size(515, 56);
             this.panMenuAndToolbar.TabIndex = 0;
             // 
             // toolStrip1
@@ -248,12 +251,15 @@
             this.toolStripSeparator1,
             this.toolStripLabel2,
             this.tpZoomOut,
-            this.tpZoomIn});
+            this.tpZoomIn,
+            this.toolStripLabel4,
+            this.toolStripSeparator2,
+            this.tbDebug});
             this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip1.Size = new System.Drawing.Size(346, 31);
+            this.toolStrip1.Size = new System.Drawing.Size(515, 31);
             this.toolStrip1.TabIndex = 1;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -361,12 +367,33 @@
             this.tpZoomIn.ToolTipText = "Zoom In";
             this.tpZoomIn.Click += new System.EventHandler(this.tpZoomIn_Click);
             // 
+            // toolStripLabel4
+            // 
+            this.toolStripLabel4.Name = "toolStripLabel4";
+            this.toolStripLabel4.Size = new System.Drawing.Size(19, 28);
+            this.toolStripLabel4.Text = "    ";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 31);
+            // 
+            // tbDebug
+            // 
+            this.tbDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbDebug.Image = ((System.Drawing.Image)(resources.GetObject("tbDebug.Image")));
+            this.tbDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbDebug.Name = "tbDebug";
+            this.tbDebug.Size = new System.Drawing.Size(46, 28);
+            this.tbDebug.Text = "Debug";
+            this.tbDebug.Click += new System.EventHandler(this.tbDebug_Click);
+            // 
             // panGDN
             // 
             this.panGDN.BackColor = System.Drawing.Color.White;
             this.panGDN.Controls.Add(this.pictureBox1);
             this.panGDN.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panGDN.Location = new System.Drawing.Point(346, 0);
+            this.panGDN.Location = new System.Drawing.Point(515, 0);
             this.panGDN.Name = "panGDN";
             this.panGDN.Size = new System.Drawing.Size(273, 56);
             this.panGDN.TabIndex = 1;
@@ -388,16 +415,16 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 56);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(619, 4);
+            this.panel1.Size = new System.Drawing.Size(788, 4);
             this.panel1.TabIndex = 3;
             // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(51)))), ((int)(((byte)(153)))), ((int)(((byte)(255)))));
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 496);
+            this.panel2.Location = new System.Drawing.Point(0, 576);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(619, 4);
+            this.panel2.Size = new System.Drawing.Size(788, 4);
             this.panel2.TabIndex = 4;
             // 
             // panel3
@@ -409,7 +436,7 @@
             this.panel3.Location = new System.Drawing.Point(0, 60);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(4);
-            this.panel3.Size = new System.Drawing.Size(619, 436);
+            this.panel3.Size = new System.Drawing.Size(788, 516);
             this.panel3.TabIndex = 5;
             // 
             // pbPage
@@ -425,7 +452,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(619, 522);
+            this.ClientSize = new System.Drawing.Size(788, 602);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
@@ -497,9 +524,9 @@
         private System.Windows.Forms.ToolStripLabel toolStripLabel3;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel toolStripLabel2;
-
-
-
+        private System.Windows.Forms.ToolStripLabel toolStripLabel4;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton tbDebug;
     }
 }
 

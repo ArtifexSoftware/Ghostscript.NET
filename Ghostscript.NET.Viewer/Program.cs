@@ -34,7 +34,7 @@ namespace Ghostscript.NET.Viewer
 {
     static class Program
     {
-        public static string NAME = "Ghostscript.NET.Viewer " + Assembly.GetEntryAssembly().GetName().Version.ToString();
+        public static string NAME = "Ghostscript.NET.Viewer " + Assembly.GetEntryAssembly().GetName().Version.ToString(3);
 
         /// <summary>
         /// The main entry point for the application.

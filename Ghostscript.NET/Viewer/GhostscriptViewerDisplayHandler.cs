@@ -121,7 +121,7 @@ namespace Ghostscript.NET.Viewer
 
             _destImage = GhostscriptViewerImage.Create(width, height, raster, PixelFormat.Format24bppRgb);
 
-            _viewer.FormatHandler.ShowPagePostScriptCommandInvoked = false; 
+            _viewer.FormatHandler.ShowPagePostScriptCommandInvoked = false;
 
             _viewer.RaiseDisplaySize(new GhostscriptViewerViewEventArgs(_destImage, new Rectangle(0, 0, width, height)));
 
@@ -194,19 +194,11 @@ namespace Ghostscript.NET.Viewer
 
                     if (w == _destImage.Width && h == _destImage.Height)
                     {
-                        //IntPtr bkp = Marshal.AllocCoTaskMem(destStrideSize * h);
-
-                        //ImageMemoryHelper.CopyImagePartFrom(_destImage.Scan0, bkp, 0, 0, w, h, destStrideSize, bytesPerPixel);
-                        //ImageMemoryHelper.CopyImagePartTo(_destImage.Scan0, _srcImage, 0, 0, w, h, destStrideSize, bytesPerPixel);
-                        //ImageMemoryHelper.CopyImagePartTo(_destImage.Scan0, bkp, 0, 0, w, h, destStrideSize, bytesPerPixel);
-
-                        //Marshal.FreeCoTaskMem(bkp);
-
                         _destImage.Unlock();
 
                         return 0;
                     }
-                    
+
                     IntPtr tempTile = Marshal.AllocHGlobal(tileStride * h);
 
                     ImageMemoryHelper.CopyImagePartFrom(_srcImage, tempTile, x, y, w, h, _srcStride, bytesPerPixel);

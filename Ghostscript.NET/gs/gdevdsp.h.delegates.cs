@@ -54,7 +54,7 @@ namespace Ghostscript.NET
     public delegate int display_update_callback(IntPtr handle, IntPtr device, Int32 x, Int32 y, Int32 w, Int32 h);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate IntPtr display_memalloc_callback(IntPtr handle, IntPtr device, UInt32 size);
+    public delegate void display_memalloc_callback(IntPtr handle, IntPtr device, UInt32 size);
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int display_memfree_callback(IntPtr handle, IntPtr device, IntPtr mem);

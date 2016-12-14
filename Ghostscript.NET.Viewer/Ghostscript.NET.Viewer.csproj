@@ -51,16 +51,27 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FDebug.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FDebug.Designer.cs">
+      <DependentUpon>FDebug.cs</DependentUpon>
+    </Compile>
     <Compile Include="FMain.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="FMain.Designer.cs">
       <DependentUpon>FMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="GhostscriptStdIOHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FDebug.resx">
+      <DependentUpon>FDebug.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FMain.resx">
       <DependentUpon>FMain.cs</DependentUpon>
     </EmbeddedResource>
