@@ -154,18 +154,19 @@ namespace Ghostscript.NET
         public void ReadGhostscriptPipeOutput(object state)
         {
             // create BinaryReader instance through which we will read out Ghostscript output
-            BinaryReader reader = new BinaryReader(_pipe);
-
-            // allocate memory space for the incoming output data
-            byte[] buffer = new byte[_pipe.InBufferSize];
-
-            int readCount = 0;
-
-            // read untill we have something to read
-            while ((readCount = reader.Read(buffer, 0, buffer.Length)) > 0)
+            using(BinaryReader reader = new BinaryReader(_pipe))
             {
-                // write the output to our local memory stream
-                _data.Write(buffer, 0, readCount);
+                // allocate memory space for the incoming output data
+                byte[] buffer = new byte[_pipe.InBufferSize];
+
+                int readCount = 0;
+
+                // read untill we have something to read
+                while ((readCount = reader.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    // write the output to our local memory stream
+                    _data.Write(buffer, 0, readCount);
+                }
             }
         }
 
