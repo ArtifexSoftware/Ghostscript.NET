@@ -24,7 +24,6 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-using System;
 using System.Text;
 
 namespace Ghostscript.NET
@@ -35,8 +34,7 @@ namespace Ghostscript.NET
 
         public static string ToUtf8String(string value)
         {
-            byte[] bytes = System.Text.Encoding.Default.GetBytes(value);
-            return System.Text.Encoding.UTF8.GetString(bytes);
+            return Encoding.Default.GetString(Encoding.UTF8.GetBytes(value));
         }
 
         #endregion
