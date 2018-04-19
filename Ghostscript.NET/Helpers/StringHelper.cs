@@ -34,7 +34,7 @@ namespace Ghostscript.NET
 
         public static string ToUtf8String(string value)
         {
-            return Encoding.Default.GetString(Encoding.UTF8.GetBytes(value));
+            return Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(value)));
         }
 
         #endregion
