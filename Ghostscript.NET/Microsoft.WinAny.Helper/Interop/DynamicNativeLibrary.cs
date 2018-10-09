@@ -531,7 +531,7 @@ namespace Microsoft.WinAny.Interop
                 if ((section->Characteristics & WinNT.IMAGE_SCN_MEM_DISCARDABLE) != 0)
                 {
                     // section is not needed any more and can safely be freed
-                    WinBase.VirtualFree((IntPtr)((long)section->PhysicalAddress | (long)image_offset), section->SizeOfRawData, WinNT.MEM_DECOMMIT);
+                    WinBase.VirtualFree((IntPtr)(void*)((long)section->PhysicalAddress | (long)image_offset), section->SizeOfRawData, WinNT.MEM_DECOMMIT);
                     continue;
                 }
 
@@ -555,7 +555,7 @@ namespace Microsoft.WinAny.Interop
                 if (rawDataSize > 0)
                 {
                     // change memory access flags
-                    WinBase.VirtualProtect((IntPtr)((long)section->PhysicalAddress | (long)image_offset), rawDataSize, protect, &oldProtect);
+                    WinBase.VirtualProtect((IntPtr)(void*)((long)section->PhysicalAddress | (long)image_offset), rawDataSize, protect, &oldProtect);
                 }
             }
         }
