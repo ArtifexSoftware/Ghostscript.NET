@@ -168,7 +168,7 @@ namespace Ghostscript.NET
 
             do
             {
-                n = output.Read(buffer, 0, buffer.Length);
+                n = input.Read(buffer, 0, buffer.Length);
                 output.Write(buffer, 0, n);
             } while (n != 0);
         }
