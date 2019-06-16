@@ -37,7 +37,11 @@ steps:
   inputs:
     command: 'pack'
     packagesToPack: '**/*Ghostscript.NET.csproj'
-    versioningScheme: 'off'
+    versioningScheme: 'byPrereleaseNumber'
+    majorVersion: '1'
+    minorVersion: '2'
+    patchVersion: '1'
+    includeSymbols: true
 
 - task: NuGetCommand@2
   inputs:
