@@ -71,7 +71,7 @@ namespace Ghostscript.NET.Samples
 
         void processor_Processing(object sender, GhostscriptProcessorProcessingEventArgs e)
         {
-            Console.WriteLine(e.CurrentPage.ToString() + " / " + e.CurrentPage.ToString());
+            Console.WriteLine(e.CurrentPage.ToString() + " / " + e.TotalPages.ToString());
         }
 
         public class LogStdio : GhostscriptStdIO
