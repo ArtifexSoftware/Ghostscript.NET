@@ -237,10 +237,10 @@ namespace Ghostscript.NET
 
                     if (lineParts.Length == 6)
                     {
-                        pic.C = Math.Round(float.Parse(lineParts[0], CultureInfo.InvariantCulture) * 100, 2);
-                        pic.M = Math.Round(float.Parse(lineParts[1], CultureInfo.InvariantCulture) * 100, 2);
-                        pic.Y = Math.Round(float.Parse(lineParts[2], CultureInfo.InvariantCulture) * 100, 2);
-                        pic.K = Math.Round(float.Parse(lineParts[3], CultureInfo.InvariantCulture) * 100, 2);
+                        pic.C = Math.Round(float.Parse(lineParts[0], CultureInfo.InvariantCulture) * 100, 4);
+                        pic.M = Math.Round(float.Parse(lineParts[1], CultureInfo.InvariantCulture) * 100, 4);
+                        pic.Y = Math.Round(float.Parse(lineParts[2], CultureInfo.InvariantCulture) * 100, 4);
+                        pic.K = Math.Round(float.Parse(lineParts[3], CultureInfo.InvariantCulture) * 100, 4);
 
                         if (lineParts[5] == "OK")
                         {
