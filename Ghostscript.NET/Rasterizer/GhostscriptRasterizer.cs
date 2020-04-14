@@ -286,10 +286,9 @@ namespace Ghostscript.NET.Rasterizer
         /// <param name="yDpi">Desired y DPI.</param>
         /// <param name="pageNumber">The page number.</param>
         /// <returns>PDF page represented as System.Drawing.Image.</returns>
-        public Image GetPage(int xDpi, int yDpi, int pageNumber)
+        public Image GetPage(int Dpi, int pageNumber)
         {
-            _viewer.ZoomXDpi = xDpi;
-            _viewer.ZoomYDpi = yDpi;
+            _viewer.Dpi = Dpi;
             _viewer.ShowPage(pageNumber, true);
             return _lastRasterizedImage;
         }
