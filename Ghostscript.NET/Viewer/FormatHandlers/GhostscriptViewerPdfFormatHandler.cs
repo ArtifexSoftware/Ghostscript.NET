@@ -82,10 +82,6 @@ namespace Ghostscript.NET.Viewer
                     /DSCPageCount 0 def
                 ");
 
-            // open PDF support dictionaries
-            this.Execute(@"
-                    GS_PDF_ProcSet begin
-                    pdfdict begin");
         }
 
         #endregion
@@ -97,7 +93,7 @@ namespace Ghostscript.NET.Viewer
             filePath = StringHelper.ToUtf8String(filePath);
 
             // open PDF file
-            int res = this.Execute(string.Format("({0}) (r) file runpdfbegin", filePath.Replace("\\", "/")));
+            int res = this.Execute(string.Format("({0}) (r) file runpdfbegin pdfpagecount", filePath.Replace("\\", "/")));
 
             if(res == ierrors.e_ioerror)
             {

@@ -384,7 +384,7 @@ namespace Ghostscript.NET.Viewer
                         (int)DISPLAY_FORMAT_FIRSTROW.DISPLAY_BOTTOMFIRST).ToString());
 
 
-
+            args.Add("-dNOSAFER");
             args.Add("-dDOINTERPOLATE");
             args.Add("-dGridFitTT=0");
 
