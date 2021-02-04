@@ -68,7 +68,7 @@ namespace Ghostscript.NET.Samples
 
         void ghostscript_Processing(object sender, GhostscriptProcessorProcessingEventArgs e)
         {
-            Console.WriteLine(e.CurrentPage.ToString() + " / " + e.CurrentPage.ToString());
+            Console.WriteLine(e.CurrentPage.ToString() + " / " + e.TotalPages.ToString());
         }
 
         private void Start2()
