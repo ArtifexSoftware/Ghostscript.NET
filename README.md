@@ -18,7 +18,7 @@
 
 **Latest changes - 2021-02-04 - v.1.2.2.**
  * fixed Ghostscript 9.26 + (all later versions) compatibility.
- * fixed problem when openning path/file that contains non ASCII characters.
+ * fixed problem when opening path/file that contains non ASCII characters.
  * fixed "Arithmetic operation resulted in an overflow" when using multithread instance.
  * changed Y and Y DPI settings to match GhostscriptViewer.
  * fixed CurrentPage -> TotalPages logging.
