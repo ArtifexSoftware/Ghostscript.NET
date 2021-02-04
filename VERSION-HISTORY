@@ -13,7 +13,7 @@
 
 HISTORY of the Ghostscript.NET library
 
-1.2.1.         2021-02-04
+1.2.2.         2021-02-04
 -------------------------
 - fixed Ghostscript 9.26 + (all later versions) compatibility.
 - fixed problem when openning path/file that contains non ASCII characters.
