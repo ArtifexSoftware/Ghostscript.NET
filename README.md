@@ -37,10 +37,10 @@ Josip Habjan (habjan@gmail.com)
 
 **Samples built on the top of the Ghostscript.NET library**
 
+Direct postscript interpretation via Ghostscript.NET:
+
+![Ghostscript.NET.Display](https://i.ibb.co/Fnk8rFP/ss-jj-1899.png)
+
 Ghostscript.NET.Viewer (supports viewing of the PDF, EPS and multi-page PS files):
 
 ![Ghostscript.NET.Viewer](http://a.fsdn.com/con/app/proj/ghostscriptnet/screenshots/gs-net-render.png)
-
-Direct postscript interpretation via Ghostscript.NET:
-
-![Ghostscript.NET.Display](https://i.ibb.co/Scw6gbk/ss-jj-1898.png)
