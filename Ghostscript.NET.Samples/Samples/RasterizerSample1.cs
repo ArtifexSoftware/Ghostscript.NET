@@ -52,7 +52,7 @@ namespace Ghostscript.NET.Samples
         {
             int desired_dpi = 96;
 
-            string inputPdfPath = @"E:\gss_test\Vin�cius\a.pdf";
+            string inputPdfPath = @"E:\gss_test\test\a.pdf";
             string outputPath = @"E:\gss_test\output\";
 
             using (var rasterizer = new GhostscriptRasterizer())
