@@ -467,7 +467,9 @@ namespace Microsoft.WinAny.Interop
                         else
                         {
                             WinNT.IMAGE_IMPORT_BY_NAME* thunkData = (WinNT.IMAGE_IMPORT_BY_NAME*)(memory_module->codeBase + (ulong)*thunkRef);
-                            string procName = Marshal.PtrToStringAnsi((IntPtr)(byte*)(thunkData) + 2);
+                            //string procName = Marshal.PtrToStringAnsi((IntPtr)(byte*)(thunkData) + 2);
+                            IntPtr a = (IntPtr)(byte*)(thunkData);
+                            string procName = Marshal.PtrToStringAnsi(new IntPtr(a.ToInt64() + 2));
                             *funcRef = WinBase.GetProcAddress(handle, procName);
                         }
 
