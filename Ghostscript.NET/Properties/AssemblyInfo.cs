@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Habjan")]
 [assembly: AssemblyProduct("Ghostscript.NET")]
-[assembly: AssemblyCopyright("Copyright © 2013-2016 by Josip Habjan (habjan@gmail.com). All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2013-2021 by Josip Habjan (habjan@gmail.com). All Rights Reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -16,5 +16,5 @@ using System.Runtime.InteropServices;
 [assembly: Guid("5b1fe89e-e040-4b7a-9c05-478c1756b6e8")]
 
 
-[assembly: AssemblyVersion("1.2.1")]
-[assembly: AssemblyFileVersion("1.2.1")]
+[assembly: AssemblyVersion("1.2.2")]
+[assembly: AssemblyFileVersion("1.2.2")]

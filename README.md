@@ -19,10 +19,6 @@
 
 [<img src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" alt="Click here to lend your support to: Ghostscript.NET and make a donation at pledgie.com !" />](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GS6S7RCAB7KAQ)
 
-
-Used in the [**Ghostscript Studio** (Ghostscript IDE)
-<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><img src="https://download-codeplex.sec.s-msft.com/Download?ProjectName=ghostscriptstudio&amp;DownloadId=731788&amp;Build=20779" alt="" width="200" height="50" />](https://ghostscriptstudio.codeplex.com)  
-
 **LICENSE**
 
  Ghostscript.NET is distributed under the GNU Affero General Public License (see COPYING file).

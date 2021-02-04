@@ -117,6 +117,15 @@ namespace Ghostscript.NET.Viewer
 
         #endregion
 
+        #region Execute
+
+        internal int Execute(IntPtr str)
+        {
+            return _viewer.Interpreter.Run(str);
+        }
+
+        #endregion
+
         #region Viewer
 
         public GhostscriptViewer Viewer

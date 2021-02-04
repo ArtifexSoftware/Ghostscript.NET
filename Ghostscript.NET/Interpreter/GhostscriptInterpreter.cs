@@ -370,6 +370,30 @@ namespace Ghostscript.NET.Interpreter
 
         #endregion
 
+        #region Run
+
+        /// <summary>
+        /// Runs a string.
+        /// </summary>
+        internal int Run(IntPtr str)
+        {
+            lock (this)
+            {
+                int exit_code;
+
+                int rc_run = _gs.gsapi_run_ptr_string(_gs_instance, str, 0, out exit_code);
+
+                if (ierrors.IsFatalIgnoreNeedInput(rc_run))
+                {
+                    throw new GhostscriptAPICallException("gsapi_run_string", rc_run);
+                }
+
+                return rc_run;
+            }
+        }
+
+        #endregion
+
         #region RunFile
 
         /// <summary>

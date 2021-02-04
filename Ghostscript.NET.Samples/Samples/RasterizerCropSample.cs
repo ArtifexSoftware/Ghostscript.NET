@@ -3,7 +3,7 @@
 // This file is part of Ghostscript.NET.Samples project
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2021 by Josip Habjan. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -45,8 +45,7 @@ namespace Ghostscript.NET.Samples
     {
         public void Start()
         {
-            int desired_x_dpi = 300;
-            int desired_y_dpi = 300;
+            int desired_dpi = 300;
 
             string inputPdfPath = @"E:\__test_data\test2.pdf";
             string outputPath = @"E:\__test_data\output\";
@@ -64,7 +63,7 @@ namespace Ghostscript.NET.Samples
                 {
                     string pageFilePath = Path.Combine(outputPath, "Page-" + pageNumber.ToString() + ".png");
 
-                    Image img = rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
+                    Image img = rasterizer.GetPage(desired_dpi, pageNumber);
                     img.Save(pageFilePath, ImageFormat.Png);
 
                     Console.WriteLine(pageFilePath);

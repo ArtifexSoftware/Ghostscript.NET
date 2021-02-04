@@ -50,10 +50,9 @@ namespace Ghostscript.NET.Samples
 
         public void Sample1()
         {
-            int desired_x_dpi = 96;
-            int desired_y_dpi = 96;
+            int desired_dpi = 96;
 
-            string inputPdfPath = @"E:\gss_test\test.pdf";
+            string inputPdfPath = @"E:\gss_test\Vin�cius\a.pdf";
             string outputPath = @"E:\gss_test\output\";
 
             using (var rasterizer = new GhostscriptRasterizer())
@@ -64,7 +63,7 @@ namespace Ghostscript.NET.Samples
                 {
                     var pageFilePath = Path.Combine(outputPath, string.Format("Page-{0}.png", pageNumber));
 
-                    var img = rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
+                    var img = rasterizer.GetPage(desired_dpi, pageNumber);
                     img.Save(pageFilePath, ImageFormat.Png);
 
                     Console.WriteLine(pageFilePath);
@@ -74,8 +73,7 @@ namespace Ghostscript.NET.Samples
 
         public void Sample2()
         {
-            int desired_x_dpi = 96;
-            int desired_y_dpi = 96;
+            int desired_dpi = 96;
 
             string inputPdfPath = @"E:\gss_test\test.pdf";
             string outputPath = @"E:\gss_test\output\";
@@ -93,7 +91,7 @@ namespace Ghostscript.NET.Samples
                 {
                     var pageFilePath = Path.Combine(outputPath, string.Format("Page-{0}.png", pageNumber));
 
-                    var img = rasterizer.GetPage(desired_x_dpi, desired_y_dpi, pageNumber);
+                    var img = rasterizer.GetPage(desired_dpi, pageNumber);
                     img.Save(pageFilePath, ImageFormat.Png);
 
                     Console.WriteLine(pageFilePath);

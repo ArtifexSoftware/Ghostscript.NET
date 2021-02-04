@@ -206,6 +206,7 @@ namespace Ghostscript.NET
         public gsapi_run_string_end @gsapi_run_string_end = null;
         public gsapi_run_string_with_length @gsapi_run_string_with_length = null;
         public gsapi_run_string @gsapi_run_string = null;
+        public gsapi_run_ptr_string @gsapi_run_ptr_string = null;
         public gsapi_run_file @gsapi_run_file = null;
         public gsapi_exit @gsapi_exit = null;
 
@@ -292,6 +293,11 @@ namespace Ghostscript.NET
             this.gsapi_run_string = _library.GetDelegateForFunction<gsapi_run_string>("gsapi_run_string");
 
             if (this.gsapi_run_string == null)
+                throw new GhostscriptException(string.Format(symbolMappingError, "gsapi_run_string"));
+
+            this.gsapi_run_ptr_string = _library.GetDelegateForFunction<gsapi_run_ptr_string>("gsapi_run_string");
+
+            if (this.gsapi_run_ptr_string == null)
                 throw new GhostscriptException(string.Format(symbolMappingError, "gsapi_run_string"));
 
             this.gsapi_run_file = _library.GetDelegateForFunction<gsapi_run_file>("gsapi_run_file");

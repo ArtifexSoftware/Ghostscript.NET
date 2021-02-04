@@ -184,6 +184,9 @@ namespace Ghostscript.NET
     [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet=CharSet.Ansi)]
     public delegate int gsapi_run_string(IntPtr instance, String str, Int32 user_errors, out Int32 pexit_code);
 
+    [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+    public delegate int gsapi_run_ptr_string(IntPtr instance, IntPtr str, Int32 user_errors, out Int32 pexit_code);
+
     [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet=CharSet.Ansi)]
     public delegate int gsapi_run_file(IntPtr instance, String file_name, Int32 user_errors, out Int32 pexit_code);
 

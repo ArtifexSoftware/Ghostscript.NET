@@ -9,9 +9,18 @@
 //
 // License: Affero General Public License (AGPL) http://www.gnu.org/licenses/agpl.html
 // 
-// Copyright (c) 2013-2016 by Josip Habjan 
+// Copyright (c) 2013-2021 by Josip Habjan 
 
 HISTORY of the Ghostscript.NET library
+
+1.2.1.         2021-02-04
+-------------------------
+- fixed Ghostscript 9.26 + (all later versions) compatibility.
+- fixed problem when openning path/file that contains non ASCII characters.
+- fixed "Arithmetic operation resulted in an overflow" when using multithread instance.
+- changed Y and Y DPI settings to match GhostscriptViewer.
+- fixed CurrentPage -> TotalPages logging.
+- fixed watermark transparency bug for PDF.
 
 1.2.1.         2016-12-30
 -------------------------
