@@ -38,4 +38,4 @@ Ghostscript.NET.Viewer (supports viewing of the PDF, EPS and multi-page PS files
 
 Direct postscript interpretation via Ghostscript.NET:
 
-![Ghostscript.NET.Display](https://s24.postimg.org/uqjsvuyph/gs_display.png)
+![Ghostscript.NET.Display](https://i.ibb.co/Scw6gbk/ss-jj-1898.png)
