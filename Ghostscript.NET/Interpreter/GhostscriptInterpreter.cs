@@ -428,5 +428,14 @@ namespace Ghostscript.NET.Interpreter
 
         #endregion
 
+        #region GhostscriptLibrary
+
+        public GhostscriptLibrary GhostscriptLibrary
+        {
+            get { return _gs; }
+        }
+
+        #endregion
+
     }
 }

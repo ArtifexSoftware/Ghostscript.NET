@@ -49,7 +49,7 @@ namespace Ghostscript.NET.Viewer
 
         #region GhostscriptViewerDisplayHandler
 
-        public GhostscriptViewerDisplayHandler(GhostscriptViewer viewer)
+        public GhostscriptViewerDisplayHandler(GhostscriptViewer viewer) : base(viewer.Interpreter.GhostscriptLibrary)
         {
             _viewer = viewer;
         }

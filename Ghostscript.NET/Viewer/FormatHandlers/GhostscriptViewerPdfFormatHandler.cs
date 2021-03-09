@@ -120,6 +120,10 @@ namespace Ghostscript.NET.Viewer
             {
                 throw new GhostscriptException("IO error for file: '" + filePath + "'", ierrors.e_ioerror);
             }
+            else if (res == ierrors.e_invalidfileaccess)
+            {
+                throw new GhostscriptException("IO security problem (access control failure) for file: '" + filePath + "'", ierrors.e_ioerror);
+            }
 
             this.Execute("/FirstPage where { pop FirstPage } { 1 } ifelse");
             this.Execute("/LastPage where { pop LastPage } { pdfpagecount } ifelse");

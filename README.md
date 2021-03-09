@@ -15,9 +15,11 @@
  * allows you to run multiple Ghostscript instances simultaneously within a single process.
  * compatible with 32-bit and 64-bit Ghostscript native library.
 
+**Latest changes - 2021-03-09 - v.1.2.3.**
+* fixed GhostscriptRasterizer/GhostscriptViewer and Ghostscript v.9.50+ compatibility issues.
 
 **Latest changes - 2021-02-04 - v.1.2.2.**
- * fixed Ghostscript 9.26 + (all later versions) compatibility.
+ * fixed Ghostscript v.9.26 + (all later versions) compatibility.
  * fixed problem when opening path/file that contains non ASCII characters.
  * fixed "Arithmetic operation resulted in an overflow" when using multithread instance.
  * changed Y and Y DPI settings to match GhostscriptViewer.

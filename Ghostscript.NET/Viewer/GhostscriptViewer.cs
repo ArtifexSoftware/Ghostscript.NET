@@ -384,6 +384,10 @@ namespace Ghostscript.NET.Viewer
                         (int)DISPLAY_FORMAT_FIRSTROW.DISPLAY_BOTTOMFIRST).ToString());
 
 
+            if (_interpreter.LibraryRevision > 950)
+            {
+                args.Add("--permit-file-read=" + _filePath);
+            }
 
             args.Add("-dDOINTERPOLATE");
             args.Add("-dGridFitTT=0");

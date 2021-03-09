@@ -36,8 +36,11 @@ namespace Ghostscript.NET
 
     public class gdevdsp
     {
-        public const int DISPLAY_VERSION_MAJOR = 2;
-        public const int DISPLAY_VERSION_MINOR = 0;
+        public const int DISPLAY_VERSION_MAJOR_V3 = 3;
+        public const int DISPLAY_VERSION_MINOR_V3 = 0;
+
+        public const int DISPLAY_VERSION_MAJOR_V2 = 2;
+        public const int DISPLAY_VERSION_MINOR_V2 = 0;
 
         public const long DISPLAY_COLORS_MASK = 0x8000fL;
         public const long DISPLAY_ALPHA_MASK = 0x00f0L;
@@ -173,6 +176,62 @@ namespace Ghostscript.NET
 
     #endregion
 
+    #region display_callback_v3
+
+    /// <summary>
+    /// Display device callback structure.
+    /// 
+    /// Note that for Windows, the display callback functions are
+    /// cdecl, not stdcall.  This differs from those in iapi.h.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public class display_callback_v3 : display_callback
+    {
+        /// <summary>
+        /// Added in V3 */
+        /// If non NULL, then this gives the callback provider a chance to
+        /// a) be informed of and b) control the bandheight used by the
+        /// display device. If a call to allocate the page mode bitmap fails
+        /// (either an internal allocation or a display_memalloc call), then
+        /// Ghostscript will look for the presence of a
+        /// display_rectangle_request callback. If it exists, then it will
+        /// attempt to use retangle request mode.
+        /// 
+        /// As part of this, it will pick an appropriate bandheight. If
+        /// this callback exists, it will be called so the callback provider
+        /// can know (and, optionally, tweak) the bandheight to be used.
+        /// This is purely for performance. The callback should only ever
+        /// *reduce* the bandheight given here.
+        /// 
+        /// Return the adjusted bandheight (or 0 for no change).
+        /// </summary>
+        public display_adjust_band_height display_adjust_band_height;
+
+        /// <summary>
+        /// Ask the callback for a rectangle to render (and a block to render
+        /// it in). Each subsequent call tells the caller that any previous
+        /// call has finished. To signal 'no more rectangles' return with
+        /// *w or *h = 0.
+        /// 
+        /// On entry: *raster and *plane_raster are set to the standard
+        ///   values. All other values are undefined.
+        /// On return: *memory should point to a block of memory to use.
+        ///   Pixel (*ox,*oy) is the first pixel represented in that block.
+        ///   *raster = the number of bytes difference between the address of
+        ///   component 0 of Pixel(*ox,*oy) and the address of component 0 of
+        ///   Pixel(*ox,1+*oy).
+        ///   *plane_raster = the number of bytes difference between the
+        ///   address of component 0 of Pixel(*ox,*oy) and the address of
+        ///   component 1 of Pixel(*ox,*oy), if in planar mode, 0 otherwise.
+        ///   *x, *y, *w, *h = rectangle requested within that memory block.
+        /// </summary>
+        public display_rectangle_request display_rectangle_request;
+
+    }
+
+    #endregion
+
+
     #region display_callback
 
     /// <summary>
@@ -182,7 +241,7 @@ namespace Ghostscript.NET
     /// cdecl, not stdcall.  This differs from those in iapi.h.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct display_callback
+    public class display_callback
     {
         /// <summary>
         /// Size of this structure
@@ -289,5 +348,4 @@ namespace Ghostscript.NET
     }
 
     #endregion
-
 }

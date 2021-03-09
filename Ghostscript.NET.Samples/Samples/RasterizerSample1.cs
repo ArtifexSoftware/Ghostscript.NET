@@ -26,8 +26,6 @@
 
 // required Ghostscript.NET namespaces
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using Ghostscript.NET.Rasterizer;
@@ -52,12 +50,14 @@ namespace Ghostscript.NET.Samples
         {
             int desired_dpi = 96;
 
-            string inputPdfPath = @"E:\gss_test\test\a.pdf";
+            string inputPdfPath = @"E:\gss_test\test.pdf";
             string outputPath = @"E:\gss_test\output\";
+
+            GhostscriptVersionInfo gvi = new GhostscriptVersionInfo(@"C:\Program Files\gs\gs9.53.3\bin\gsdll64.dll");
 
             using (var rasterizer = new GhostscriptRasterizer())
             {
-                rasterizer.Open(inputPdfPath);
+                rasterizer.Open(inputPdfPath, gvi, false);
 
                 for (var pageNumber = 1; pageNumber <= rasterizer.PageCount; pageNumber++)
                 {

@@ -39,6 +39,8 @@ namespace Ghostscript.NET
 
         internal display_callback _callback;
 
+        internal GhostscriptLibrary _gs;
+
         #endregion
 
         #region Constructor
@@ -46,14 +48,24 @@ namespace Ghostscript.NET
         /// <summary>
         /// Initializes a new instance of the Ghostscript.NET.GhostscriptDisplayDeviceHandler class.
         /// </summary>
-        public GhostscriptDisplayDeviceHandler()
+        public GhostscriptDisplayDeviceHandler(GhostscriptLibrary gs)
         {
-            _callback = new display_callback();
+            _gs = gs;
 
-            _callback.size = Marshal.SizeOf(_callback);
-
-            _callback.version_minor = gdevdsp.DISPLAY_VERSION_MINOR;
-            _callback.version_major = gdevdsp.DISPLAY_VERSION_MAJOR;
+            if (gs.Revision > 951)
+            {
+                _callback = new display_callback_v3();
+                _callback.version_minor = gdevdsp.DISPLAY_VERSION_MINOR_V3;
+                _callback.version_major = gdevdsp.DISPLAY_VERSION_MAJOR_V3;
+                _callback.size = Marshal.SizeOf(typeof(display_callback_v3));
+            }
+            else
+            {
+                _callback = new display_callback();
+                _callback.version_minor = gdevdsp.DISPLAY_VERSION_MINOR_V2;
+                _callback.version_major = gdevdsp.DISPLAY_VERSION_MAJOR_V2;
+                _callback.size = Marshal.SizeOf(typeof(display_callback));
+            }
 
             _callback.display_open = new display_open_callback(display_open);
             _callback.display_preclose = new display_preclose_callback(display_preclose);

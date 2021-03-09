@@ -59,6 +59,15 @@ namespace Ghostscript.NET
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int display_memfree_callback(IntPtr handle, IntPtr device, IntPtr mem);
 
+    // added in v2
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public delegate int display_separation_callback(IntPtr handle, IntPtr device, Int32 component, String component_name, UInt16 c, UInt16 m, UInt16 y, UInt16 k);
+
+    // added in v3
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int display_adjust_band_height(IntPtr handle, IntPtr device, Int32 bandheight);
+
+    // added in v3
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate int display_rectangle_request(IntPtr handle, IntPtr device, IntPtr memory, Int32 ox, Int32 oy, Int32 raster, Int32 plane_raster, Int32 x, Int32 y, Int32 w, Int32 h);
 }
