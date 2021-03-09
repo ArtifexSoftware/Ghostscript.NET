@@ -4,7 +4,6 @@
 // This file is part of Ghostscript.NET library
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
 //
-// Development files: http://ghostscriptnet.codeplex.com
 // Development files: https://github.com/jhabjan/Ghostscript.NET
 //
 // License: Affero General Public License (AGPL) http://www.gnu.org/licenses/agpl.html
@@ -12,6 +11,10 @@
 // Copyright (c) 2013-2021 by Josip Habjan 
 
 HISTORY of the Ghostscript.NET library
+
+1.2.3.         2021-03-09
+-------------------------
+- fixed GhostscriptRasterizer/GhostscriptViewer and Ghostscript v.9.50+ compatibility issues.
 
 1.2.2.         2021-02-04
 -------------------------

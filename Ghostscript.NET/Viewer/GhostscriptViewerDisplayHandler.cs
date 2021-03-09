@@ -147,7 +147,7 @@ namespace Ghostscript.NET.Viewer
         {
             _viewer.FormatHandler.ShowPagePostScriptCommandInvoked = true;
 
-            if (!_viewer.ProgressiveUpdate)
+            if (!_viewer.ProgressiveUpdate || _viewer.Interpreter.GhostscriptLibrary.Revision > 950)
             {
                 int bytesPerPixel = 3;
 
