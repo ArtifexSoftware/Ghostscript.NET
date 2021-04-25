@@ -119,10 +119,10 @@ namespace Ghostscript.NET
         #region TextAlphaBits
 
         /// <summary>
-        /// These option control the use of subsample antialiasing. 
+        /// These option control the use of subsample anti-aliasing. 
         /// Their use is highly recommended for producing high quality rasterizations of the input files. 
         /// The size of the subsampling box n should be 4 for optimum output, but smaller values can be used for faster rendering. 
-        /// Antialiasing is enabled separately for text and graphics content.
+        /// Anti-aliasing is enabled separately for text and graphics content.
         /// </summary>
         [GhostscriptSwitch("-dTextAlphaBits={0}")]
         public GhostscriptImageDeviceAlphaBits? TextAlphaBits { get; set; }
@@ -132,10 +132,10 @@ namespace Ghostscript.NET
         #region GraphicsAlphaBits
 
         /// <summary>
-        /// These option control the use of subsample antialiasing. 
+        /// These option control the use of subsample anti-aliasing. 
         /// Their use is highly recommended for producing high quality rasterizations of the input files. 
         /// The size of the subsampling box n should be 4 for optimum output, but smaller values can be used for faster rendering. 
-        /// Antialiasing is enabled separately for text and graphics content.
+        /// Anti-aliasing is enabled separately for text and graphics content.
         /// </summary>
         [GhostscriptSwitch("-dGraphicsAlphaBits={0}")]
         public GhostscriptImageDeviceAlphaBits? GraphicsAlphaBits { get; set; }

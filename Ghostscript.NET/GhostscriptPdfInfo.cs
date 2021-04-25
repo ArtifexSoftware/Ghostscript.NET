@@ -83,8 +83,8 @@ namespace Ghostscript.NET
         /// This function is supported only in Ghostscript v9.05 or newer.
         /// </summary>
         /// <param name="stream">Stream representing PDF document.</param>
-        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
-        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
+        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentially.</param>
+        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentially.</param>
         /// <returns>Dictionary of page numbers with ink coverage.</returns>
         public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(Stream stream, int firstPage, int lastPage)
         {
@@ -102,8 +102,8 @@ namespace Ghostscript.NET
         /// This function is supported only in Ghostscript v9.05 or newer.
         /// </summary>
         /// <param name="stream">Stream representing PDF document.</param>
-        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
-        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
+        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentially.</param>
+        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentially.</param>
         /// <param name="versionInfo">GhostscriptVersionInfo instance that tells which Ghostscript library to use.</param>
         /// <returns>A dictionary of a page numbers with the ink coverage.</returns>
         public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(Stream stream, int firstPage, int lastPage, GhostscriptVersionInfo versionInfo)
@@ -168,8 +168,8 @@ namespace Ghostscript.NET
         /// This function is supported only in Ghostscript v9.05 or newer.
         /// </summary>
         /// <param name="path">PDF file path.</param>
-        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
-        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
+        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentially.</param>
+        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentially.</param>
         /// <returns>A dictionary of a page numbers with the ink coverage.</returns>
         public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(string path, int firstPage, int lastPage)
         {
@@ -187,8 +187,8 @@ namespace Ghostscript.NET
         /// This function is supported only in Ghostscript v9.05 or newer.
         /// </summary>
         /// <param name="path">PDF file path.</param>
-        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
-        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentionally.</param>
+        /// <param name="firstPage">Designated start page of the document. Pages of all documents in PDF collections are numbered sequentially.</param>
+        /// <param name="lastPage">Designated end page of the document. Pages of all documents in PDF collections are numbered sequentially.</param>
         /// <param name="versionInfo">GhostscriptVersionInfo instance that tells which Ghostscript library to use.</param>
         /// <returns>A dictionary of a page numbers with the ink coverage.</returns>
         public static Dictionary<int, GhostscriptPageInkCoverage> GetInkCoverage(string path, int firstPage, int lastPage, GhostscriptVersionInfo versionInfo)

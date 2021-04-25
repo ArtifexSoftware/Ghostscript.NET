@@ -39,9 +39,9 @@ using System.Runtime.InteropServices;
 namespace Microsoft.WinAny.Interop
 {
     /// <summary>
-    /// Class that helps you to load and use native/unmanaged dynamic-link libraries dinamically.
+    /// Class that helps you to load and use native/unmanaged dynamic-link libraries dynamically.
     /// It provides ability to load libraries from the memory or disk. 
-    /// It's compatibile with x86 and x64 libraries.
+    /// It's compatible with x86 and x64 libraries.
     /// </summary>
     public unsafe class DynamicNativeLibrary : IDisposable
     {

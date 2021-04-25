@@ -60,7 +60,7 @@ namespace Ghostscript.NET
                 throw new ArgumentNullException("library");
             }
 
-            // check if library is compatibile with a running process
+            // check if library is compatible with a running process
             if (Environment.Is64BitProcess != NativeLibraryHelper.Is64BitLibrary(library))
             {
                 // throw friendly gsdll incompatibility message
@@ -116,7 +116,7 @@ namespace Ghostscript.NET
             _version = version;
             _loadedFromMemory = fromMemory;
 
-            // check if library is compatibile with a running process
+            // check if library is compatible with a running process
             if (Environment.Is64BitProcess != NativeLibraryHelper.Is64BitLibrary(version.DllPath))
             {
                 // throw friendly gsdll incompatibility message

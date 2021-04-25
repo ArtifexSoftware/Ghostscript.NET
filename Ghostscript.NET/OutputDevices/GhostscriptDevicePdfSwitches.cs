@@ -33,7 +33,7 @@ namespace Ghostscript.NET
         #region FirstPage
 
         /// <summary>
-        /// Begins interpreting on the designated page of the document. Pages of all documents in PDF collections are numbered sequentionally.
+        /// Begins interpreting on the designated page of the document. Pages of all documents in PDF collections are numbered sequentially.
         /// </summary>
         [GhostscriptSwitch("-dFirstPage={0}")]
         public int? FirstPage { get; set; }
@@ -43,7 +43,7 @@ namespace Ghostscript.NET
         #region LastPage
 
         /// <summary>
-        /// Stops interpreting after the designated page of the document. Pages of all documents in PDF collections are numbered sequentionally.
+        /// Stops interpreting after the designated page of the document. Pages of all documents in PDF collections are numbered sequentially.
         /// </summary>
         [GhostscriptSwitch("-dLastPage={0}")]
         public int? LastPage { get; set; }
