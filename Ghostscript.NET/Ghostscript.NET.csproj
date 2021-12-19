@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ghostscript.NET</RootNamespace>
     <AssemblyName>Ghostscript.NET</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -20,7 +20,20 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
-    <TargetFrameworkProfile />
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Portable.$(AssemblyName)</PackageId>
+    <Description>Managed wrapper library around the Ghostscript native library (32-bit &amp; 64-bit), an interpreter for the PostScript language, PDF, related software and documentation.</Description>
+    <Company>Habjan</Company>
+    <Copyright>Copyright © 2013-2021 by Josip Habjan (habjan@gmail.com). All Rights Reserved.</Copyright>
+    <Version>1.2.3</Version>
+	<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/jhabjan/Ghostscript.NET</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/jhabjan/Ghostscript.NET.git</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
+	<PackageTags>.NET ghostscript pdf conversion image</PackageTags>
+	<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -81,79 +94,10 @@
     <DelaySign>false</DelaySign>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Exceptions\GhostscriptLibraryNotInstalledException.cs" />
-    <Compile Include="Exceptions\GhostscriptAPICallException.cs" />
-    <Compile Include="Exceptions\GhostscriptException.cs" />
-    <Compile Include="GhostscriptDisplayDeviceHandler.cs" />
-    <Compile Include="GhostscriptLibrary.cs" />
-    <Compile Include="GhostscriptLicense.cs" />
-    <Compile Include="GhostscriptPageOrientation.cs" />
-    <Compile Include="GhostscriptPdfInfo.cs" />
-    <Compile Include="GhostscriptPipedOutput.cs" />
-    <Compile Include="GhostscriptRectangle.cs" />
-    <Compile Include="GhostscriptStdIO.cs" />
-    <Compile Include="GhostscriptSwitchAttribute.cs" />
-    <Compile Include="gs\ierrors.h.cs" />
-    <Compile Include="gs\ierrors.h.helper.cs" />
-    <Compile Include="Helpers\BufferHelper.cs" />
-    <Compile Include="Helpers\FileCleanupHelper.cs" />
-    <Compile Include="Helpers\ImageMemoryHelper.cs" />
-    <Compile Include="Helpers\NativeLibraryHelper.cs" />
-    <Compile Include="Helpers\StreamHelper.cs" />
-    <Compile Include="Helpers\StringHelper.cs" />
-    <Compile Include="Interpreter\GhostscriptInterpreter.cs" />
-    <Compile Include="Microsoft.WinAny.Helper\Interop\DynamicNativeLibrary.cs" />
-    <Compile Include="Microsoft.WinAny.Helper\_native\memory.cs" />
-    <Compile Include="Microsoft.WinAny.Helper\_native\WinBase.h.cs" />
-    <Compile Include="Microsoft.WinAny.Helper\_native\WinNT.h.cs" />
-    <Compile Include="OutputDevices\GhostscriptJpegDevice.cs" />
-    <Compile Include="OutputDevices\GhostscriptDevicePageSwitches.cs" />
-    <Compile Include="OutputDevices\GhostscriptDevicePdfSwitches.cs" />
-    <Compile Include="OutputDevices\GhostscriptDevice.cs" />
-    <Compile Include="OutputDevices\GhostscriptDeviceInteractionSwitches.cs" />
-    <Compile Include="OutputDevices\GhostscriptDeviceOtherSwitches.cs" />
-    <Compile Include="OutputDevices\GhostscriptImageDevice.cs" />
-    <Compile Include="OutputDevices\GhostscriptPngDevice.cs" />
-    <Compile Include="Processor\GhostscriptProcessor.cs" />
-    <Compile Include="gs\gdevdsp.h.cs" />
-    <Compile Include="GhostscriptVersionInfo.cs" />
-    <Compile Include="gs\gdevdsp.h.delegates.cs" />
-    <Compile Include="gs\iapi.h.cs" />
-    <Compile Include="gs\iapi.h.delegates.cs" />
-    <Compile Include="Processor\GhostscriptProcessor.EventsRelated.cs" />
-    <Compile Include="Processor\GhostscriptProcessorInternalStdIOHandler.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rasterizer\GhostscriptRasterizer.cs" />
-    <Compile Include="Viewer\DSC\DSCToken.cs" />
-    <Compile Include="Viewer\DSC\DSCTokenEnding.cs" />
-    <Compile Include="Viewer\DSC\DSCTokenizer.cs" />
-    <Compile Include="Viewer\FormatHandlers\GhostscriptViewerDefaultFormatHandler.cs" />
-    <Compile Include="Viewer\FormatHandlers\GhostscriptViewerEpsFormatHandler.cs" />
-    <Compile Include="Viewer\FormatHandlers\GhostscriptViewerPdfFormatHandler.cs" />
-    <Compile Include="Viewer\FormatHandlers\GhostscriptViewerPsFormatHandler.cs" />
-    <Compile Include="Viewer\GhostscriptViewer.cs" />
-    <Compile Include="Viewer\GhostscriptViewerDisplayHandler.cs" />
-    <Compile Include="Viewer\GhostscriptViewerFormatHandler.cs" />
-    <Compile Include="Viewer\GhostscriptViewerImage.cs" />
-    <Compile Include="Viewer\GhostscriptViewerState.cs" />
-    <Compile Include="Viewer\GhostscriptViewerStdIOHandler.cs" />
-    <Compile Include="Viewer\GhostscriptViewerView.cs" />
-    <Compile Include="_native\wdm.h.cs" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Ghostscript.NET.snk" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
