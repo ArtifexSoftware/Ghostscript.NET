@@ -76,7 +76,7 @@ namespace Ghostscript.NET
     /// <summary>
     /// Destroy an instance of Ghostscript
     /// Before you call this, Ghostscript must have finished.
-    /// If Ghostscript has been initialised, you must call gsapi_exit()
+    /// If Ghostscript has been initialized, you must call gsapi_exit()
     /// before gsapi_delete_instance.
     /// </summary>
     /// <param name="instance"></param>
@@ -127,7 +127,7 @@ namespace Ghostscript.NET
     /// <summary>
     /// Set the encoding used for the args. By default we assume
     /// 'local' encoding. For windows this equates to whatever the current
-    /// codepage is. For linux this is utf8.
+    /// codepage is. For Linux this is utf8.
     /// 
     /// Use of this API (gsapi) with 'local' encodings (and hence without calling
     /// this function) is now deprecated!
@@ -143,7 +143,7 @@ namespace Ghostscript.NET
     }
 
     /// <summary>
-    /// Initialise the interpreter.
+    /// Initialize the interpreter.
     /// This calls gs_main_init_with_args() in imainarg.c
     /// 1. If quit or EOF occur during gsapi_init_with_args(), 
     ///    the return value will be e_Quit.  This is not an error. 
@@ -165,7 +165,7 @@ namespace Ghostscript.NET
     // The gsapi_run_* functions are like gs_main_run_* except
     // that the error_object is omitted.
     // If these functions return <= -100, either quit or a fatal
-    // error has occured.  You then call gsapi_exit() next.
+    // error has occurred.  You then call gsapi_exit() next.
     // The only exception is gsapi_run_string_continue()
     // which will return e_NeedInput if all is well.
 

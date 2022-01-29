@@ -99,7 +99,7 @@ namespace Ghostscript.NET
         #region LibPath
 
         /// <summary>
-        /// Gets Ghostscrip lib path.
+        /// Gets Ghostscript lib path.
         /// </summary>
         public string LibPath
         {
@@ -127,7 +127,7 @@ namespace Ghostscript.NET
         /// </summary>
         public override string ToString()
         {
-            return string.Format("Licence: {0}, Version: {1}, Dll: {2}, Lib: {3}", _licenseType, _version, _dllPath, _libPath);
+            return string.Format("License: {0}, Version: {1}, Dll: {2}, Lib: {3}", _licenseType, _version, _dllPath, _libPath);
         }
 
         #endregion

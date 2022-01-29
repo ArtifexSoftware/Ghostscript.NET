@@ -53,7 +53,7 @@ namespace Ghostscript.NET
 
     #endregion
 
-    /* The display format is set by a combination of the following bitfields */
+    /* The display format is set by a combination of the following bit fields */
 
     #region DISPLAY_FORMAT_COLOR
 
@@ -195,7 +195,7 @@ namespace Ghostscript.NET
         /// (either an internal allocation or a display_memalloc call), then
         /// Ghostscript will look for the presence of a
         /// display_rectangle_request callback. If it exists, then it will
-        /// attempt to use retangle request mode.
+        /// attempt to use rectangle request mode.
         /// 
         /// As part of this, it will pick an appropriate bandheight. If
         /// this callback exists, it will be called so the callback provider

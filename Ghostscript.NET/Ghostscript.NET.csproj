@@ -8,13 +8,13 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<AssemblyName>Ghostscript.Net.Core</AssemblyName>
 		<Company>Habjan</Company>
-		<Copyright>Copyright © 2013-2021 by Josip Habjan (habjan@gmail.com). All Rights Reserved.</Copyright>
+		<Copyright>Copyright © 2013-2022 by Josip Habjan (habjan@gmail.com). All Rights Reserved.</Copyright>
 		<Description>Managed wrapper library around the Ghostscript native library (32-bit &amp; 64-bit), an interpreter for the PostScript language, PDF, related software and documentation.</Description>
 		<Authors>Habjan</Authors>
 		<Product>Ghostscript.NET</Product>
-		<Version>1.3.0</Version>
-		<FileVersion>1.3.0</FileVersion>
-		<AssemblyVersion>1.3.0</AssemblyVersion>
+		<Version>1.4.0</Version>
+		<FileVersion>1.4.0</FileVersion>
+		<AssemblyVersion>1.4.0</AssemblyVersion>
 		<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/jhabjan/Ghostscript.NET</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/jhabjan/Ghostscript.NET.git</RepositoryUrl>
@@ -22,7 +22,7 @@
 		<PackageId>Ghostscript.NET</PackageId>
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageTags>.NET ghostscript pdf conversion image</PackageTags>
-		<PackageReleaseNotes>Added compatibility for .NET Standard, .NET Core and .NET 5.</PackageReleaseNotes>
+		<PackageReleaseNotes>Added compatibility for .NET Standard, .NET Core and .NET 5 &amp; 6</PackageReleaseNotes>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -33,11 +33,23 @@
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 		<Nullable>disable</Nullable>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
 	</PropertyGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' or '$(TargetFramework)' == 'netcoreapp3.1' or '$(TargetFramework)' == 'net5.0-windows'  or '$(TargetFramework)' == 'net6.0-windows'">
+	<PropertyGroup>
+	  <NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+	
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' or '$(TargetFramework)' == 'netcoreapp3.1' or '$(TargetFramework)' == 'net5.0-windows'">
 		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
 		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+		<PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0-windows'">
+		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 		<PackageReference Include="System.Drawing.Primitives" Version="4.3.0" />
 	</ItemGroup>
 

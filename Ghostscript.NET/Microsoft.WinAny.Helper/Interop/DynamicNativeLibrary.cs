@@ -65,7 +65,7 @@ namespace Microsoft.WinAny.Interop
         /// <summary>
         /// Initializes a new instance of the NativeLibrary class from a native module stored on disk.
         /// </summary>
-        /// <param name="lpLibFileName">Native module file name.</param>
+        /// <param name="fileName">Native module file name.</param>
         public DynamicNativeLibrary(string fileName)
         {
             _loadedModuleHandle = WinBase.LoadLibrary(fileName);

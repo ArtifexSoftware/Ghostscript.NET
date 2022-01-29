@@ -25,7 +25,12 @@
       "ProjectGuid": "4c7b5a1e-2172-48a8-8139-5cb7a3d6065f",
       "DisplayName": "Ghostscript.NET.Samples",
       "ColorIndex": 3
+    },
+    "3aa07e8a-8e52-4e60-a6bb-a5991b5f829f": {
+      "ProjectGuid": "3aa07e8a-8e52-4e60-a6bb-a5991b5f829f",
+      "DisplayName": "root",
+      "ColorIndex": 4
     }
   },
-  "NextColorIndex": 4
+  "NextColorIndex": 5
 }

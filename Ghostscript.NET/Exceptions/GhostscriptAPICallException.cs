@@ -31,7 +31,7 @@ namespace Ghostscript.NET
     public class GhostscriptAPICallException : GhostscriptException
     {
         public GhostscriptAPICallException(string function, int code) 
-            : base(string.Format("An error occured when call to '{0}' is made: {1}", function, code))
+            : base(string.Format("An error occurred when call to '{0}' is made: {1}", function, code))
         { }
     }
 }

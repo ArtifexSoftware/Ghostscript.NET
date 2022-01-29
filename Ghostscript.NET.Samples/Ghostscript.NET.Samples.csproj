@@ -5,6 +5,9 @@
 		<OutputType>Exe</OutputType>
 		<Copyright>Copyright © 2013-2021 Josip Habjan (habjan@gmail.com)</Copyright>
 		<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
+		<Version>1.4.0</Version>
+		<FileVersion>1.4.0</FileVersion>
+		<AssemblyVersion>1.4.0</AssemblyVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj" />

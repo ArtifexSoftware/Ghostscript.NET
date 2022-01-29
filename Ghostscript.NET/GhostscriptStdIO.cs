@@ -90,7 +90,7 @@ namespace Ghostscript.NET
         /// Standard input handler.
         /// </summary>
         /// <param name="handle">Standard input handle.</param>
-        /// <param name="pointer">Pointer to a memroy block.</param>
+        /// <param name="pointer">Pointer to a memory block.</param>
         /// <param name="count">Number of bytes that standard input expects.</param>
         /// <returns>Number of bytes returned.</returns>
         private int gs_std_in(IntPtr handle, IntPtr pointer, int count)
@@ -158,7 +158,7 @@ namespace Ghostscript.NET
         /// Handles standard output.
         /// </summary>
         /// <param name="handle">Standard output handle.</param>
-        /// <param name="pointer">Pointer to a memroy block.</param>
+        /// <param name="pointer">Pointer to a memory block.</param>
         /// <param name="count">Number of bytes that standard output writes.</param>
         /// <returns>Number of bytes read.</returns>
         private int gs_std_out(IntPtr handle, IntPtr pointer, int count)

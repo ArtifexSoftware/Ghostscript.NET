@@ -6,6 +6,9 @@
 		<Copyright>Copyright © 2013-2021 Josip Habjan (habjan@gmail.com)</Copyright>
 		<PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
 		<UseWindowsForms>True</UseWindowsForms>
+		<Version>1.4.0</Version>
+		<FileVersion>1.4.0</FileVersion>
+		<AssemblyVersion>1.4.0</AssemblyVersion>
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="_res\ghostscript-dotnet.png" />

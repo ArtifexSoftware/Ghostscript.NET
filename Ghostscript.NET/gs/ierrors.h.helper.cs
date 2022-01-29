@@ -59,7 +59,7 @@ namespace Ghostscript.NET
         /// <summary>
         /// Returns error name.
         /// </summary>
-        /// <param name="returnCode">Return code from the Ghostscript.</param>
+        /// <param name="code">Return code from the Ghostscript.</param>
         /// <returns>Error name.</returns>
         public static string GetErrorName(int code)
         {

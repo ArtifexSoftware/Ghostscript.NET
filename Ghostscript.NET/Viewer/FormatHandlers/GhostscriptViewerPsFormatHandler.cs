@@ -213,7 +213,7 @@ namespace Ghostscript.NET.Viewer
                         }
                     case DSC_PAGE:         // %%Page: <label> <ordinal>
                         {
-                            // label can be anything, we need to get oridinal which is the last
+                            // label can be anything, we need to get ordinal which is the last
                             // value of the line
 
                             DSCToken pageNumberToken;
@@ -263,7 +263,7 @@ namespace Ghostscript.NET.Viewer
                 _lastPageEnding.StartPosition = _tokenizer.FileSize;
             }
 
-            // we did'n find %%Pages comment, set the last page number to 1
+            // we didn't find %%Pages comment, set the last page number to 1
             if (this.LastPageNumber == 0)
             {
                 this.LastPageNumber = 1;
