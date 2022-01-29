@@ -115,8 +115,10 @@ namespace Ghostscript.NET
                         // check if the thread is still running
                         if (_thread.ThreadState == ThreadState.Running)
                         {
+#if !NET5_0 && !NET6_0
                             // abort the thread
                             _thread.Abort();
+#endif
                         }
 
                         _thread = null;

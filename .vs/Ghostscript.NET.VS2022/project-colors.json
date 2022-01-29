@@ -1,0 +1,31 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "8bdbdeec-cab1-4c0b-86c2-7b0d0d3fe363": {
+      "ProjectGuid": "8bdbdeec-cab1-4c0b-86c2-7b0d0d3fe363",
+      "DisplayName": "Ghostscript.NET",
+      "ColorIndex": 0
+    },
+    "c099eb3a-b4d7-4379-afab-4fcd4df4f003": {
+      "ProjectGuid": "c099eb3a-b4d7-4379-afab-4fcd4df4f003",
+      "DisplayName": "Ghostscript.NET.Viewer",
+      "ColorIndex": 1
+    },
+    "3509f0f7-a7ad-4fee-b388-aa817f3413e9": {
+      "ProjectGuid": "3509f0f7-a7ad-4fee-b388-aa817f3413e9",
+      "DisplayName": "Ghostscript.NET.DisplayTest",
+      "ColorIndex": 2
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "4c7b5a1e-2172-48a8-8139-5cb7a3d6065f": {
+      "ProjectGuid": "4c7b5a1e-2172-48a8-8139-5cb7a3d6065f",
+      "DisplayName": "Ghostscript.NET.Samples",
+      "ColorIndex": 3
+    }
+  },
+  "NextColorIndex": 4
+}
