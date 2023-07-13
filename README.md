@@ -26,15 +26,9 @@
  * fixed CurrentPage -> TotalPages logging.
  * fixed watermark transparency bug for PDF.
  
-[If you have found **Ghostscript.NET** useful and has contributed to your project **consider donating**. Donating helps support **Ghostscript.NET**.](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GS6S7RCAB7KAQ)
-
-[<img src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" alt="Click here to lend your support to: Ghostscript.NET and make a donation at pledgie.com !" />](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=GS6S7RCAB7KAQ)
-
 **LICENSE**
 
  Ghostscript.NET is distributed under the GNU Affero General Public License (see COPYING file).
-
-Josip Habjan (habjan@gmail.com)
 
 
 **Samples built on the top of the Ghostscript.NET library**
