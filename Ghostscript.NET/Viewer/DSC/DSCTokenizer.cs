@@ -1,9 +1,9 @@
-﻿//
+//
 // DSCTokenizer.cs
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2016 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2023 by Josip Habjan. All rights reserved.
 //
 // Author ported some parts of this code from GSView. 
 //
@@ -164,6 +164,7 @@ namespace Ghostscript.NET.Viewer.DSC
 
             while ((c = this.ReadChar()) > -1)
             {
+                // unix new line
                 if (c == '\n' && (end & DSCTokenEnding.LineEnd) == DSCTokenEnding.LineEnd)
                 {
                     token.Length = _bufferedStream.Position - 1 - token.StartPosition;
@@ -171,9 +172,20 @@ namespace Ghostscript.NET.Viewer.DSC
                     token.Ending = DSCTokenEnding.LineEnd;
                     return token;
                 }
-                else if (c == '\r' && this.ReadChar() == '\n' && (end & DSCTokenEnding.LineEnd) == DSCTokenEnding.LineEnd)
+                // windows new line
+                else if (c == '\r' && this.PeekChar() == '\n' && (end & DSCTokenEnding.LineEnd) == DSCTokenEnding.LineEnd)
                 {
+                    this.ReadChar();
+
                     token.Length = _bufferedStream.Position - 2 - token.StartPosition;
+                    token.Text = text.ToString().Trim();
+                    token.Ending = DSCTokenEnding.LineEnd;
+                    return token;
+                }
+                // mac new line
+                else if (c == '\r' && (end & DSCTokenEnding.LineEnd) == DSCTokenEnding.LineEnd)
+                {
+                    token.Length = _bufferedStream.Position - 1 - token.StartPosition;
                     token.Text = text.ToString().Trim();
                     token.Ending = DSCTokenEnding.LineEnd;
                     return token;
@@ -223,7 +235,7 @@ namespace Ghostscript.NET.Viewer.DSC
 
         #endregion
 
-        #region ReadByte
+        #region ReadChar
 
         private int ReadChar()
         {
@@ -254,6 +266,49 @@ namespace Ghostscript.NET.Viewer.DSC
         }
 
         #endregion
+
+        #region PeekChar
+
+        private int PeekChar()
+        {
+            if (_bufferedStream.Position == _bufferedStream.Length)
+            {
+                return -1;
+            }
+
+            if (_isUnicode)
+            {
+                byte[] b = new byte[2];
+
+                _bufferedStream.Read(b, 0, 2);
+
+                int res = 0;
+
+                if (_isLittleEndian)
+                {
+                    res = (int)(b[0] | b[1] << 8);
+                }
+                else
+                {
+                    res = (int)(b[0] << 8 | b[1]);
+                }
+
+                _bufferedStream.Position -= 2;
+
+                return res;
+            }
+            else
+            {
+                int res = _bufferedStream.ReadByte();
+
+                _bufferedStream.Position--;
+
+                return res;
+            }
+        }
+
+        #endregion
+
     }
 
 }
