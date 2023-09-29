@@ -1,9 +1,9 @@
-﻿//
+//
 // GhostscriptViewerPdfFormatHandler.cs
 // This file is part of Ghostscript.NET library
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
-// Copyright (c) 2013-2021 by Josip Habjan. All rights reserved.
+// Copyright (c) 2013-2023 by Josip Habjan. All rights reserved.
 //
 // Author ported some parts of this code from GSView. 
 //
@@ -265,7 +265,7 @@ namespace Ghostscript.NET.Viewer
 
         public override void StdError(string message)
         {
-
+            System.Diagnostics.Debug.WriteLine($"GS:StdError > {message}");
         }
 
         #endregion
@@ -277,10 +277,15 @@ namespace Ghostscript.NET.Viewer
             if (pageNumber >= this.FirstPageNumber && pageNumber <= this.LastPageNumber)
             {
                 this.Execute(string.Format("{0} GSNETViewer_PDFpage", pageNumber));
+
+                if (this.Viewer.Interpreter.LibraryRevision >= 10010)
+                {
+                    this.Execute("Page pdfshowpage_init");
+                }
             }
             else
             {
-                throw new GhostscriptException("Page number is not in pages number range!");
+                throw new GhostscriptException("The page number falls outside the range of valid page numbers!");
             }
         }
 
@@ -292,11 +297,18 @@ namespace Ghostscript.NET.Viewer
         {
             if (pageNumber >= this.FirstPageNumber && pageNumber <= this.LastPageNumber)
             {
-                this.Execute("Page pdfshowpage");
+                if (this.Viewer.Interpreter.LibraryRevision >= 10010)
+                {
+                    this.Execute("Page pdfshowpage_finish");
+                }
+                else
+                {
+                    this.Execute("Page pdfshowpage");
+                }
             }
             else
             {
-                throw new GhostscriptException("Page number is not in pages number range!");
+                throw new GhostscriptException("The page number falls outside the range of valid page numbers!");
             }
         }
 
