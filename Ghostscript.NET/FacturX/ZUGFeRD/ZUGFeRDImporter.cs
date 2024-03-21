@@ -25,8 +25,8 @@ namespace Ghostscript.NET.FacturX.ZUGFeRD
 
 
 
-    using Item = org.mustangproject.Item;
-    using Product = org.mustangproject.Product;
+    using Item = Ghostscript.NET.FacturX.ZUGFeRD.Item;
+    using Product = Ghostscript.NET.FacturX.ZUGFeRD.Product;
     using Document = org.w3c.dom.Document;
     using Node = org.w3c.dom.Node;
     using NodeList = org.w3c.dom.NodeList;
@@ -263,7 +263,6 @@ namespace Ghostscript.NET.FacturX.ZUGFeRD
 
                 return true;
             }
-            return false;
         }
 
 

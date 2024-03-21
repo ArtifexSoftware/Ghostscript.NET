@@ -14,6 +14,8 @@ using Ghostscript.NET;
 using Ghostscript.NET.Processor;
 using Microsoft.Extensions.FileProviders.Embedded;
 using Microsoft.Extensions.FileProviders;
+
+using Ghostscript.NET.FacturX.ZUGFeRD;
 /// <summary>
 
 /// ''' Klasse um per Ghostscript.net/Ghostscript beliebige PDFs in PDF/A-3 Dateien zu konvertieren
