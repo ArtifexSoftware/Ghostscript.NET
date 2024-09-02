@@ -8,14 +8,10 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
     <BuildPackage>true</BuildPackage>
 
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <SccProjectName></SccProjectName>
+    <SccLocalPath></SccLocalPath>
+    <SccAuxPath></SccAuxPath>
+    <SccProvider></SccProvider>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -59,6 +55,7 @@
     <PackageReference Include="itext7" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.3" />
     <PackageReference Include="OpenJDK.BigMathNET" Version="1.0.2.1" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.8" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
   </ItemGroup>
 </Project>
