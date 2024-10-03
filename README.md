@@ -2,6 +2,8 @@
 
 **Ghostscript.NET** - (written in C#) is the most completed managed wrapper library around the Ghostscript library (32-bit & 64-bit), an interpreter for the PostScript language, PDF, related software and documentation.
 
+**Note**: This project currently only works with versions of Ghostscript < 10, see [release versions](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases).
+
 [**NuGet: PM> Install-Package Ghostscript.NET**](http://nuget.org/packages/Ghostscript.NET/)
 
 **Contains**
