@@ -66,7 +66,9 @@ namespace Ghostscript.NET.FacturX.ZUGFeRD
             string tempfilename = Path.GetTempPath() + "\\factur-x.xml";
             File.WriteAllBytes(tempfilename, zf2p.getXML());
 
-            pc.EmbedXMLForZF(tempfilename, Convert.ToString(version));
+            pc.SetZUGFeRDVersion("2.1");
+            pc.SetZUGFeRDProfile(Profiles.getByName("EN16931").getXMPName());
+            pc.SetEmbeddedXMLFile(tempfilename);
             pc.ConvertToPDFA3(gsDLL);
             File.Delete(Path.GetTempPath() + "\\factur-x.xml");
             if (!noSourceCopy) {

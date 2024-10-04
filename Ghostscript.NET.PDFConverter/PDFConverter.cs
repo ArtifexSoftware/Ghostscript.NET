@@ -16,74 +16,72 @@ using Microsoft.Extensions.FileProviders.Embedded;
 using Microsoft.Extensions.FileProviders;
 
 using Ghostscript.NET.FacturX.ZUGFeRD;
-/// <summary>
 
-/// ''' Klasse um per Ghostscript.net/Ghostscript beliebige PDFs in PDF/A-3 Dateien zu konvertieren
 
-/// ''' 
-
-/// ''' </summary>
 namespace Ghostscript.NET.PDFConverter
 {
+    /// <summary>
+    /// This class allows to convert an existing PDF file into PDF A/3 with ZUGFeRD/ XRechnung attached to it.
+    /// </summary>
     public class PDFConverter
     {
         private string? file_GSDLL_DLL = null;
-        private readonly string? file_AdobeRGB1998_ICC = null;
-        private readonly string? file_BIGSCRIPT_PS = null;
+        private readonly string? AdobeICCFilePath = null;
+        private readonly string? PostScriptBigScriptPath = null;
 
-        private readonly string resourceDir = Path.GetTempPath();
+        private readonly string TemporaryDirectory = Path.GetTempPath();
         private GhostscriptVersionInfo? gsVersion = null;
 
-        protected string mPDFInFile = ""; // 08.06.20
-        protected string mPDFOutFile = "";
-        protected string? mXMLOutFile = null;
-        protected string FXVersion = "1.0";
-        protected Profile usedProfile = Profiles.getByName("EN16931");
+        protected string SourcePDFaAth = ""; // 08.06.20
+        protected string TargetPDFPath = "";
+        protected string? xmlInvoicePath = null;
+        protected string? ZUGFeRDVersion = null;
+        protected string? ZUGFeRDProfile = null;
 
 
         /// <summary>
-        ///     ''' Konstruktor mit Angabe Datenbankdatei, intern-nummer, KlassenID (und Gruppenpositionen) wenn ZUGFeRD geschrieben werden soll
-        ///     ''' </summary>
-        ///     ''' <param name="pPDFInFile">PDF-Eingabedatei</param>
-        ///     ''' <param name="pPDFOutFile">PDF-A/3 Ausgabedatei</param>
-        public PDFConverter(string pPDFInFile, string pPDFOutFile)
+        /// The constructor of the class accepts both input and output path for PDF conversion.
+        /// </summary>
+        /// <param name="sourcePDFPath">PDF input path </param>
+        /// <param name="targetPDFPath">PDF-A/3 output path</param>        
+        public PDFConverter(string sourcePDFPath, string targetPDFPath)
         {
-            file_AdobeRGB1998_ICC = this.resourceDir + "\\AdobeRGB1998.icc";
-            file_BIGSCRIPT_PS = this.resourceDir + "\\pdfconvert.ps";
+            AdobeICCFilePath = this.TemporaryDirectory + "\\AdobeRGB1998.icc";
+            PostScriptBigScriptPath = this.TemporaryDirectory + "\\pdfconvert.ps";
 
-            mPDFInFile = pPDFInFile;
-            mPDFOutFile = pPDFOutFile;
+            SourcePDFaAth = sourcePDFPath;
+            TargetPDFPath = targetPDFPath;
         }
-        public PDFConverter setFXVersion(string pZFVersion) {
-            FXVersion = pZFVersion;
 
-            return this;
+        public PDFConverter SetZUGFeRDVersion(string zugferdVersion) 
+        {
+            ZUGFeRDVersion = zugferdVersion;
+            return this;        
         }
-        public PDFConverter setFXProfile(Profile p) {
-            usedProfile = p;
 
+        public PDFConverter SetZUGFeRDProfile(string profile) 
+        {
+            ZUGFeRDProfile = profile;
             return this;
         }
 
 
         /// <summary>
-        ///     ''' Erlaubt die Angabe einer einzubettenden XML-Datei. Die Ausgabe wird dann inkl. RDF-Metadaten und PDF/A-Schema Extension zur ZUGFeRD-Datei in der in 
-        ///     ''' pZFVersion angegebenen Version (2p0 fr 2.0, 2.0.1 sowie 2.1, 2.1.1)
-        ///     ''' </summary>
-        ///     ''' <param name="pXMLOutFile"></param>
-        ///     ''' <param name="pZFVersion"></param>
-        public void EmbedXMLForZF(string pXMLOutFile, string pZFVersion)
+        /// Reads the xml file from the given path in order to embed it into the PDF A/3 file.
+        /// </summary>
+        ///     ''' <param name="xmlFilePath"></param>       
+        public void SetEmbeddedXMLFile(string xmlFilePath)
         {
-            mXMLOutFile = pXMLOutFile;
-        }
+            xmlInvoicePath = xmlFilePath;
+        } // !SetEmbeddedXMLFile()
 
 
 
-        public void prepareICC()
+        public void PrepareICC()
         {
             string tempfilename = Path.GetTempPath() + "AdobeRGB1998.icc";
             StoreEmbeddedResourceLocally("assets\\AdobeCompat-v2.icc", tempfilename);
-        } // !prepareICC()
+        } // !PrepareICC()
 
 
         private byte[] LoadEmbeddedResource(string path)
@@ -120,73 +118,53 @@ namespace Ghostscript.NET.PDFConverter
 
 
         /// <summary>
-        ///     ''' Schreibt eine Postscript-, genauer gesagt PDFMark-Datei die von Ghostscript interpretiert werden kann und mindestens in eine PDF-A/3 umwandelt
-        ///     ''' 
-        ///     ''' </summary>
-        ///     ''' <param name="pEmbeddedAdobeRGB1998ICCFile">ICC-Farbprofildatei bspw von https://www.adobe.com/support/downloads/iccprofiles/iccprofiles_win.html </param>
-        ///     '''
-        protected void WritePDFMark(string pEmbeddedAdobeRGB1998ICCFile)
-        {
-            string EscapedEmbeddedXMLFile = "";
-
-            if (mXMLOutFile != null)
+        /// Creates a Postscript file or - more exact: PDFMark file - which is interpreted by Ghostscript and converts file into PDF-A/3
+        /// </summary>        
+        private void WritePDFMark()
+        {                       
+            if (String.IsNullOrWhiteSpace(xmlInvoicePath))
             {
-                if (!File.Exists(mXMLOutFile))
-                {
-                    throw new Exception("Datei " + mXMLOutFile + " existiert nicht");
-                }
-                EscapedEmbeddedXMLFile = mXMLOutFile.Replace(@"\", @"\\"); // in PDFMark werden \ zu \\ gequoted
+                throw new Exception("No valid xml invoice path. Aborting.");
             }
 
-
-
-            if (!File.Exists(pEmbeddedAdobeRGB1998ICCFile))
+            if (!File.Exists(xmlInvoicePath))
             {
-                throw new Exception("Datei " + file_AdobeRGB1998_ICC + " existiert nicht");
+                throw new FileNotFoundException(xmlInvoicePath);
             }
-            /*        if (!pEmbeddedAdobeRGB1998ICCFile.Contains(Directory.GetCurrentDirectory()))
-                    {
-                        throw new Exception("Datei " + file_AdobeRGB1998_ICC + " muss unterhalb des absolut angegebenen Applikationspfades " + Directory.GetCurrentDirectory() + " liegen.");
-                    }
-                    */
-            string EscapedEmbeddedICCFile = file_AdobeRGB1998_ICC.Replace(Directory.GetCurrentDirectory(), @".\").Replace(@"\", @"\\");
+            
 
-            if (mPDFInFile == mPDFOutFile)
+            if (!File.Exists(AdobeICCFilePath))
             {
-                throw new Exception("Eingabedatei darf nicht Ausgabedatei sein");
+                throw new FileNotFoundException(AdobeICCFilePath);
+            }
+
+            if (SourcePDFaAth.Equals(TargetPDFPath, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("Input and output file shall not be the same.");
             }
 
             string PDFmark = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFConverter.assets.pdfMarkA3.template"));
-            PDFmark = PDFmark.Replace("{{EscapedEmbeddedICCFile}}", EscapedEmbeddedICCFile);
+            PDFmark = PDFmark.Replace("{{EscapedEmbeddedICCFile}}", AdobeICCFilePath.Replace(@"\", @"\\")); // properly escape path for pdfmark
 
-            if (mXMLOutFile != null)
+            if (xmlInvoicePath != null)
             {
-                // Dim myFile As New FileInfo(mXMLOutFile)
-                // Dim sizeInBytes As Long = myFile.Length
-                FileInfo fi = new FileInfo(mXMLOutFile);
-                long sizeInBytes = fi.Length;
-
-                string rdfFXProfile = "EN 16931";
-
+                FileInfo fi = new FileInfo(xmlInvoicePath);
                 string PDFmarkZUGFeRD = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFConverter.assets.pdfMarkZUGFeRD.template"));
                 PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{Date}}", DateTime.Now.ToString("yyyyMMddHHmmssK").Replace(":", "'"));
-                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{EscapedEmbeddedXMLFile}}", EscapedEmbeddedXMLFile);
-                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{SizeInBytes}}", sizeInBytes.ToString());
-                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{FXVersion}}", FXVersion);
-                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{FXComformanceLevel}}", usedProfile.getXMPName());
-            
+                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{EscapedEmbeddedXMLFile}}", xmlInvoicePath.Replace(@"\", @"\\")); // properly escape path for pdfpark
+                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{SizeInBytes}}", fi.Length.ToString());
+                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{FXVersion}}", ZUGFeRDVersion);
+                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{FXComformanceLevel}}", ZUGFeRDProfile);
                 PDFmark += PDFmarkZUGFeRD;
             }
 
-
-
             UTF8Encoding utf8 = new UTF8Encoding(false); // do not use BOM s. https://docs.microsoft.com/de-de/dotnet/api/system.text.utf8encoding?view=netcore-3.1
-            File.WriteAllBytes(file_BIGSCRIPT_PS, utf8.GetBytes(PDFmark));
+            File.WriteAllBytes(PostScriptBigScriptPath, utf8.GetBytes(PDFmark));
+        } // !WritePDFMark()
 
-        }
 
         // <summary>
-        // Prft ob die Ausgabedatei beschrieben werden kann
+        // Checks if the output file can be written at all
         // </summary>
         public bool IsFileLocked(FileInfo file)
         {
@@ -203,113 +181,87 @@ namespace Ghostscript.NET.PDFConverter
             finally
             {
                 if (stream != null)
+                {
                     stream.Close();
+                }
             }
             return false;
-        }
+        } // !IsFileLocked()
 
 
         /// <summary>
-        ///     ''' Wandelt eine PDF-Datei (Dateiname in inputfile) in eine PDF A/3 (Outputfilename) um und hngt die aktuelle E-rechnung an 
-        ///     ''' </summary>
-        ///     ''' <returns>True wenn die Konvertierung funktioniert hat</returns>
+        /// Converts a PDF file into PDF A/3 and attaches the given xml invoice        
+        /// <returns>True if successful, false otherwise</returns>
         public bool ConvertToPDFA3(String gsdll)
         {
 
             file_GSDLL_DLL = gsdll;
             gsVersion = new GhostscriptVersionInfo(file_GSDLL_DLL);
 
-            this.prepareICC();
+            PrepareICC();
 
             // based on https://github.com/jhabjan/Ghostscript.NET/blob/master/Ghostscript.NET.Samples/Samples/ProcessorSample1.cs
             if (!File.Exists(file_GSDLL_DLL))
             {
-                throw new Exception("Ghostscript DLL " + file_GSDLL_DLL + " bitte ins Verzeichnis " + Directory.GetCurrentDirectory() + " kopieren");
-
+                throw new FileNotFoundException(file_GSDLL_DLL);
             }
 
-            if (!File.Exists(file_AdobeRGB1998_ICC))
+            if (!File.Exists(SourcePDFaAth))
             {
-                throw new Exception("Farbpprofile " + file_AdobeRGB1998_ICC + " bitte ins Verzeichnis " + Directory.GetCurrentDirectory() + " kopieren");
-
+                throw new FileNotFoundException(SourcePDFaAth);
             }
-            if (!File.Exists(mPDFInFile))
-            {
-                throw new Exception("Eingabedatei " + mPDFInFile + " existiert nicht");
 
-            }
-            if (File.Exists(mPDFOutFile))
+            if (File.Exists(TargetPDFPath))
             {
-                if (FileSystem.GetAttr(mPDFOutFile) == Constants.vbReadOnly)
+                if (FileSystem.GetAttr(TargetPDFPath) == Constants.vbReadOnly)
                 {
-                    throw new Exception("Ausgabedatei " + mPDFOutFile + " keine Schreibrechte");
-
-
+                    throw new UnauthorizedAccessException(TargetPDFPath);
                 }
-                FileInfo fi = new FileInfo(mPDFOutFile);
+
+                FileInfo fi = new FileInfo(TargetPDFPath);
                 if (IsFileLocked(fi))
                 {
-                    throw new Exception("Ausgabedatei " + mPDFOutFile + " nicht beschreibbar (noch geffnet?)");
-
+                    throw new Exception($"File {TargetPDFPath} cannot be written. Might be opened/ locked.");
                 }
             }
 
-            // Info: braucht folgende DLLs:
-            // BouncyCastle.Crypto.dll, Common.Logging.Core.dll, Common.Logging.dll
-            // und: etliche, weitere der iText*.dll -> vorsichtshalber alle 9 kopiert
-            /*            PdfDocument doc = new PdfDocument(new PdfReader(mPDFInFile));
-                        PdfAConformanceLevel comLev = doc.GetReader().GetPdfAConformanceLevel();
-                        if (comLev != null)
-                        {
-                        }
-
-            */
-
-
-
-            WritePDFMark(file_AdobeRGB1998_ICC);
-
-            // MsgBox(gsVersion.ToString)
-            GhostscriptLibrary gsL = null/* TODO Change to default(_) if this is not a reference type */;
-            // Dim gsL As GhostscriptLibrary = New GhostscriptLibrary(File.ReadAllBytes(ClsCommon.JS.StartupDir & ClsEDocs_Base.FixedValues.FILENAME_ZF_GSDLL32))
-            gsL = new GhostscriptLibrary(gsVersion);
+            WritePDFMark();
+            
+            GhostscriptLibrary ghostscriptLibrary = new GhostscriptLibrary(gsVersion);
             GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
 
-            List<string> switches = new List<string>();
-            // works : "C:\Program Files (x86)\gs\gs9.52\bin\gswin32c.exe" -dPDFA=1 -dNOOUTERSAVE -sProcessColorModel=DeviceRGB -sDEVICE=pdfwrite -o RG_10690-pdfa.pdf -dPDFACompatibilityPolicy=1 "C:\Program Files (x86)\gs\gs9.52\lib\PDFA_def.ps" RG_10690.pdf
-            // "C:\Program Files (x86)\gs\gs9.52\bin\gswin64c.exe" -dPDFA=1 -dNOOUTERSAVE -sProcessColorModel=DeviceRGB -sDEVICE=pdfwrite -o RG_10690-pdfa.pdf -dPDFACompatibilityPolicy=1 "C:\Program Files (x86)\gs\gs9.52\lib\PDFA_def.ps" RG_10690.pdf
-            switches.Add(""); // ' Der allererste Parameter wird mitunter ignoriert weil EXEs da ihren eigenen Namen bergeben bekommen
-            switches.Add("-P"); // Zugriff auf Ressourcen unterhalb des aktuellen Verzeichnisses erlauben
-            switches.Add("-dPDFA=3"); // 'in A/3 umwandeln Teil 1 von 3
-                                      // switches.Add("-dCompressStreams=false") ''hatten mal Probleme weil scheinbar auch die XMP Metadaten von ZUGFeRD komprimiert wurden, das hat sich mittlerweile erledigt
-            switches.Add("-sColorConversionStrategy=RGB"); // ' muss fr PDF/A angegeben werden
-            switches.Add("-sDEVICE=pdfwrite"); // ' ein Device muss frs Rastern angegeben werden
-            switches.Add("-o" + mPDFOutFile); // ' Ausgabedatei
-            switches.Add("-dPDFACompatibilityPolicy=1"); // 'in A/3 umwandeln Teil 2 von 3
-            switches.Add("-dRenderIntent=3"); // 'in A/3 umwandeln Teil 3 von 3
-            switches.Add("-sGenericResourceDir=\"" + resourceDir + "/\""); // ' hier kann ein zustzliches Verzeichnis angegeben werden in dem Ressourcen wie die icc-Datei liegen drfen
-            switches.Add(file_BIGSCRIPT_PS); // ' die PDFMark-Programmdatei die interpretiert werden soll. Anders als die ICC und ggf. einzubettende XML-Datei ist das keine Ressourcendatei und die kann liegen wo sie will.
-                                             // siehe https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/pdfmark_reference.pdf
-                                             // und https://gitlab.com/crossref/pdfmark
-            switches.Add(mPDFInFile); // ' PDF-Eingabedatei
+            List<string> switches = new List<string>();            
+            switches.Add(""); // first parameter might be ignored 
+            switches.Add("-P"); // allow access to resources within the current directory
+            switches.Add("-dPDFA=3"); // convert to A/3 pat 1/3
+                                      // switches.Add("-dCompressStreams=false") hat problems as apparently XMP Metadata was compressed by ZUGFeRD. Obsolete in the meantime
+            switches.Add("-sColorConversionStrategy=RGB"); // necessary for PDF/A conversion
+            switches.Add("-sDEVICE=pdfwrite"); // Device for rasterization. Mandatory
+            switches.Add("-o" + TargetPDFPath); // Output path
+            switches.Add("-dPDFACompatibilityPolicy=1"); // convert to A/3 part 2/3
+            switches.Add("-dRenderIntent=3"); // convert to A/3 part 3/3            
+            switches.Add(PostScriptBigScriptPath); // PDFMark program file that shall be interpreted.
+                                             // see https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/pdfmark_reference.pdf
+                                             // and https://gitlab.com/crossref/pdfmark
+            switches.Add(SourcePDFaAth); // PDF input file
 
             bool success = false;
-            using (GhostscriptProcessor gsProcessor = new GhostscriptProcessor(gsL))
+            using (GhostscriptProcessor processor = new GhostscriptProcessor(ghostscriptLibrary))
             {
                 VerboseMsgBoxOutput stdio = new VerboseMsgBoxOutput();
-                // gsProcessor.StartProcessing(switches.ToArray(), stdio)
-                gsProcessor.StartProcessing(switches.ToArray(), null/* TODO Change to default(_) if this is not a reference type */);
+                processor.StartProcessing(switches.ToArray(), stdio);
 
                 // (erfolglose) Versuche, das Hngen zu vermeiden...
-                gsProcessor.Dispose();
+                processor.Dispose();
             }
             success = true;
             return success;
-        }
+        } // !ConvertToPDFA3()
+
 
         // <summary>
-        // Zum Debuggen von Ghostscript ist es manchmal hilfreich, die Ausgabe in MsgBoxes umleiten zu knnen
-        // Bekannte Fehlercodes -100: Datei nicht gefunden oder nicht beschreibbar 
+        // In order to debug Ghostscript it is helpful to direct msgbox output
+        // Known error codes: -100: file not found or canot be written
         // </summary>
         public class VerboseMsgBoxOutput : GhostscriptStdIO
         {
