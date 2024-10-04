@@ -31,7 +31,7 @@ using Ghostscript.NET;
 using Ghostscript.NET.Processor;
 using System.IO;
 using Ghostscript.NET.PDFConverter;
-using Ghostscript.NET.FacturX.ZUGFeRD;
+using Ghostscript.NET.PDFConverter.Samples.ZUGFeRD;
 
 
 namespace Ghostscript.NET.PDFConverter.Samples

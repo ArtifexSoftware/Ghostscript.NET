@@ -1,6 +1,6 @@
 using System;
 
-namespace Ghostscript.NET.FacturX.ZUGFeRD
+namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
 {
 	/// <summary>
 	/// provides e.g. the IBAN to transfer money to :-)

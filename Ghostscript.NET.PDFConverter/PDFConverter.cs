@@ -15,8 +15,6 @@ using Ghostscript.NET.Processor;
 using Microsoft.Extensions.FileProviders.Embedded;
 using Microsoft.Extensions.FileProviders;
 
-using Ghostscript.NET.FacturX.ZUGFeRD;
-
 
 namespace Ghostscript.NET.PDFConverter
 {

@@ -5,7 +5,7 @@ using System.Xml;
 using Microsoft.Extensions.Logging;
 using Ghostscript.NET.PDFConverter;
 
-namespace Ghostscript.NET.FacturX.ZUGFeRD
+namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
 {
 
     public class ZUGFeRDExporter

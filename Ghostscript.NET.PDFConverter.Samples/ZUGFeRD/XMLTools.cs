@@ -3,7 +3,7 @@ using System.Text;
 using System.Security;
 using System.Globalization;
 
-namespace Ghostscript.NET.FacturX
+namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
 {
 
 

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 /// on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions
 /// and limitations under the License.
 /// </summary>
-namespace Ghostscript.NET.FacturX.ZUGFeRD
+namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
 {
 
     /// <summary>
@@ -22,13 +22,6 @@ namespace Ghostscript.NET.FacturX.ZUGFeRD
     /// @version 1.1.0
     /// @author jstaerk
     /// </summary>
-
-
-
-    using Item = Ghostscript.NET.FacturX.ZUGFeRD.Item;
-    using Product = Ghostscript.NET.FacturX.ZUGFeRD.Product;
-  
-
     public class ZUGFeRDImporter
     {
 

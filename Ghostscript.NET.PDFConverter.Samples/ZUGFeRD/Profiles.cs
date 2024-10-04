@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-namespace Ghostscript.NET.FacturX.ZUGFeRD
+namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
 {
 
 	public class Profiles

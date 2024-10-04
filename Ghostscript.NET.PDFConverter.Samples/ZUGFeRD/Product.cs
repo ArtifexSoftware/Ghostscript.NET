@@ -1,4 +1,4 @@
-namespace Ghostscript.NET.FacturX.ZUGFeRD
+namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
 {
 	
 	/// <summary>

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-
-
 using System.Reflection;
-namespace Ghostscript.NET.FacturX.ZUGFeRD
+
+
+namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
 {
 
     public class ZUGFeRD2PullProvider
