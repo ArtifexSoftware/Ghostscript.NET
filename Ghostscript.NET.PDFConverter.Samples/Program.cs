@@ -57,7 +57,8 @@ namespace Ghostscript.NET.PDFConverter.Samples
             //sample = new SendToPrinterSample();
             //sample = new RasterizerCropSample();
 
-            sample = new FacturXWriteSample();
+            sample = new FacturXWithMustangSample();
+            sample = new FacturXWithZUGFeRDcsharpSample();
 
             sample.Start();
 

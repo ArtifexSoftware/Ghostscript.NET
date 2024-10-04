@@ -35,11 +35,9 @@ using Ghostscript.NET.PDFConverter.Samples.ZUGFeRD;
 
 
 namespace Ghostscript.NET.PDFConverter.Samples
-{
-    public class FacturXWriteSample : ISample
+{ 
+    public class FacturXWithMustangSample : ISample
     {
-
-
         public void Start()
         {
             
@@ -58,8 +56,7 @@ namespace Ghostscript.NET.PDFConverter.Samples
             converter.SetZUGFeRDProfile(Profiles.getByName("EN16931").getXMPName());
             converter.SetZUGFeRDVersion("2.1");
             converter.SetEmbeddedXMLFile(outfilename);
-            converter.ConvertToPDFA3(@"e:\in.pdf", @"e:\out.pdf");
+            converter.ConvertToPDFA3(@"e:\in.pdf", @"e:\out-mustang.pdf");
         }
-
     }
 }

@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj" />
-    <ProjectReference Include="..\Ghostscript.NET.PDFConverter\Ghostscript.NET.PDFConverter.csproj" />
+    <PackageReference Include="ZUGFeRD-csharp" Version="14.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Samples\" />
+    <ProjectReference Include="..\..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj" />
+    <ProjectReference Include="..\Ghostscript.NET.PDFConverter\Ghostscript.NET.PDFConverter.csproj" />
   </ItemGroup>
 
 </Project>
