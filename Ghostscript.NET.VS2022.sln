@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET.Samples", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET", "..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj", "{5544384A-3367-4EA5-9216-2DEEB3223CBE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET.PDFA3Converter", "Ghostscript.NET.PDFConverter\Ghostscript.NET.PDFA3Converter.csproj", "{1F6A5D22-DBA9-403B-B235-233DBA9801A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET.PDFA3Converter", "Ghostscript.NET.PDFA3Converter\Ghostscript.NET.PDFA3Converter.csproj", "{1F6A5D22-DBA9-403B-B235-233DBA9801A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET.PDFA3Converter.Samples", "Ghostscript.NET.PDFConverter.Samples\Ghostscript.NET.PDFA3Converter.Samples.csproj", "{294FE872-0D67-45B7-ADFB-1BA2F9EA01CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET.PDFA3Converter.Samples", "Ghostscript.NET.PDFA3Converter.Samples\Ghostscript.NET.PDFA3Converter.Samples.csproj", "{294FE872-0D67-45B7-ADFB-1BA2F9EA01CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET.Viewer", "Ghostscript.NET.Viewer\Ghostscript.NET.Viewer.csproj", "{C099EB3A-B4D7-4379-AFAB-4FCD4DF4F003}"
 EndProject

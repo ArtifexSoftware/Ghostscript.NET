@@ -35,7 +35,7 @@
 }
 bind def
 
-/XmlFileName	(factur-x.xml)				def
+/XmlFileName	({{Filename}})				def
 /XmlFileDesc	(invoice)		def
 /XmlFileDate	(D:{{Date}}')			def
 /XmlFileData	({{EscapedEmbeddedXMLFile}}) (r) file		def

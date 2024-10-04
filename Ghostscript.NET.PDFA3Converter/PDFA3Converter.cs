@@ -139,6 +139,7 @@ namespace Ghostscript.NET.PDFA3Converter
             {
                 FileInfo fi = new FileInfo(xmlInvoicePath);
                 string PDFmarkZUGFeRD = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFA3Converter.assets.pdfMarkZUGFeRD.template"));
+                PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{Filename}}", "factur-x.xml");
                 PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{Date}}", DateTime.Now.ToString("yyyyMMddHHmmssK").Replace(":", "'"));
                 PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{EscapedEmbeddedXMLFile}}", xmlInvoicePath.Replace(@"\", @"\\")); // properly escape path for pdfpark
                 PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{SizeInBytes}}", fi.Length.ToString());
