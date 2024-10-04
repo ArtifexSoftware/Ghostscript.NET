@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using Microsoft.Extensions.Logging;
-using Ghostscript.NET.PDFConverter;
+using Ghostscript.NET.PDFA3Converter;
 
-namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 {
 
     public class ZUGFeRDExporter
@@ -56,7 +56,7 @@ namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
         public void export(String targetFilename)
         {
 
-            Ghostscript.NET.PDFConverter.PDFConverter pc = new Ghostscript.NET.PDFConverter.PDFConverter(gsDLL);
+            Ghostscript.NET.PDFA3Converter.PDFA3Converter pc = new Ghostscript.NET.PDFA3Converter.PDFA3Converter(gsDLL);
 
             ZUGFeRD2PullProvider zf2p = new ZUGFeRD2PullProvider();
             zf2p.setProfile(Profiles.getByName(profile));

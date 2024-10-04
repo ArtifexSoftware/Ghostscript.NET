@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 
 
-namespace Ghostscript.NET.PDFConverter.Samples
+namespace Ghostscript.NET.PDFA3Converter.Samples
 {
     class Program
     {

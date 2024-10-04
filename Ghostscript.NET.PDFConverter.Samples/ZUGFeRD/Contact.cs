@@ -1,6 +1,6 @@
 using System.Xml;
 
-namespace Ghostscript.NET.PDFConverter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 {
 	/// <summary>
 	///*

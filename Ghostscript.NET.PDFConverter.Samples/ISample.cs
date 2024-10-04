@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Ghostscript.NET.PDFConverter.Samples
+namespace Ghostscript.NET.PDFA3Converter.Samples
 {
     public interface ISample
     {

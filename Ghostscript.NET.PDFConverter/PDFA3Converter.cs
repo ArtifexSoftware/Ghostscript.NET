@@ -16,12 +16,12 @@ using Microsoft.Extensions.FileProviders.Embedded;
 using Microsoft.Extensions.FileProviders;
 
 
-namespace Ghostscript.NET.PDFConverter
+namespace Ghostscript.NET.PDFA3Converter
 {
     /// <summary>
     /// This class allows to convert an existing PDF file into PDF A/3 with ZUGFeRD/ XRechnung attached to it.
     /// </summary>
-    public class PDFConverter
+    public class PDFA3Converter
     {
         private readonly string? AdobeICCFilePath = null;
         private readonly string? PostScriptBigScriptPath = null;
@@ -39,7 +39,7 @@ namespace Ghostscript.NET.PDFConverter
         /// </summary>
         /// <param name="sourcePDFPath">PDF input path </param>
         /// <param name="targetPDFPath">PDF-A/3 output path</param>        
-        public PDFConverter(String gsdll)
+        public PDFA3Converter(String gsdll)
         {
             GSDLLPath = gsdll;
             AdobeICCFilePath = this.TemporaryDirectory + "\\AdobeRGB1998.icc";
@@ -47,14 +47,14 @@ namespace Ghostscript.NET.PDFConverter
         }
 
 
-        public PDFConverter SetZUGFeRDVersion(string zugferdVersion) 
+        public PDFA3Converter SetZUGFeRDVersion(string zugferdVersion) 
         {
             ZUGFeRDVersion = zugferdVersion;
             return this;        
         }
 
 
-        public PDFConverter SetZUGFeRDProfile(string profile) 
+        public PDFA3Converter SetZUGFeRDProfile(string profile) 
         {
             ZUGFeRDProfile = profile;
             return this;
@@ -132,13 +132,13 @@ namespace Ghostscript.NET.PDFConverter
                 throw new FileNotFoundException(AdobeICCFilePath);
             }
 
-            string PDFmark = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFConverter.assets.pdfMarkA3.template"));
+            string PDFmark = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFA3Converter.assets.pdfMarkA3.template"));
             PDFmark = PDFmark.Replace("{{EscapedEmbeddedICCFile}}", AdobeICCFilePath.Replace(@"\", @"\\")); // properly escape path for pdfmark
 
             if (xmlInvoicePath != null)
             {
                 FileInfo fi = new FileInfo(xmlInvoicePath);
-                string PDFmarkZUGFeRD = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFConverter.assets.pdfMarkZUGFeRD.template"));
+                string PDFmarkZUGFeRD = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFA3Converter.assets.pdfMarkZUGFeRD.template"));
                 PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{Date}}", DateTime.Now.ToString("yyyyMMddHHmmssK").Replace(":", "'"));
                 PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{EscapedEmbeddedXMLFile}}", xmlInvoicePath.Replace(@"\", @"\\")); // properly escape path for pdfpark
                 PDFmarkZUGFeRD = PDFmarkZUGFeRD.Replace("{{SizeInBytes}}", fi.Length.ToString());

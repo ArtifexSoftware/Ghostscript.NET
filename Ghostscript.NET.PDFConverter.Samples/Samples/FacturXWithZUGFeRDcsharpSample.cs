@@ -30,11 +30,11 @@ using System.Diagnostics;
 using Ghostscript.NET;
 using Ghostscript.NET.Processor;
 using System.IO;
-using Ghostscript.NET.PDFConverter;
+using Ghostscript.NET.PDFA3Converter;
 using s2industries.ZUGFeRD;
 
 
-namespace Ghostscript.NET.PDFConverter.Samples
+namespace Ghostscript.NET.PDFA3Converter.Samples
 {
     public class FacturXWithZUGFeRDcsharpSample : ISample
     {
@@ -44,7 +44,7 @@ namespace Ghostscript.NET.PDFConverter.Samples
             InvoiceDescriptor invoice = CreateInvoice();
             invoice.Save(outFilename, ZUGFeRDVersion.Version22, s2industries.ZUGFeRD.Profile.Comfort);
 
-            PDFConverter converter = new PDFConverter(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
+            PDFA3Converter converter = new PDFA3Converter(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
             converter.SetZUGFeRDProfile("EN 16931");
             converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outFilename);

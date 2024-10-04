@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj" />
-    <ProjectReference Include="..\Ghostscript.NET.PDFConverter\Ghostscript.NET.PDFConverter.csproj" />
+    <ProjectReference Include="..\Ghostscript.NET.PDFConverter\Ghostscript.NET.PDFA3Converter.csproj" />
   </ItemGroup>
 
 </Project>

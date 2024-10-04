@@ -30,11 +30,11 @@ using System.Diagnostics;
 using Ghostscript.NET;
 using Ghostscript.NET.Processor;
 using System.IO;
-using Ghostscript.NET.PDFConverter;
-using Ghostscript.NET.PDFConverter.Samples.ZUGFeRD;
+using Ghostscript.NET.PDFA3Converter;
+using Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD;
 
 
-namespace Ghostscript.NET.PDFConverter.Samples
+namespace Ghostscript.NET.PDFA3Converter.Samples
 { 
     public class FacturXWithMustangSample : ISample
     {
@@ -52,7 +52,7 @@ namespace Ghostscript.NET.PDFConverter.Samples
             string outfilename = "xrechnung.xml";
             File.WriteAllBytes(outfilename, zf2p.getXML());
 
-            PDFConverter converter = new PDFConverter(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
+            PDFA3Converter converter = new PDFA3Converter(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
             converter.SetZUGFeRDProfile(Profiles.getByName("EN16931").getXMPName());
             converter.SetZUGFeRDVersion("2.1");
             converter.SetEmbeddedXMLFile(outfilename);
