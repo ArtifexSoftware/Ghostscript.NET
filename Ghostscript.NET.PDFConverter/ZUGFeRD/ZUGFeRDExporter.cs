@@ -56,7 +56,7 @@ namespace Ghostscript.NET.FacturX.ZUGFeRD
         public void export(String targetFilename)
         {
 
-            Ghostscript.NET.PDFConverter.PDFConverter pc = new Ghostscript.NET.PDFConverter.PDFConverter(sourcePDF, targetFilename);
+            Ghostscript.NET.PDFConverter.PDFConverter pc = new Ghostscript.NET.PDFConverter.PDFConverter(gsDLL);
 
             ZUGFeRD2PullProvider zf2p = new ZUGFeRD2PullProvider();
             zf2p.setProfile(Profiles.getByName(profile));
@@ -69,7 +69,7 @@ namespace Ghostscript.NET.FacturX.ZUGFeRD
             pc.SetZUGFeRDVersion("2.1");
             pc.SetZUGFeRDProfile(Profiles.getByName("EN16931").getXMPName());
             pc.SetEmbeddedXMLFile(tempfilename);
-            pc.ConvertToPDFA3(gsDLL);
+            pc.ConvertToPDFA3(sourcePDF, targetFilename);
             File.Delete(Path.GetTempPath() + "\\factur-x.xml");
             if (!noSourceCopy) {
                 File.Delete(sourcePDF);

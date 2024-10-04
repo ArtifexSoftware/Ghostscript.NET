@@ -54,11 +54,11 @@ namespace Ghostscript.NET.PDFConverter.Samples
             string outfilename = "xrechnung.xml";
             File.WriteAllBytes(outfilename, zf2p.getXML());
 
-            PDFConverter converter = new PDFConverter(@"e:\in.pdf", @"e:\out.pdf");
+            PDFConverter converter = new PDFConverter(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
             converter.SetZUGFeRDProfile(Profiles.getByName("EN16931").getXMPName());
             converter.SetZUGFeRDVersion("2.1");
             converter.SetEmbeddedXMLFile(outfilename);
-            converter.ConvertToPDFA3(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
+            converter.ConvertToPDFA3(@"e:\in.pdf", @"e:\out.pdf");
         }
 
     }

@@ -25,15 +25,12 @@ namespace Ghostscript.NET.PDFConverter
     /// </summary>
     public class PDFConverter
     {
-        private string? file_GSDLL_DLL = null;
         private readonly string? AdobeICCFilePath = null;
         private readonly string? PostScriptBigScriptPath = null;
 
-        private readonly string TemporaryDirectory = Path.GetTempPath();
-        private GhostscriptVersionInfo? gsVersion = null;
+        private readonly string TemporaryDirectory = Path.GetTempPath();        
 
-        protected string SourcePDFaAth = ""; // 08.06.20
-        protected string TargetPDFPath = "";
+        protected string? GSDLLPath = null;
         protected string? xmlInvoicePath = null;
         protected string? ZUGFeRDVersion = null;
         protected string? ZUGFeRDProfile = null;
@@ -44,20 +41,20 @@ namespace Ghostscript.NET.PDFConverter
         /// </summary>
         /// <param name="sourcePDFPath">PDF input path </param>
         /// <param name="targetPDFPath">PDF-A/3 output path</param>        
-        public PDFConverter(string sourcePDFPath, string targetPDFPath)
+        public PDFConverter(String gsdll)
         {
+            GSDLLPath = gsdll;
             AdobeICCFilePath = this.TemporaryDirectory + "\\AdobeRGB1998.icc";
             PostScriptBigScriptPath = this.TemporaryDirectory + "\\pdfconvert.ps";
-
-            SourcePDFaAth = sourcePDFPath;
-            TargetPDFPath = targetPDFPath;
         }
+
 
         public PDFConverter SetZUGFeRDVersion(string zugferdVersion) 
         {
             ZUGFeRDVersion = zugferdVersion;
             return this;        
         }
+
 
         public PDFConverter SetZUGFeRDProfile(string profile) 
         {
@@ -132,15 +129,9 @@ namespace Ghostscript.NET.PDFConverter
                 throw new FileNotFoundException(xmlInvoicePath);
             }
             
-
             if (!File.Exists(AdobeICCFilePath))
             {
                 throw new FileNotFoundException(AdobeICCFilePath);
-            }
-
-            if (SourcePDFaAth.Equals(TargetPDFPath, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new Exception("Input and output file shall not be the same.");
             }
 
             string PDFmark = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFConverter.assets.pdfMarkA3.template"));
@@ -190,43 +181,47 @@ namespace Ghostscript.NET.PDFConverter
 
 
         /// <summary>
-        /// Converts a PDF file into PDF A/3 and attaches the given xml invoice        
+        /// Converts a PDF file into PDF A/3 and attaches the given xml invoice
+        /// 
+        /// <param name="sourcePDFPath">PDF input path </param>
+        /// <param name="targetPDFPath">PDF-A/3 output path</param>  
         /// <returns>True if successful, false otherwise</returns>
-        public bool ConvertToPDFA3(String gsdll)
+        public bool ConvertToPDFA3(string sourcePDFPath, string targetPDFPath)
         {
-
-            file_GSDLL_DLL = gsdll;
-            gsVersion = new GhostscriptVersionInfo(file_GSDLL_DLL);
-
-            PrepareICC();
-
             // based on https://github.com/jhabjan/Ghostscript.NET/blob/master/Ghostscript.NET.Samples/Samples/ProcessorSample1.cs
-            if (!File.Exists(file_GSDLL_DLL))
+            if (!File.Exists(GSDLLPath))
             {
-                throw new FileNotFoundException(file_GSDLL_DLL);
+                throw new FileNotFoundException(GSDLLPath);
+            }                     
+
+            if (!File.Exists(sourcePDFPath))
+            {
+                throw new FileNotFoundException(sourcePDFPath);
             }
 
-            if (!File.Exists(SourcePDFaAth))
+            if (sourcePDFPath.Equals(targetPDFPath, StringComparison.OrdinalIgnoreCase))
             {
-                throw new FileNotFoundException(SourcePDFaAth);
+                throw new Exception("Source file and target file cannot be the same");
             }
 
-            if (File.Exists(TargetPDFPath))
+            if (File.Exists(targetPDFPath))
             {
-                if (FileSystem.GetAttr(TargetPDFPath) == Constants.vbReadOnly)
+                if (FileSystem.GetAttr(targetPDFPath) == Constants.vbReadOnly)
                 {
-                    throw new UnauthorizedAccessException(TargetPDFPath);
+                    throw new UnauthorizedAccessException(targetPDFPath);
                 }
 
-                FileInfo fi = new FileInfo(TargetPDFPath);
+                FileInfo fi = new FileInfo(targetPDFPath);
                 if (IsFileLocked(fi))
                 {
-                    throw new Exception($"File {TargetPDFPath} cannot be written. Might be opened/ locked.");
+                    throw new Exception($"File {targetPDFPath} cannot be written. Might be opened/ locked.");
                 }
             }
 
+            PrepareICC();
             WritePDFMark();
-            
+
+            GhostscriptVersionInfo? gsVersion = new GhostscriptVersionInfo(GSDLLPath);
             GhostscriptLibrary ghostscriptLibrary = new GhostscriptLibrary(gsVersion);
             GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
 
@@ -237,13 +232,13 @@ namespace Ghostscript.NET.PDFConverter
                                       // switches.Add("-dCompressStreams=false") hat problems as apparently XMP Metadata was compressed by ZUGFeRD. Obsolete in the meantime
             switches.Add("-sColorConversionStrategy=RGB"); // necessary for PDF/A conversion
             switches.Add("-sDEVICE=pdfwrite"); // Device for rasterization. Mandatory
-            switches.Add("-o" + TargetPDFPath); // Output path
+            switches.Add($"-o{targetPDFPath}"); // Output path
             switches.Add("-dPDFACompatibilityPolicy=1"); // convert to A/3 part 2/3
             switches.Add("-dRenderIntent=3"); // convert to A/3 part 3/3            
             switches.Add(PostScriptBigScriptPath); // PDFMark program file that shall be interpreted.
                                              // see https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/pdfmark_reference.pdf
                                              // and https://gitlab.com/crossref/pdfmark
-            switches.Add(SourcePDFaAth); // PDF input file
+            switches.Add(sourcePDFPath); // PDF input file
 
             bool success = false;
             using (GhostscriptProcessor processor = new GhostscriptProcessor(ghostscriptLibrary))
