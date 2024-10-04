@@ -1,0 +1,169 @@
+
+
+% istring SimpleUTF16BE ostring
+/SimpleUTF16BE
+{
+	dup length
+	1 add
+	2 mul
+	string
+
+	% istring ostring
+	dup 0 16#FE put
+	dup 1 16#FF put
+	2
+	3 -1 roll
+
+	% ostring index istring
+	{
+		% ostring index ichar
+		3 1 roll
+		% ichar ostring index
+		2 copy 16#00 put
+		1 add
+		2 copy
+		5 -1 roll
+		% ostring index ostring index ichar
+		put
+		1 add
+		% ostring index
+	}
+	forall
+
+	% ostring index
+	pop
+}
+bind def
+
+/XmlFileName	(factur-x.xml)				def
+/XmlFileDesc	(invoice)		def
+/XmlFileDate	(D:{{Date}}')			def
+/XmlFileData	({{EscapedEmbeddedXMLFile}}) (r) file		def
+
+
+
+  % Object {ContentStream} anlegen und befllen
+  [
+  	/_objdef 	{ContentStream}
+  	/type 		/stream
+  /OBJ pdfmark
+
+  [
+  	{ContentStream}	<<
+  			/Type		/EmbeddedFile
+  			/Subtype	(text/xml) cvn
+  			/Params		<<
+  					/ModDate	XmlFileDate
+                    /Size {{SizeInBytes}}
+  					>>
+  			>>
+  /PUT pdfmark
+
+  [
+  	{ContentStream}	XmlFileData
+  /PUT pdfmark
+
+  [
+  	{ContentStream}
+  /CLOSE pdfmark
+
+  % Object {FSDict} fr File Specification anlegen und befllen
+  [
+  	/_objdef	{FSDict}
+  	/type		/dict
+  /OBJ pdfmark
+
+  [
+  	{FSDict}	<<
+  			/Type 		/Filespec
+  			/F 		XmlFileName
+  			/UF 		XmlFileName SimpleUTF16BE
+  			/Desc		XmlFileDesc
+  			/AFRelationship	/Alternative
+  			/EF 		<<
+  					/F		{ContentStream}
+  					/UF		{ContentStream}
+  					>>
+  			>>
+  /PUT pdfmark
+
+  % Object {AFArray} fr Associated Files anlegen und befllen
+  [
+  	/_objdef	{AFArray}
+  	/type		/array
+  /OBJ pdfmark
+
+  [
+  	{AFArray}	{FSDict}
+  /APPEND pdfmark
+
+
+
+  % Associated Files im Object {Catalog} eintragen
+  [
+  	{Catalog}	<<
+  			/AF	{AFArray}
+  			>>
+  /PUT pdfmark
+
+
+
+  % File Specification unter Names/Embedded Files/Names im Object {Catalog} eintragen
+  [
+  	/Name		XmlFileName
+  	/FS		{FSDict}
+  /EMBED pdfmark
+
+ % Metadata im Object {Catalog} eintragen
+  [
+  	/XML		(
+<rdf:Description xmlns:pdfaExtension=""http://www.aiim.org/pdfa/ns/extension/"" xmlns:pdfaField=""http://www.aiim.org/pdfa/ns/field#"" xmlns:pdfaProperty=""http://www.aiim.org/pdfa/ns/property#"" xmlns:pdfaSchema=""http://www.aiim.org/pdfa/ns/schema#"" xmlns:pdfaType=""http://www.aiim.org/pdfa/ns/type#"" rdf:about="""">
+	<pdfaExtension:schemas>
+		<rdf:Bag>
+			<rdf:li rdf:parseType=""Resource"">
+				<pdfaSchema:schema>Factur-x PDFA Extension Schema</pdfaSchema:schema>
+				<pdfaSchema:namespaceURI>urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#</pdfaSchema:namespaceURI>
+				<pdfaSchema:prefix>fx</pdfaSchema:prefix>
+				<pdfaSchema:property>
+					<rdf:Seq>
+						<rdf:li rdf:parseType=""Resource"">
+							<pdfaProperty:name>DocumentFileName</pdfaProperty:name>
+							<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+							<pdfaProperty:category>external</pdfaProperty:category>
+							<pdfaProperty:description>Name of the embedded XML invoice file </pdfaProperty:description>
+						</rdf:li>
+						<rdf:li rdf:parseType=""Resource"">
+							<pdfaProperty:name>DocumentType</pdfaProperty:name>
+							<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+							<pdfaProperty:category>external</pdfaProperty:category>
+							<pdfaProperty:description>INVOICE</pdfaProperty:description>
+						</rdf:li>
+						<rdf:li rdf:parseType=""Resource"">
+							<pdfaProperty:name>Version</pdfaProperty:name>
+							<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+							<pdfaProperty:category>external</pdfaProperty:category>
+							<pdfaProperty:description>The actual version of the ZUGFeRD data </pdfaProperty:description>
+						</rdf:li>
+						<rdf:li rdf:parseType=""Resource"">
+							<pdfaProperty:name>ConformanceLevel</pdfaProperty:name>
+							<pdfaProperty:valueType>Text</pdfaProperty:valueType>
+							<pdfaProperty:category>external</pdfaProperty:category>
+							<pdfaProperty:description>The conformance level of the ZUGFeRD data </pdfaProperty:description>
+						</rdf:li>
+					</rdf:Seq>
+				</pdfaSchema:property>
+			</rdf:li>
+		</rdf:Bag>
+	</pdfaExtension:schemas> 
+</rdf:Description>
+
+
+<rdf:Description rdf:about="""" xmlns:fx=""urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#"">
+  	<fx:DocumentType>INVOICE</fx:DocumentType>
+  	<fx:DocumentFileName>factur-x.xml</fx:DocumentFileName>
+  	<fx:Version>{{FXVersion}}</fx:Version>
+  	<fx:ConformanceLevel>{{FXComformanceLevel}}</fx:ConformanceLevel>
+</rdf:Description>
+
+  			)
+  /Ext_Metadata pdfmark

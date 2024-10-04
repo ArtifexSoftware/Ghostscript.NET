@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="assets\AdobeCompat-v2.icc" />
+    <None Remove="assets\AdobeRGB1998.icc" />
+    <None Remove="assets\pdfMarkA3.template" />
+    <None Remove="assets\pdfMarkZUGFeRD.template" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="assets\AdobeCompat-v2.icc" />
+    <EmbeddedResource Include="assets\AdobeRGB1998.icc" />
+    <EmbeddedResource Include="assets\pdfMarkZUGFeRD.template" />
+    <EmbeddedResource Include="assets\pdfMarkA3.template" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj" />
+  </ItemGroup>
+
+</Project>
