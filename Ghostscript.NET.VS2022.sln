@@ -5,7 +5,7 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET.Samples", "Ghostscript.NET.Samples\Ghostscript.NET.Samples.csproj", "{749F1BE2-A1BE-4C89-B94B-A2F1E38E03EB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET", "..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj", "{5544384A-3367-4EA5-9216-2DEEB3223CBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET", "..\Ghostscript.net\Ghostscript.NET\Ghostscript.NET.csproj", "{5544384A-3367-4EA5-9216-2DEEB3223CBE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ghostscript.NET.PDFA3Converter", "Ghostscript.NET.PDFA3Converter\Ghostscript.NET.PDFA3Converter.csproj", "{1F6A5D22-DBA9-403B-B235-233DBA9801A2}"
 EndProject
