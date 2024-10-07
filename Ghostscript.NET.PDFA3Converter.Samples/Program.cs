@@ -58,9 +58,11 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             //sample = new RasterizerCropSample();
 
             sample = new FacturXWithMustangSample();
-            sample = new FacturXWithZUGFeRDcsharpSample();
-
             sample.Start();
+
+            sample = new FacturXWithZUGFeRDcsharpSample();
+            sample.Start();
+
 
             Console.ReadLine();
         }
