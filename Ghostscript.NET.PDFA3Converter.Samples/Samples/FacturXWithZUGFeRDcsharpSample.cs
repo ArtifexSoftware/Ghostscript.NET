@@ -44,7 +44,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             converter.SetZUGFeRDProfile("EN 16931");
             converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outFilename);
-            converter.ConvertToPDFA3(@"e:\in.pdf", @"e:\out-zugferdcsharp.pdf");
+            converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-zugferdcsharp.pdf");
         }
 
 
