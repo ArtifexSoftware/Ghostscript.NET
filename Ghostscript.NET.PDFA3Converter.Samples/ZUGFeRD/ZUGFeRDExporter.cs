@@ -35,7 +35,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         protected String? gsDLL = null;
         protected String? sourcePDF = null;
         protected bool noSourceCopy = false;
-        protected String profile = "EN16931";
+        protected String profile = "EN16931"; // European Norm for e-Invoicing
         protected int version = 2;
         protected IExportableTransaction? trans = null;
 
