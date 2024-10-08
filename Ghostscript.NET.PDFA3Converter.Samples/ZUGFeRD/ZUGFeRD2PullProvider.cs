@@ -1,3 +1,25 @@
+// Copyright (C) 2024 Artifex Software, Inc.
+//
+// This file is part of Ghostscript.NET.
+//
+// Ghostscript.NET is free software: you can redistribute it and/or modify it 
+// under the terms of the GNU Affero General Public License as published by the 
+// Free Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// Ghostscript.NET is distributed in the hope that it will be useful, but WITHOUT 
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+// details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with Ghostscript.NET. If not, see 
+// <https://www.gnu.org/licenses/agpl-3.0.en.html>
+//
+// Alternative licensing terms are available from the licensor.
+// For commercial licensing, see <https://www.artifex.com/> or contact
+// Artifex Software, Inc., 39 Mesa Street, Suite 108A, San Francisco,
+// CA 94129, USA, for further information.
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -177,12 +199,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             }
 
             string senderReg = "";
-            /*		if (trans.getOwnOrganisationFullPlaintextInfo() != null)
-                    {
-                        senderReg = "" + "<ram:IncludedNote>\n" + "		<ram:Content>\n" + XMLTools.encodeXML(trans.getOwnOrganisationFullPlaintextInfo()) + "		</ram:Content>\n" + "<ram:SubjectCode>REG</ram:SubjectCode>\n" + "</ram:IncludedNote>\n";
 
-                    }
-            */
             string rebateAgreement = "";
             if (trans.rebateAgreementExists())
             {
@@ -195,11 +212,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 subjectNote = "<ram:IncludedNote>\n" + "		<ram:Content>" + XMLTools.encodeXML(trans.getSubjectNote()) + "</ram:Content>\n" + "</ram:IncludedNote>\n";
             }
 
-            string typecode = "380";
-            /*		if (trans.getDocumentCode() != null)
-                    {
-                        typecode = trans.getDocumentCode();
-                    }*/
+            string typecode = "380"; // Invoice
+            
             string notes = "";
             if (trans.getNotes() != null)
             {
@@ -239,22 +253,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     xml = xml + "				<ram:BuyerAssignedID>" + XMLTools.encodeXML(currentItem.getProduct().getBuyerAssignedID()) + "</ram:BuyerAssignedID>\n";
                 }
                 string allowanceChargeStr = "";
-                /*			if (currentItem.getItemAllowances() != null && currentItem.getItemAllowances().length > 0)
-                            {
-                                foreach (IZUGFeRDAllowanceCharge allowance in currentItem.getItemAllowances())
-                                {
-                                    allowanceChargeStr += getAllowanceChargeStr(allowance, currentItem);
-                                }
-                            }
-                            if (currentItem.getItemCharges() != null && currentItem.getItemCharges().length > 0)
-                            {
-                                foreach (IZUGFeRDAllowanceCharge charge in currentItem.getItemCharges())
-                                {
-                                    allowanceChargeStr += getAllowanceChargeStr(charge, currentItem);
-
-                                }
-                            }
-                */
+                
 
                 xml = xml + "					<ram:Name>" + XMLTools.encodeXML(currentItem.getProduct().getName()) + "</ram:Name>\n" + "				<ram:Description>" + XMLTools.encodeXML(currentItem.getProduct().getDescription()) + "</ram:Description>\n" + "			</ram:SpecifiedTradeProduct>\n" + "			<ram:SpecifiedLineTradeAgreement>\n" + "				<ram:GrossPriceProductTradePrice>\n" + "					<ram:ChargeAmount>" + priceFormat(lc.getPriceGross()) + "</ram:ChargeAmount>\n" + "<ram:BasisQuantity unitCode=\"" + XMLTools.encodeXML(currentItem.getProduct().getUnit()) + "\">" + quantityFormat(currentItem.getBasisQuantity()) + "</ram:BasisQuantity>\n" + allowanceChargeStr + "				</ram:GrossPriceProductTradePrice>\n" + "				<ram:NetPriceProductTradePrice>\n" + "					<ram:ChargeAmount>" + priceFormat(lc.getPrice()) + "</ram:ChargeAmount>\n" + "					<ram:BasisQuantity unitCode=\"" + XMLTools.encodeXML(currentItem.getProduct().getUnit()) + "\">" + quantityFormat(currentItem.getBasisQuantity()) + "</ram:BasisQuantity>\n" + "				</ram:NetPriceProductTradePrice>\n" + "			</ram:SpecifiedLineTradeAgreement>\n" + "			<ram:SpecifiedLineTradeDelivery>\n" + "				<ram:BilledQuantity unitCode=\"" + XMLTools.encodeXML(currentItem.getProduct().getUnit()) + "\">" + quantityFormat(currentItem.getQuantity()) + "</ram:BilledQuantity>\n" + "			</ram:SpecifiedLineTradeDelivery>\n" + "			<ram:SpecifiedLineTradeSettlement>\n" + "				<ram:ApplicableTradeTax>\n" + "					<ram:TypeCode>VAT</ram:TypeCode>\n" + exemptionReason + "					<ram:CategoryCode>" + currentItem.getProduct().getTaxCategoryCode() + "</ram:CategoryCode>\n" + "					<ram:RateApplicablePercent>" + vatFormat(currentItem.getProduct().getVATPercent()) + "</ram:RateApplicablePercent>\n" + "				</ram:ApplicableTradeTax>\n";
                 if ((currentItem.getDetailedDeliveryPeriodFrom() != null) || (currentItem.getDetailedDeliveryPeriodTo() != null))
