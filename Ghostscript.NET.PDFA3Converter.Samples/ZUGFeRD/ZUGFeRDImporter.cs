@@ -129,18 +129,12 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         }
 
         /// <summary>
-
-        ///     ''' Liest eine PDF-Datei, füllt mPDFInfo und liefert im Erfolgsfall (es ist eine ZF-Datei) den Stream zurück um die XML-Daten auszulesen.
-
-        ///     ''' Normal und vor dem schreiben kann die Check-Methode aufgerufen werden, importCheck ist eine autarke Methode die zurückliefert ob ein Leseversuch
-
-        ///     ''' (in dem Fall einer ZUGFeRD-Datei) überhaupt Aussicht auf Erfolg brächte 
-
-        ///     ''' </summary>
-
-        ///     ''' <param name="pPDFFile"></param>
-
-        ///     ''' <returns></returns>
+        ///     Liest eine PDF-Datei, füllt mPDFInfo und liefert im Erfolgsfall (es ist eine ZF-Datei) den Stream zurück um die XML-Daten auszulesen.
+        ///     Normal und vor dem schreiben kann die Check-Methode aufgerufen werden, importCheck ist eine autarke Methode die zurückliefert ob ein Leseversuch
+        ///     (in dem Fall einer ZUGFeRD-Datei) überhaupt Aussicht auf Erfolg brächte 
+        ///     </summary>
+        ///     <param name="pPDFFile"></param>
+        ///     <returns></returns>
         protected PdfStream GetStreamFromPDF(string pPDFFile)
         {
             PdfReader reader = null/* TODO Change to default(_) if this is not a reference type */;
@@ -150,30 +144,33 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             }
             catch (Exception ex)
             {
-                return null/* TODO Change to default(_) if this is not a reference type */;
+                return default;
             }// No valid PDF file 
-             //mPDFFileInfo.isPDF = true;
+             
 
             PdfDocument doc = new PdfDocument(reader);
-
             PdfAConformanceLevel PDFConfLevel = doc.GetReader().GetPdfAConformanceLevel();
             if (PDFConfLevel == null)
-                return null/* TODO Change to default(_) if this is not a reference type */;// kein PDF/A
-                                                                                           //mPDFFileInfo.isPDFA = true;
+            {
+                return default;
+            }
 
             //mPDFFileInfo.levelConf = PDFConfLevel.GetConformance();
             //mPDFFileInfo.levelPart = PDFConfLevel.GetPart();
             //mPDFFileInfo.isPDFA3 = System.Convert.ToBoolean(mPDFFileInfo.levelPart == "3"); // True
 
             if ((PDFConfLevel.GetPart() != "3") && (PDFConfLevel.GetPart() != "4"))
-                return null/* TODO Change to default(_) if this is not a reference type */;// kein PDF/A-3
-
+            {
+                return default;
+            }                
 
             PdfDictionary root = doc.GetCatalog().GetPdfObject();
             PdfDictionary names = root.GetAsDictionary(PdfName.Names);
             PdfDictionary embeddedFiles; // = names.GetAsDictionary(PdfName.EmbeddedFiles)
             if (names == null)
-                return null/* TODO Change to default(_) if this is not a reference type */;// keine eingebetteten dateien
+            {
+                return default;
+            }                
             embeddedFiles = names.GetAsDictionary(PdfName.EmbeddedFiles);
             PdfArray namesArray = embeddedFiles.GetAsArray(PdfName.Names);
             int currentNameIndex = 0;
@@ -229,18 +226,16 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     }
                 }
             }
-            //if (stream != null)
-            //  mPDFFileInfo.hasZFAttachment = true;
-
 
             return stream;
         }
 
+
         /// <summary>
-        ///     ''' Lesen der ZUGFeRD-XML-Struktur aus einer PDF-Datei in eine Zieldatei
-        ///     ''' </summary>
-        ///     ''' <param name="pPDFFile"></param>
-        ///     ''' <returns>false, falls nicht gelesen werden kann. Probleme können in dem Fall mPDFInfo entnommen werden, dort muss alles auf True bzw. 1 stehen</returns>
+        /// Lesen der ZUGFeRD-XML-Struktur aus einer PDF-Datei in eine Zieldatei
+        /// </summary>
+        /// <param name="pPDFFile"></param>
+        /// <returns>false, falls nicht gelesen werden kann. Probleme können in dem Fall mPDFInfo entnommen werden, dort muss alles auf True bzw. 1 stehen</returns>
         public bool FromPDF(string pPDFFile)
         {
             PdfStream stream = GetStreamFromPDF(pPDFFile);
@@ -248,18 +243,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 return false; // details in mPDFInfo
             else
             {
-                xmlDoc = new System.Xml.XmlDocument();
-                // Dim encoding As New System.Text.UTF8Encoding(True) ' The boolean parameter controls BOM
-                // Dim reader As New System.IO.StreamReader("your file path", encoding)
-
-
-                // Dim xm As XmlReader = XmlReader.Create(New StringReader(Text.Encoding.UTF8.GetString(stream.GetBytes)))
-                // 
-                System.Text.UTF8Encoding enc = new System.Text.UTF8Encoding(false);
-                // Dim xm As XmlReader = XmlReader.Create(enc.GetString(stream.GetBytes))
-                // Dim encoding As New System.Text.UTF8Encoding(False) ' The boolean parameter controls BOM
-
-                // Dim readerx As New System.IO.StreamReader("C:\Users\jstaerk\test.xml", encoding)
+                xmlDoc = new System.Xml.XmlDocument();                
+                System.Text.UTF8Encoding enc = new System.Text.UTF8Encoding(false);                
                 byte[] xmlBytes = stream.GetBytes();
                 string xml = enc.GetString(xmlBytes);
 
@@ -287,64 +272,20 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         {
             return rawXML;
         }
-        /*
-                protected internal virtual Document getDocument()
-                {
-                    return document;
-                }
 
 
-                private void setDocument()
-                {
-                    DocumentBuilderFactory xmlFact = DocumentBuilderFactory.newInstance();
-                    xmlFact.setNamespaceAware(true);
-                    DocumentBuilder builder = xmlFact.newDocumentBuilder();
-                    MemoryStream @is = new MemoryStream(rawXML);
-                ///	is.skip(guessBOMSize(is));
-                    document = builder.parse(@is);
-                }
-
-
-                public virtual void setRawXML(sbyte[] rawXML)
-                {
-                    this.rawXML = rawXML;
-                    try
-                    {
-                        setDocument();
-                    }
-                    catch (Exception e) when (e is ParserConfigurationException || e is SAXException)
-                    {
-        //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
-                        _logger.LogError(e.Message);
-                        throw new ZUGFeRDExportException(e);
-                    }
-                }
-
-
-
-        */
         protected internal virtual string extractString(string xpathStr)
         {
             XmlNode resultNode = xmlDoc.SelectSingleNode(xpathStr);
 
-
-
-
-            /*			string result = extractString("//*[local-name() = 'SpecifiedTradeSettlementHeaderMonetarySummation']/*[local-name() = 'DuePayableAmount']");
-                        if (string.ReferenceEquals(result, null) || result.Length == 0)
-                        {
-
-                            // fx/zf would be SpecifiedTradeSettlementMonetarySummation
-                            // 				but ox is SpecifiedTradeSettlementHeaderMonetarySummation...
-                            result = extractString("//*[local-name() = 'GrandTotalAmount']");
-
-
-                        }
-                        */
-            if (resultNode.InnerText == null) { return ""; }
+            if (resultNode?.InnerText == null) 
+            { 
+                return ""; 
+            }
             return resultNode.InnerText;
-
         }
+
+
         /// <returns> the reference (purpose) the sender specified for this invoice </returns>
         public virtual string getForeignReference()
         {
@@ -391,12 +332,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 {
                     return extractString("//*[local-name() = 'ApplicableHeaderTradeSettlement']//*[local-name() = 'InvoiceCurrencyCode']");
                 }
-            }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
+            }            
             catch (Exception e)
-            {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
+            {             
                 _logger.LogError(e.Message);
 
                 return "";
@@ -433,12 +371,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 {
                     return extractString("//*[local-name() = 'BuyerOrderReferencedDocument']//*[local-name() = 'IssuerAssignedID']");
                 }
-            }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
+            }            
             catch (Exception e)
-            {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
+            {                
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -463,12 +398,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 {
                     return extractString("//*[local-name() = 'ExchangedDocument']//*[local-name() = 'IssueDateTime']//*[local-name() = 'DateTimeString']");
                 }
-            }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
+            }            
             catch (Exception e)
-            {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
+            {             
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -487,12 +419,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 {
                     return extractString("//*[local-name() = 'SpecifiedTradeSettlementHeaderMonetarySummation']//*[local-name() = 'TaxBasisTotalAmount']");
                 }
-            }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
+            }            
             catch (Exception e)
-            {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
+            {             
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -512,11 +441,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'SpecifiedTradeSettlementHeaderMonetarySummation']//*[local-name() = 'TaxTotalAmount']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
             catch (Exception e)
-            {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
+            {             
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -536,11 +462,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'SpecifiedTradeSettlementHeaderMonetarySummation']//*[local-name() = 'RoundingAmount']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
             catch (Exception e)
             {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -560,11 +483,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'SpecifiedTradeSettlementHeaderMonetarySummation']//*[local-name() = 'TotalPrepaidAmount']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
             catch (Exception e)
-            {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
+            {             
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -603,22 +523,19 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'ExchangedDocument']//*[local-name() = 'IncludedNote']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
             catch (Exception e)
-            {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
+            {             
                 _logger.LogError(e.Message);
                 return "";
             }
         }
+
 
         /// <returns> the BuyerTradeParty Name </returns>
         public virtual string getBuyerTradePartyName()
         {
             return extractString("//*[local-name() = 'BuyerTradeParty']//*[local-name() = 'Name']");
         }
-
 
 
         /// <returns> the line Total Amount </returns>
@@ -635,11 +552,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'SpecifiedTradeSettlementHeaderMonetarySummation']//*[local-name() = 'LineTotalAmount']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
             catch (Exception e)
-            {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
+            {             
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -665,11 +579,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'ActualDeliverySupplyChainEvent']//*[local-name() = 'OccurrenceDateTime']//*[local-name() = 'DateTimeString']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
             catch (Exception e)
             {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -689,11 +600,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'ExchangedDocument']//*[local-name() = 'ID']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
+
             catch (Exception e)
             {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -715,11 +624,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'ExchangedDocument']/*[local-name() = 'TypeCode']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
             catch (Exception e)
             {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -740,11 +646,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     return extractString("//*[local-name() = 'ApplicableHeaderTradeAgreement']/*[local-name() = 'BuyerReference']");
                 }
             }
-            //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-            //ORIGINAL LINE: catch (final Exception e)
             catch (Exception e)
             {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
                 _logger.LogError(e.Message);
                 return "";
             }
@@ -781,24 +684,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         /// <returns> the total payable amount </returns>
         public virtual string getAmount()
         {
-
             // xmlDoc property is a  XmlDocument
             // 
             XmlNode amountNode = xmlDoc.SelectSingleNode("//*[local-name() = 'SpecifiedTradeSettlementHeaderMonetarySummation']/*[local-name() = 'DuePayableAmount']");
-
-
-
-            /*			string result = extractString("//*[local-name() = 'SpecifiedTradeSettlementHeaderMonetarySummation']/*[local-name() = 'DuePayableAmount']");
-                        if (string.ReferenceEquals(result, null) || result.Length == 0)
-                        {
-
-                            // fx/zf would be SpecifiedTradeSettlementMonetarySummation
-                            // 				but ox is SpecifiedTradeSettlementHeaderMonetarySummation...
-                            result = extractString("//*[local-name() = 'GrandTotalAmount']");
-
-
-                        }
-                        */
             if (amountNode.InnerText == null) { return ""; }
             return amountNode.InnerText;
         }
@@ -809,6 +697,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         {
             return extractString("//*[local-name() = 'SpecifiedTradePaymentTerms']/*[local-name() = 'DueDateDateTime']/*[local-name() = 'DateTimeString']");
         }
+
+
         public virtual int getVersion()
         {
             if (!containsMeta_Conflict)
@@ -837,518 +727,5 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             return encoding.GetString(rawXML);
 
         }
-
-        /*
-                public virtual Dictionary<string, sbyte[]> getAdditionalData()
-                {
-                    return additionalXMLs;
-                }
-
-
-                /// <summary>
-                /// get xmp metadata of the PDF, null if not available
-                /// </summary>
-                /// <returns> string </returns>
-                public virtual string getXMP()
-                {
-                    return xmpString;
-                }
-
-
-                /// <returns> if export found parseable ZUGFeRD data </returns>
-                public virtual bool containsMeta()
-                {
-                    return containsMeta_Conflict;
-                }
-
-
-                /// <param name="meta"> raw XML to be set </param>
-                /// <exception cref="IOException"> if raw can not be set </exception>
-        //JAVA TO C# CONVERTER WARNING: Method 'throws' clauses are not available in C#:
-        //ORIGINAL LINE: public void setMeta(String meta) throws java.io.IOException
-                public virtual void setMeta(string meta)
-                {
-                    setRawXML(meta.GetBytes());
-                }
-
-
-                /// <returns> raw XML of the invoice </returns>
-                public virtual string getMeta()
-                {
-                    if (rawXML == null)
-                    {
-                        return null;
-                    }
-
-                    return StringHelper.NewString(rawXML);
-                }
-
-
-    
-
-                /// <returns> return UTF8 XML (without BOM) of the invoice </returns>
-               
-
-
-
-
-                /// <summary>
-                /// will return true if the metadata (just extract-ed or set with setMeta) contains ZUGFeRD XML
-                /// </summary>
-                /// <returns> true if the invoice contains ZUGFeRD XML </returns>
-                public virtual bool canParse()
-                {
-
-                    // SpecifiedExchangedDocumentContext is in the schema, so a relatively good
-                    // indication if zugferd is present - better than just invoice
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final String meta = getMeta();
-                    string meta = getMeta();
-                    return (!string.ReferenceEquals(meta, null)) && (meta.Length > 0) && ((meta.Contains("SpecifiedExchangedDocumentContext") || meta.Contains("ExchangedDocumentContext")));
-                }
-
-
-                internal static string convertStreamToString(Stream @is)
-                {
-                    // source https://stackoverflow.com/questions/309424/how-do-i-read-convert-an-inputstream-into-a-string-in-java referring to
-                    // https://community.oracle.com/blogs/pat/2004/10/23/stupid-scanner-tricks
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final java.util.Scanner s = new java.util.Scanner(is, "UTF-8").useDelimiter("\\A");
-                    Scanner s = (new Scanner(@is, "UTF-8")).useDelimiter("\\A");
-                    return s.hasNext() ? s.next() : "";
-                }
-
-                /// <summary>
-                /// returns an instance of PostalTradeAddress for SellerTradeParty section </summary>
-                /// <returns> an instance of PostalTradeAddress </returns>
-                public virtual PostalTradeAddress getBuyerTradePartyAddress()
-                {
-
-                    NodeList nl = null;
-
-                    try
-                    {
-                        if (getVersion() == 1)
-                        {
-                            nl = getNodeListByPath("//*[local-name() = 'CrossIndustryDocument']//*[local-name() = 'SpecifiedSupplyChainTradeTransaction']/*[local-name() = 'ApplicableSupplyChainTradeAgreement']//*[local-name() = 'BuyerTradeParty']//*[local-name() = 'PostalTradeAddress']");
-                        }
-                        else
-                        {
-                            nl = getNodeListByPath("//*[local-name() = 'CrossIndustryInvoice']//*[local-name() = 'SupplyChainTradeTransaction']//*[local-name() = 'ApplicableHeaderTradeAgreement']//*[local-name() = 'BuyerTradeParty']//*[local-name() = 'PostalTradeAddress']");
-                        }
-                    }
-        //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-        //ORIGINAL LINE: catch (final Exception e)
-                    catch (Exception e)
-                    {
-        //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
-                        _logger.LogError(e.Message);
-                        return null;
-                    }
-
-                    return getAddressFromNodeList(nl);
-                }
-
-                /// <summary>
-                /// returns an instance of PostalTradeAddress for SellerTradeParty section </summary>
-                /// <returns> an instance of PostalTradeAddress </returns>
-                public virtual PostalTradeAddress getSellerTradePartyAddress()
-                {
-
-                    NodeList nl = null;
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final PostalTradeAddress address = new PostalTradeAddress();
-                    PostalTradeAddress address = new PostalTradeAddress();
-
-                    try
-                    {
-                        if (getVersion() == 1)
-                        {
-                            nl = getNodeListByPath("//*[local-name() = 'CrossIndustryDocument']//*[local-name() = 'SpecifiedSupplyChainTradeTransaction']//*[local-name() = 'ApplicableSupplyChainTradeAgreement']//*[local-name() = 'SellerTradeParty']//*[local-name() = 'PostalTradeAddress']");
-                        }
-                        else
-                        {
-                            nl = getNodeListByPath("//*[local-name() = 'CrossIndustryInvoice']//*[local-name() = 'SupplyChainTradeTransaction']//*[local-name() = 'ApplicableHeaderTradeAgreement']//*[local-name() = 'SellerTradeParty']//*[local-name() = 'PostalTradeAddress']");
-                        }
-                    }
-        //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-        //ORIGINAL LINE: catch (final Exception e)
-                    catch (Exception e)
-                    {
-        //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
-                        _logger.LogError(e.Message);
-                        return null;
-                    }
-
-                    return getAddressFromNodeList(nl);
-                }
-
-                private PostalTradeAddress getAddressFromNodeList(NodeList nl)
-                {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final PostalTradeAddress address = new PostalTradeAddress();
-                    PostalTradeAddress address = new PostalTradeAddress();
-
-                    if (nl != null)
-                    {
-                        for (int i = 0; i < nl.getLength(); i++)
-                        {
-                            Node n = nl.item(i);
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final org.w3c.dom.NodeList nodes = n.getChildNodes();
-                            NodeList nodes = n.getChildNodes();
-                            for (int j = 0; j < nodes.getLength(); j++)
-                            {
-                                n = nodes.item(j);
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final short nodeType = n.getNodeType();
-                                short nodeType = n.getNodeType();
-                                if ((nodeType == Node.ELEMENT_NODE) && (n.getLocalName() != null))
-                                {
-                                    switch (n.getLocalName())
-                                    {
-                                        case "PostcodeCode":
-                                            address.setPostCodeCode("");
-                                            if (n.getFirstChild() != null)
-                                            {
-                                                address.setPostCodeCode(n.getFirstChild().getNodeValue());
-                                            }
-                                            break;
-                                        case "LineOne":
-                                            address.setLineOne("");
-                                            if (n.getFirstChild() != null)
-                                            {
-                                                address.setLineOne(n.getFirstChild().getNodeValue());
-                                            }
-                                            break;
-                                        case "LineTwo":
-                                            address.setLineTwo("");
-                                            if (n.getFirstChild() != null)
-                                            {
-                                                address.setLineTwo(n.getFirstChild().getNodeValue());
-                                            }
-                                            break;
-                                        case "LineThree":
-                                            address.setLineThree("");
-                                            if (n.getFirstChild() != null)
-                                            {
-                                                address.setLineThree(n.getFirstChild().getNodeValue());
-                                            }
-                                            break;
-                                        case "CityName":
-                                            address.setCityName("");
-                                            if (n.getFirstChild() != null)
-                                            {
-                                                address.setCityName(n.getFirstChild().getNodeValue());
-                                            }
-                                            break;
-                                        case "CountryID":
-                                            address.setCountryID("");
-                                            if (n.getFirstChild() != null)
-                                            {
-                                                address.setCountryID(n.getFirstChild().getNodeValue());
-                                            }
-                                            break;
-                                        case "CountrySubDivisionName":
-                                            address.setCountrySubDivisionName("");
-                                            if (n.getFirstChild() != null)
-                                            {
-                                                address.setCountrySubDivisionName(n.getFirstChild().getNodeValue());
-                                            }
-                                            break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    return address;
-                }
-
-                /// <summary>
-                /// returns a list of LineItems </summary>
-                /// <returns> a List of LineItem instances </returns>
-                public virtual IList<Item> getLineItemList()
-                {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final java.util.List<org.w3c.dom.Node> nodeList = getLineItemNodes();
-                    IList<Node> nodeList = getLineItemNodes();
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final java.util.List<org.mustangproject.Item> lineItemList = new java.util.ArrayList<>();
-                    IList<Item> lineItemList = new List<Item>();
-
-                    foreach (Node n in nodeList)
-                    {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final org.mustangproject.Item lineItem = new org.mustangproject.Item(null, null, null);
-                        Item lineItem = new Item(null, null, null);
-                        lineItem.setProduct(new Product(null,null,null,null));
-
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final org.w3c.dom.NodeList nl = n.getChildNodes();
-                        NodeList nl = n.getChildNodes();
-                        for (int i = 0; i < nl.getLength(); i++)
-                        {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final org.w3c.dom.Node nn = nl.item(i);
-                            Node nn = nl.item(i);
-                            Node node = null;
-                            if (nn.getLocalName() != null)
-                            {
-                                switch (nn.getLocalName())
-                                {
-                                    case "SpecifiedLineTradeAgreement":
-                                    case "SpecifiedSupplyChainTradeAgreement":
-
-                                        node = getNodeByName(nn.getChildNodes(), "NetPriceProductTradePrice");
-                                        if (node != null)
-                                        {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final org.w3c.dom.NodeList tradeAgreementChildren = node.getChildNodes();
-                                            NodeList tradeAgreementChildren = node.getChildNodes();
-                                            node = getNodeByName(tradeAgreementChildren, "ChargeAmount");
-                                            lineItem.setPrice(trydecimal(getNodeValue(node)));
-                                            node = getNodeByName(tradeAgreementChildren, "BasisQuantity");
-                                            if (node != null && node.getAttributes() != null)
-                                            {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final org.w3c.dom.Node unitCodeAttribute = node.getAttributes().getNamedItem("unitCode");
-                                                Node unitCodeAttribute = node.getAttributes().getNamedItem("unitCode");
-                                                if (unitCodeAttribute != null)
-                                                {
-                                                    lineItem.getProduct().setUnit(unitCodeAttribute.getNodeValue());
-                                                }
-                                            }
-                                        }
-
-                                        node = getNodeByName(nn.getChildNodes(), "GrossPriceProductTradePrice");
-                                        if (node != null)
-                                        {
-                                            node = getNodeByName(node.getChildNodes(), "ChargeAmount");
-                                            lineItem.setGrossPrice(trydecimal(getNodeValue(node)));
-                                        }
-                                        break;
-
-                                    case "AssociatedDocumentLineDocument":
-
-                                        node = getNodeByName(nn.getChildNodes(), "LineID");
-                                        lineItem.setId(getNodeValue(node));
-                                        break;
-
-                                    case "SpecifiedTradeProduct":
-
-                                        node = getNodeByName(nn.getChildNodes(), "SellerAssignedID");
-                                        lineItem.getProduct().setSellerAssignedID(getNodeValue(node));
-
-                                        node = getNodeByName(nn.getChildNodes(), "BuyerAssignedID");
-                                        lineItem.getProduct().setBuyerAssignedID(getNodeValue(node));
-
-                                        node = getNodeByName(nn.getChildNodes(), "Name");
-                                        lineItem.getProduct().setName(getNodeValue(node));
-
-                                        node = getNodeByName(nn.getChildNodes(), "Description");
-                                        lineItem.getProduct().setDescription(getNodeValue(node));
-                                        break;
-
-                                    case "SpecifiedLineTradeDelivery":
-                                    case "SpecifiedSupplyChainTradeDelivery":
-                                        node = getNodeByName(nn.getChildNodes(), "BilledQuantity");
-                                        lineItem.setQuantity(trydecimal(getNodeValue(node)));
-                                        break;
-
-                                    case "SpecifiedLineTradeSettlement":
-                                        node = getNodeByName(nn.getChildNodes(), "ApplicableTradeTax");
-                                        if (node != null)
-                                        {
-                                            node = getNodeByName(node.getChildNodes(), "RateApplicablePercent");
-                                            lineItem.getProduct().setVATPercent(trydecimal(getNodeValue(node)));
-                                        }
-
-                                        node = getNodeByName(nn.getChildNodes(), "ApplicableTradeTax");
-                                        if (node != null)
-                                        {
-                                            node = getNodeByName(node.getChildNodes(), "CalculatedAmount");
-                                            lineItem.setTax(trydecimal(getNodeValue(node)));
-                                        }
-
-                                        node = getNodeByName(nn.getChildNodes(), "SpecifiedTradeSettlementLineMonetarySummation");
-                                        if (node != null)
-                                        {
-                                            node = getNodeByName(node.getChildNodes(), "LineTotalAmount");
-                                            lineItem.setLineTotalAmount(trydecimal(getNodeValue(node)));
-                                        }
-                                        break;
-                                    case "SpecifiedSupplyChainTradeSettlement":
-                                        //ZF 1!
-
-                                        node = getNodeByName(nn.getChildNodes(), "ApplicableTradeTax");
-                                        if (node != null)
-                                        {
-                                            node = getNodeByName(node.getChildNodes(), "ApplicablePercent");
-                                            lineItem.getProduct().setVATPercent(trydecimal(getNodeValue(node)));
-                                        }
-
-                                        node = getNodeByName(nn.getChildNodes(), "ApplicableTradeTax");
-                                        if (node != null)
-                                        {
-                                            node = getNodeByName(node.getChildNodes(), "CalculatedAmount");
-                                            lineItem.setTax(trydecimal(getNodeValue(node)));
-                                        }
-
-                                        node = getNodeByName(nn.getChildNodes(), "SpecifiedTradeSettlementMonetarySummation");
-                                        if (node != null)
-                                        {
-                                            node = getNodeByName(node.getChildNodes(), "LineTotalAmount");
-                                            lineItem.setLineTotalAmount(trydecimal(getNodeValue(node)));
-                                        }
-                                        break;
-                                }
-                            }
-                        }
-                        lineItemList.Add(lineItem);
-                    }
-                    return lineItemList;
-                }
-
-                /// <summary>
-                /// returns a List of LineItem Nodes from ZUGFeRD XML </summary>
-                /// <returns> a List of Node instances </returns>
-                public virtual IList<Node> getLineItemNodes()
-                {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final java.util.List<org.w3c.dom.Node> lineItemNodes = new java.util.ArrayList<>();
-                    IList<Node> lineItemNodes = new List<Node>();
-                    NodeList nl = null;
-                    try
-                    {
-                        if (getVersion() == 1)
-                        {
-                            nl = getNodeListByPath("//*[local-name() = 'CrossIndustryDocument']//*[local-name() = 'SpecifiedSupplyChainTradeTransaction']//*[local-name() = 'IncludedSupplyChainTradeLineItem']");
-                        }
-                        else
-                        {
-                            nl = getNodeListByPath("//*[local-name() = 'CrossIndustryInvoice']//*[local-name() = 'SupplyChainTradeTransaction']//*[local-name() = 'IncludedSupplyChainTradeLineItem']");
-                        }
-                    }
-        //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-        //ORIGINAL LINE: catch (final Exception e)
-                    catch (Exception e)
-                    {
-        //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
-                        _logger.LogError(e.Message);
-                    }
-
-                    for (int i = 0; i < nl.getLength(); i++)
-                    {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final org.w3c.dom.Node n = nl.item(i);
-                        Node n = nl.item(i);
-                        lineItemNodes.Add(n);
-                    }
-                    return lineItemNodes;
-                }
-
-                /// <summary>
-                /// Returns a node, found by name. If more nodes with the same name are present, the first occurence will be returned </summary>
-                /// <param name="nl"> - A NodeList which may contains the searched node </param>
-                /// <param name="name"> The nodes name </param>
-                /// <returns> a Node or null, if nothing is found </returns>
-                private Node getNodeByName(NodeList nl, string name)
-                {
-                    for (int i = 0; i < nl.getLength(); i++)
-                    {
-                        if ((nl.item(i).getLocalName() != null) && (nl.item(i).getLocalName().Equals(name)))
-                        {
-                            return nl.item(i);
-                        }
-                        else if (nl.item(i).getChildNodes().getLength() > 0)
-                        {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final org.w3c.dom.Node node = getNodeByName(nl.item(i).getChildNodes(), name);
-                            Node node = getNodeByName(nl.item(i).getChildNodes(), name);
-                            if (node != null)
-                            {
-                                return node;
-                            }
-                        }
-                    }
-                    return null;
-                }
-
-                /// <summary>
-                /// Get a NodeList by providing an path </summary>
-                /// <param name="path"> a compliable Path </param>
-                /// <returns> a Nodelist or null, if an error occurs </returns>
-                public virtual NodeList getNodeListByPath(string path)
-                {
-
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final javax.xml.xpath.XPathFactory xpathFact = javax.xml.xpath.XPathFactory.newInstance();
-                    XPathFactory xpathFact = XPathFactory.newInstance();
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final javax.xml.xpath.XPath xPath = xpathFact.newXPath();
-                    XPath xPath = xpathFact.newXPath();
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final String s = path;
-                    string s = path;
-
-                    try
-                    {
-        //JAVA TO C# CONVERTER WARNING: The original Java variable was marked 'final':
-        //ORIGINAL LINE: final javax.xml.xpath.XPathExpression xpr = xPath.compile(s);
-                        XPathExpression xpr = xPath.compile(s);
-                        return (NodeList) xpr.evaluate(getDocument(), XPathConstants.NODESET);
-                    }
-        //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-        //ORIGINAL LINE: catch (final Exception e)
-                    catch (Exception e)
-                    {
-        //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
-                        _logger.LogError(e.Message);
-                        return null;
-                    }
-                }
-
-                /// <summary>
-                /// returns the value of an node </summary>
-                /// <param name="node"> the Node to get the value from </param>
-                /// <returns> A String or empty String, if no value was found </returns>
-                private string getNodeValue(Node node)
-                {
-                    if (node != null)
-                    {
-                        if (node.getFirstChild() != null)
-                        {
-                            return node.getFirstChild().getNodeValue();
-                        }
-                    }
-                    return "";
-                }
-
-                /// <summary>
-                /// tries to convert an String to decimal. </summary>
-                /// <param name="nodeValue"> The value as String </param>
-                /// <returns> a decimal with the value provides as String or a decimal with value 0.00 if an error occurs </returns>
-                private decimal trydecimal(string nodeValue)
-                {
-                    try
-                    {
-                        return new decimal(nodeValue);
-                    }
-        //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-        //ORIGINAL LINE: catch (final Exception e)
-                    catch (ception)
-                    {
-                        try
-                        {
-                            return new decimal(Convert.ToSingle(nodeValue));
-                        }
-        //JAVA TO C# CONVERTER WARNING: 'final' catch parameters are not available in C#:
-        //ORIGINAL LINE: catch (final Exception ex)
-                        catch (ception)
-                        {
-                            return new decimal("0.00");
-                        }
-                    }
-                }*/
     }
 }
