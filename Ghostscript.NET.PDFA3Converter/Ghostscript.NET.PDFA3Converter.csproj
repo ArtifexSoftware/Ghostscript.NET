@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj" />
+    <ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj" />
   </ItemGroup>
 
 </Project>

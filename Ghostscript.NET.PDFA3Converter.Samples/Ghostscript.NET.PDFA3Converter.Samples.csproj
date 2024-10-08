@@ -8,12 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="itext7" Version="8.0.5" />
     <PackageReference Include="ZUGFeRD-csharp" Version="14.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj" />
+    <ProjectReference Include="..\..\Ghostscript.net\Ghostscript.NET\Ghostscript.NET.csproj" />
     <ProjectReference Include="..\Ghostscript.NET.PDFA3Converter\Ghostscript.NET.PDFA3Converter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="sample-invoice.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Samples\sample-invoice.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
