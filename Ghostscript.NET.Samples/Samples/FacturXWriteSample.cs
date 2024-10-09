@@ -1,5 +1,5 @@
 ﻿//
-// Program.cs
+// AddWatermarkSample.cs
 // This file is part of Ghostscript.NET.Samples project
 //
 // Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
@@ -26,37 +26,34 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Ghostscript.NET;
-using Ghostscript.NET.Samples;
+using Ghostscript.NET.Processor;
+using System.IO;
+using java.math;
+using Ghostscript.NET.FacturX.ZUGFeRD;
 
-Console.WriteLine("Ghostscript.NET Samples");
 
-if (!GhostscriptVersionInfo.IsGhostscriptInstalled)
+namespace Ghostscript.NET.Samples
 {
-    throw new Exception("You don't have Ghostscript installed on this machine!");
+    public class FacturXWriteSample : ISample
+    {
+
+
+        public void Start()
+        {
+            
+            Invoice i = (new Invoice()).setDueDate(DateTime.Now).setIssueDate(DateTime.Now).setDeliveryDate(DateTime.Now).setSender((new TradeParty("Test company", "teststr", "55232", "teststadt", "DE")).addTaxID("DE4711").addVATID("DE0815").setContact(new Contact("Hans Test", "+49123456789", "test@example.org")).addBankDetails(new BankDetails("DE12500105170648489890", "COBADEFXXX"))).setRecipient(new TradeParty("Franz Müller", "teststr.12", "55232", "Entenhausen", "DE")).setReferenceNumber("991-01484-64").setNumber("123").
+                    addItem(new Item(new Product("Testprodukt", "", "C62", new BigDecimal(19)), new BigDecimal("1.0"), new BigDecimal("1.0")));
+
+            ZUGFeRD2PullProvider zf2p = new ZUGFeRD2PullProvider();
+            zf2p.setProfile(Profiles.getByName("XRechnung"));
+            zf2p.generateXML(i);
+            System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+
+            string outfilename = "xrechnung.xml";
+            File.WriteAllBytes(outfilename, zf2p.getXML());
+        }
+
+    }
 }
-
-List<ISample> samples = new()
-{
-    //new GetInkCoverageSample(),
-    //new ProcessorSample1(),
-    //new ProcessorSample2(),
-    //new FindInstalledGhostscriptVersionsSample(),
-    //new RunMultipleInstancesSample(),
-    //new ViewerSample(),
-    //new RasterizerSample1(),
-    //new RasterizerSample2(),
-    //new AddWatermarkSample(),
-    //new DeviceUsageSample(),
-    //new PipedOutputSample(),
-    //new SendToPrinterSample(),
-    new FacturXWriteSample()
-};
-
-foreach (ISample sample in samples)
-{
-    sample.Start();
-    Console.WriteLine($"Sample '{sample.GetType().Name}' run successful!");
-}
-
-Console.ReadLine();
