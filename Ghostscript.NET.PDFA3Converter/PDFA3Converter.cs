@@ -141,7 +141,7 @@ namespace Ghostscript.NET.PDFA3Converter
         {                       
             if (String.IsNullOrWhiteSpace(xmlInvoicePath))
             {
-                throw new Exception("No valid xml invoice path. Aborting.");
+                return;
             }
 
             if (!File.Exists(xmlInvoicePath))

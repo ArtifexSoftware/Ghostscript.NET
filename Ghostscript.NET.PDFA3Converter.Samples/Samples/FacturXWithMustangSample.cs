@@ -35,8 +35,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
     public class FacturXWithMustangSample : ISample
     {
         public void Start()
-        {
-            
+        {            
             Invoice i = (new Invoice()).setDueDate(DateTime.Now).setIssueDate(DateTime.Now).setDeliveryDate(DateTime.Now).setSender((new TradeParty("Test company", "Test Street 1", "55232", "Test City", "DE")).addTaxID("DE4711").addVATID("DE0815").setContact(new Contact("Hans Test", "+49123456789", "test@example.org")).addBankDetails(new BankDetails("DE12500105170648489890", "COBADEFXXX"))).setRecipient(new TradeParty("Franz Müller", "Test Steet 12", "55232", "Entenhausen", "DE")).setReferenceNumber("991-01484-64").setNumber("123").
                     addItem(new Item(new Product("Test product", "", "C62", 19m), 1.0m, 1.0m));
 
@@ -49,9 +48,11 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             File.WriteAllBytes(outfilename, zf2p.getXML());
 
             PDFA3Converter converter = new PDFA3Converter(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
+            /*
             converter.SetZUGFeRDProfile(Profiles.getByName("EN16931").getXMPName());
-            converter.SetZUGFeRDVersion("2.1");
+            converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outfilename);
+            */
             converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-mustang.pdf");
         }
     }
