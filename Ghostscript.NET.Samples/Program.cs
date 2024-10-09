@@ -26,40 +26,36 @@
 
 using System;
 using System.Collections.Generic;
-using Ghostscript.NET.Viewer;
+using Ghostscript.NET;
+using Ghostscript.NET.Samples;
 
-namespace Ghostscript.NET.Samples
+Console.WriteLine("Ghostscript.NET Samples");
+
+if (!GhostscriptVersionInfo.IsGhostscriptInstalled)
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Ghostscript.NET Samples");
-
-            if (!GhostscriptVersionInfo.IsGhostscriptInstalled)
-            {
-                throw new Exception("You don't have Ghostscript installed on this machine!");
-            }
-
-            ISample sample;
-
-            //sample = new GetInkCoverageSample();
-            //sample = new ProcessorSample1();
-            //sample = new ProcessorSample2();
-            //sample = new FindInstalledGhostscriptVersionsSample();
-            //sample = new RunMultipleInstancesSample();
-            //sample = new ViewerSample();
-            sample = new RasterizerSample1();
-            //sample = new RasterizerSample2();
-            //sample = new AddWatermarkSample();
-            //sample = new DeviceUsageSample();
-            //sample = new PipedOutputSample();
-            //sample = new SendToPrinterSample();
-            //sample = new RasterizerCropSample();
-
-            sample.Start();
-
-            Console.ReadLine();
-        }
-    }
+    throw new Exception("You don't have Ghostscript installed on this machine!");
 }
+
+List<ISample> samples = new()
+{
+    //new GetInkCoverageSample(),
+    //new ProcessorSample1(),
+    //new ProcessorSample2(),
+    //new FindInstalledGhostscriptVersionsSample(),
+    //new RunMultipleInstancesSample(),
+    //new ViewerSample(),
+    //new RasterizerSample1(),
+    //new RasterizerSample2(),
+    //new AddWatermarkSample(),
+    //new DeviceUsageSample(),
+    //new PipedOutputSample(),
+    //new SendToPrinterSample()
+};
+
+foreach (ISample sample in samples)
+{
+    sample.Start();
+    Console.WriteLine($"Sample '{sample.GetType().Name}' run successful!");
+}
+
+Console.ReadLine();
