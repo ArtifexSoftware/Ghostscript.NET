@@ -7,17 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="assets\AdobeCompat-v2.icc" />
-    <None Remove="assets\AdobeRGB1998.icc" />
     <None Remove="assets\pdfMarkA3.template" />
     <None Remove="assets\pdfMarkZUGFeRD.template" />
+    <None Remove="assets\rgb.icc" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="assets\AdobeCompat-v2.icc" />
-    <EmbeddedResource Include="assets\AdobeRGB1998.icc" />
     <EmbeddedResource Include="assets\pdfMarkZUGFeRD.template" />
     <EmbeddedResource Include="assets\pdfMarkA3.template" />
+    <EmbeddedResource Include="assets\rgb.icc" />
   </ItemGroup>
 
   <ItemGroup>
