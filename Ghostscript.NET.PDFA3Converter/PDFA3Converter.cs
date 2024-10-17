@@ -136,13 +136,8 @@ namespace Ghostscript.NET.PDFA3Converter
         /// Creates a Postscript file or - more exact: PDFMark file - which is interpreted by Ghostscript and converts file into PDF-A/3
         /// </summary>        
         private void WritePDFMark()
-        {                       
-            if (String.IsNullOrWhiteSpace(xmlInvoicePath))
-            {
-                return;
-            }
-
-            if (!File.Exists(xmlInvoicePath))
+        {
+            if (String.IsNullOrWhiteSpace(xmlInvoicePath) || !File.Exists(xmlInvoicePath))
             {
                 throw new FileNotFoundException(xmlInvoicePath);
             }
@@ -236,7 +231,15 @@ namespace Ghostscript.NET.PDFA3Converter
             }
 
             PrepareICC();
-            WritePDFMark();
+
+            try
+            {
+                WritePDFMark();
+            }
+            catch
+            {
+                throw new Exception("Could not create PDF Mark");
+            }
 
             GhostscriptVersionInfo? gsVersion = new GhostscriptVersionInfo(GSDLLPath);
             GhostscriptLibrary ghostscriptLibrary = new GhostscriptLibrary(gsVersion);

@@ -23,9 +23,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.util.zlib;
 using System.Xml;
 using iText.Kernel.Pdf;
+using iText.Kernel.XMP.Impl;
+using iText.Layout.Borders;
+using iText.StyledXmlParser.Jsoup.Nodes;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 /// <summary>
 /// ********************************************************************** Copyright 2018 Jochen Staerk Use is subject to license terms. Licensed under the
@@ -117,16 +123,15 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         }
 
 
-        /// <summary>
-        /// Extracts a ZUGFeRD invoice from a PDF document represented by an input stream. Errors are reported via exception handling.
-        /// </summary>
-        /// <param name="pdfStream"> a inputstream of a pdf file </param>
-        //JAVA TO C# CONVERTER WARNING: Method 'throws' clauses are not available in C#:
-        //ORIGINAL LINE: private void extractLowLevel(java.io.InputStream pdfStream) throws java.io.IOException
+		/// <summary>
+		/// Extracts a ZUGFeRD invoice from a PDF document represented by an input stream. Errors are reported via exception handling.
+		/// </summary>
+		/// <param name="pdfStream"> a inputstream of a pdf file </param>
+		//JAVA TO C# CONVERTER WARNING: Method 'throws' clauses are not available in C#:
+		//ORIGINAL LINE: private void extractLowLevel(java.io.InputStream pdfStream) throws java.io.IOException
         private void extractLowLevel(Stream pdfStream)
         {
-
-        }
+		}
 
         /// <summary>
         ///     Liest eine PDF-Datei, füllt mPDFInfo und liefert im Erfolgsfall (es ist eine ZF-Datei) den Stream zurück um die XML-Daten auszulesen.
