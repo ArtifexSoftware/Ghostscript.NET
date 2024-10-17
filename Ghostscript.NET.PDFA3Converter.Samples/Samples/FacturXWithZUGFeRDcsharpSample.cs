@@ -45,7 +45,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outFilename);
             converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-zugferdcsharp.pdf");
-        }
+			System.IO.File.Delete(outFilename);
+		}
 
 
         private InvoiceDescriptor CreateInvoice()

@@ -54,6 +54,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             converter.SetEmbeddedXMLFile(outfilename);
             */
             converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-mustang.pdf");
+            System.IO.File.Delete(outfilename);
         }
     }
 }
