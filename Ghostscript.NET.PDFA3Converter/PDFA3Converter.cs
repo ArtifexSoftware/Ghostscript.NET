@@ -43,7 +43,7 @@ namespace Ghostscript.NET.PDFA3Converter
     /// </summary>
     public class PDFA3Converter
     {
-        private readonly string? RGBICCFilename = null;
+        private readonly string? RGBICCFilePath = null;
         private readonly string? PostScriptBigScriptPath = null;  
 
         protected string? GSDLLPath = null;
@@ -60,7 +60,7 @@ namespace Ghostscript.NET.PDFA3Converter
         public PDFA3Converter(String gsdll)
         {
             GSDLLPath = gsdll;
-            RGBICCFilename = "rgb.icc";
+            RGBICCFilePath = System.IO.Path.Combine(Path.GetTempPath(), "rgb.icc");
             PostScriptBigScriptPath = System.IO.Path.Combine(Path.GetTempPath(), "pdfconvert.ps");
         }
 
@@ -91,9 +91,8 @@ namespace Ghostscript.NET.PDFA3Converter
 
 
         public void PrepareICC()
-        {
-            string tempfilename = System.IO.Path.Combine(Path.GetTempPath(), RGBICCFilename);
-            StoreEmbeddedResourceLocally($"{Assembly.GetExecutingAssembly().GetName().Name}.assets.{RGBICCFilename}", tempfilename);
+        {            
+            StoreEmbeddedResourceLocally($"{Assembly.GetExecutingAssembly().GetName().Name}.assets.{RGBICCFilePath}", RGBICCFilePath);
         } // !PrepareICC()
 
 
@@ -139,15 +138,14 @@ namespace Ghostscript.NET.PDFA3Converter
             {
                 throw new FileNotFoundException(xmlInvoicePath);
             }
-
-            string rgbICCFilepath = System.IO.Path.Combine(Path.GetTempPath(), RGBICCFilename);
-            if (!File.Exists(rgbICCFilepath))
+            
+            if (!File.Exists(RGBICCFilePath))
             {
-                throw new FileNotFoundException(rgbICCFilepath);
+                throw new FileNotFoundException(RGBICCFilePath);
             }
 
             string PDFmark = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFA3Converter.assets.pdfMarkA3.template"));
-            PDFmark = PDFmark.Replace("{{EscapedEmbeddedICCFile}}", rgbICCFilepath.Replace(@"\", @"\\")); // properly escape path for pdfmark
+            PDFmark = PDFmark.Replace("{{EscapedEmbeddedICCFile}}", RGBICCFilePath.Replace(@"\", @"\\")); // properly escape path for pdfmark
             
             FileInfo fi = new FileInfo(xmlInvoicePath);
             string PDFmarkZUGFeRD = System.Text.Encoding.Default.GetString(LoadEmbeddedResource("Ghostscript.NET.PDFA3Converter.assets.pdfMarkZUGFeRD.template"));

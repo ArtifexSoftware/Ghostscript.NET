@@ -48,11 +48,11 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             File.WriteAllBytes(outfilename, zf2p.getXML());
 
             PDFA3Converter converter = new PDFA3Converter(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
-            /*
+            
             converter.SetZUGFeRDProfile(Profiles.getByName("EN16931").getXMPName());
             converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outfilename);
-            */
+            
             converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-mustang.pdf");
             System.IO.File.Delete(outfilename);
         }
