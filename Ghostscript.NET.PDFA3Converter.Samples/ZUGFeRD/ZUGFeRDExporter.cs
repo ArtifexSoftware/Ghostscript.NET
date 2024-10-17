@@ -24,8 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using Microsoft.Extensions.Logging;
-using Ghostscript.NET.PDFA3Converter;
+
 
 namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 {

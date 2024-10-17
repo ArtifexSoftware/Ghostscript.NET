@@ -34,8 +34,6 @@ using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 using Ghostscript.NET;
 using Ghostscript.NET.Processor;
-using Microsoft.Extensions.FileProviders.Embedded;
-using Microsoft.Extensions.FileProviders;
 
 
 namespace Ghostscript.NET.PDFA3Converter
