@@ -18,8 +18,7 @@
     <EmbeddedResource Include="assets\rgb.icc" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Ghostscript.net2\Ghostscript.NET\Ghostscript.NET.csproj" />
+  <ItemGroup>    
     <ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj" />
   </ItemGroup>
 
