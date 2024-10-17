@@ -34,6 +34,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualBasic;
 using Ghostscript.NET;
 using Ghostscript.NET.Processor;
+using System.Net.Http.Headers;
 
 
 namespace Ghostscript.NET.PDFA3Converter
@@ -235,6 +236,11 @@ namespace Ghostscript.NET.PDFA3Converter
             catch
             {
                 throw new Exception("Could not create PDF Mark");
+            }
+
+            if (!System.IO.File.Exists(PostScriptBigScriptPath))
+            {
+                throw new Exception("Could not prepare postscript file");
             }
 
             GhostscriptVersionInfo? gsVersion = new GhostscriptVersionInfo(GSDLLPath);
