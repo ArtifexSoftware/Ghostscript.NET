@@ -44,6 +44,8 @@ Ghostscript.NET.Viewer (supports viewing of the PDF, EPS and multi-page PS files
 
 The `Ghostscript.NET.PDFA3Converter` extension of the Ghostscript.NET library simplifies converting existing PDF files into PDF/A-3 format. This format is particularly useful for embedding XML-based representations of invoices, such as those used in **XRechnung** and **Factur-X** standards.
 
+**_NOTE:_** Please ensure to tag [stephanstapel](https://github.com/stephanstapel) with any [issues](https://github.com/ArtifexSoftware/Ghostscript.NET/issues) regarding the PDF A/3 converter.
+
 ## Key Features
 - Supports the embedding of XML-based invoices into PDF/A-3 format.
 - Includes necessary ICC profiles and pdfMark templates for compliance with PDF/A-3 standards.
