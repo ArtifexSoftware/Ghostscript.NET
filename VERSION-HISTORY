@@ -1,16 +1,34 @@
-﻿//
-// version-history
+// Copyright (C) 2025 Artifex Software, Inc.
 //
-// This file is part of Ghostscript.NET library
-// Author: Josip Habjan (habjan@gmail.com, http://www.linkedin.com/in/habjan) 
+// This file is part of Ghostscript.NET library.
 //
-// Development files: https://github.com/jhabjan/Ghostscript.NET
+// Ghostscript.NET is free software: you can redistribute it and/or modify it under the
+// terms of the GNU Affero General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
 //
-// License: Affero General Public License (AGPL) http://www.gnu.org/licenses/agpl.html
-// 
-// Copyright (c) 2013-2021 by Josip Habjan 
+// Ghostscript.NET is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+// details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with MuPDF. If not, see <https://www.gnu.org/licenses/agpl-3.0.en.html>
+//
+// Alternative licensing terms are available from the licensor.
+// For commercial licensing, see <https://artifex.com/licensing> or contact
+// Artifex Software, Inc., 39 Mesa Street, Suite 108A, San Francisco,
+// CA 94129, USA, for further information.
 
-HISTORY of the Ghostscript.NET library
+HISTORY of the Ghostscript.NET library:
+
+
+1.3.0.         2025-03-18
+-------------------------
+- Adds support for PDF/A conversion & ZUGFeRD samples with PDFA3Converter module.
+
+
+// Previously maintained and developed by Josip Habjan (http://www.linkedin.com/in/habjan)
 
 1.2.3.         2021-03-09
 -------------------------
@@ -78,7 +96,7 @@ HISTORY of the Ghostscript.NET library
 -------------------------
 - implemented Ghostscript native library verification with a friendly error message 
   that will clear out the confusion when used native Ghostscript library is not 
-  compatibile with the running process.
+  compatabile with the running process.
 - fixed the pipe client handle disposal bug when the GhostscriptPipedOutput is used.
 - fixed problem with the applying PDF page orientation for the GhostscriptViewer and 
   the GhostscriptRasterizer.
@@ -174,7 +192,7 @@ HISTORY of the Ghostscript.NET library
 - added GhostscriptRasterizer class which provides ability to easily export PDF  
   pages, PostScript pages and EPS files to the System.Drawing.Image object in the
   memory. For each page different x and y dpi settings can be set.
-- fixed gsapi_stdin callback and it's value passing to the ghostscript library.
+- fixed gsapi_stdin callback and it's value passing to the Ghostscript library.
 - added ProgressiveUpdate property to the GhostscriptViewer class so progressive 
   update can be controlled outside the library.
 
@@ -196,7 +214,7 @@ HISTORY of the Ghostscript.NET library
   deployment. This will leave Ghostscript.NET library without any extra dependencies.
 - added Processing event to the GhostscriptProcessor class. Processing event contains
   TotalPages and CurrentPage information.
-- added Error event in the GhostscriptProcessor class. Raised when error occures in
+- added Error event in the GhostscriptProcessor class. Raised when error occurs in
   the Ghostscript interpreter.
 - added DisplayPdfSample into the Ghostscript.NET.Samples project.
 
@@ -209,10 +227,10 @@ HISTORY of the Ghostscript.NET library
 
 1.0.5.         2013-09-02
 -------------------------
-- implemented progressive display update while ghostscript is drawing / rasterizing,
+- implemented progressive display update while Ghostscript is drawing / rasterizing,
   now a custom update interval can be set in GhostscriptViewer class.
-- fixed problem when using 64-bit ghostscript library where raster (stride) line 
-  size is not equal to 32-bit ghostscript library raster line size.
+- fixed problem when using 64-bit Ghostscript library where raster (stride) line 
+  size is not equal to 32-bit Ghostscript library raster line size.
 - changed GhostscriptViewer class event logic.
 - changed Ghostscript.NET.Viewer application in order to show progressive update.
 - modified Ghostscript.NET.DisplayTest, now it uses GhostscriptViewer class with 
@@ -247,10 +265,10 @@ HISTORY of the Ghostscript.NET library
 -------------------------
 - implementation logic is changed
 - added GhostscriptProcessor class with StdIO which allows you to process the files
-  by defining init arguments only with ability to handle Ghostscrtip output messages.
+  by defining init arguments only with ability to handle Ghostscript output messages.
 
 
 1.0.0.         2013-08-22
 -------------------------
-- initial release, all ghostscript functions are implemented and base wrapper created.
+- initial release, all Ghostscript functions are implemented and base wrapper created.
 - ability to run multiple instances of the Ghostscript within a single process.
