@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Ghostscript.net\Ghostscript.NET\Ghostscript.NET.csproj" />
+    <ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj" />
   </ItemGroup>
 
   <ItemGroup>

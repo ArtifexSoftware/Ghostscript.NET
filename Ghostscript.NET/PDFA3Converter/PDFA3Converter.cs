@@ -55,8 +55,8 @@ namespace Ghostscript.NET.PDFA3Converter
         /// <summary>
         /// The constructor of the class accepts both input and output path for PDF conversion.
         /// </summary>
-        /// <param name="sourcePDFPath">PDF input path </param>
-        /// <param name="targetPDFPath">PDF-A/3 output path</param>        
+        /// <param name="gsdll">PDF input path </param>
+  
         public PDFA3Converter(String gsdll)
         {
             GSDLLPath = gsdll;
@@ -193,6 +193,7 @@ namespace Ghostscript.NET.PDFA3Converter
             }
             catch (IOException generatedExceptionName)
             {
+                Console.WriteLine(generatedExceptionName.Message);
                 // handle the exception your way
                 return true;
             }
@@ -213,6 +214,7 @@ namespace Ghostscript.NET.PDFA3Converter
         /// <param name="sourcePDFPath">PDF input path </param>
         /// <param name="targetPDFPath">PDF-A/3 output path</param>  
         /// <returns>True if successful, false otherwise</returns>
+        /// </summary>
         public bool ConvertToPDFA3(string sourcePDFPath, string targetPDFPath)
         {
             // based on https://github.com/jhabjan/Ghostscript.NET/blob/master/Ghostscript.NET.Samples/Samples/ProcessorSample1.cs
@@ -274,6 +276,7 @@ namespace Ghostscript.NET.PDFA3Converter
             switches.Add("-sColorConversionStrategy=RGB"); // necessary for PDF/A conversion
             switches.Add("-sDEVICE=pdfwrite"); // Device for rasterization. Mandatory
             switches.Add($"-o{targetPDFPath}"); // Output path
+            switches.Add("-dNOSAFER"); // Disable safe mode
             switches.Add("-dPDFACompatibilityPolicy=1"); // convert to A/3 part 2/3
             switches.Add("-dRenderIntent=3"); // convert to A/3 part 3/3            
             switches.Add(PostScriptBigScriptPath); // PDFMark program file that shall be interpreted.

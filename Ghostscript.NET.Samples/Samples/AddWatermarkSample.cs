@@ -81,7 +81,7 @@ namespace Ghostscript.NET.Samples
             dev.GraphicsAlphaBits = GhostscriptImageDeviceAlphaBits.V_4;
             dev.TextAlphaBits = GhostscriptImageDeviceAlphaBits.V_4;
             dev.ResolutionXY = new GhostscriptImageDeviceResolution(96, 96);
-            dev.InputFiles.Add(@"E:\gss_test\indispensable.pdf");
+            dev.InputFiles.Add(@"E:\gss_test\test.pdf");
             dev.Pdf.FirstPage = 2;
             dev.Pdf.LastPage = 4;
             dev.PostScript = POSTSCRIPT_APPEND_WATERMARK;

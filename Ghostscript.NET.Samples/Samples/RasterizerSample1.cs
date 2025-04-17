@@ -53,7 +53,7 @@ namespace Ghostscript.NET.Samples
             string inputPdfPath = @"E:\gss_test\test.pdf";
             string outputPath = @"E:\gss_test\output\";
 
-            GhostscriptVersionInfo gvi = new GhostscriptVersionInfo(@"C:\Program Files\gs\gs9.53.3\bin\gsdll64.dll");
+            GhostscriptVersionInfo gvi = new GhostscriptVersionInfo(@"D:\gs\gs9.56.1\bin\gsdll64.dll");
 
             using (var rasterizer = new GhostscriptRasterizer())
             {

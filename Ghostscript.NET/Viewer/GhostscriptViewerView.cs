@@ -65,6 +65,7 @@ namespace Ghostscript.NET.Viewer
 
         #region MediaBox
 
+
         public RectangleF MediaBox
         {
             get { return _mediaBox; }

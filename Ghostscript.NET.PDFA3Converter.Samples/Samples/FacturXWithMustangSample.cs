@@ -27,7 +27,7 @@ using Ghostscript.NET;
 using Ghostscript.NET.Processor;
 using System.IO;
 using Ghostscript.NET.PDFA3Converter;
-using Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD;
+using Ghostscript.NET.PDFA3Converter.ZUGFeRD;
 
 
 namespace Ghostscript.NET.PDFA3Converter.Samples

@@ -6,7 +6,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Ghostscript.NET.xml</DocumentationFile>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Title>Ghostscript.NET</Title>
-    <Version>1.3.0-rc.2</Version>
+    <Version>1.3.0-rc.5</Version>
     <Authors>Jamie Lemon, Maksym Tkachuk</Authors>
     <Company>Artifex</Company>
     <Description>A C# binding for Ghostscript library</Description>

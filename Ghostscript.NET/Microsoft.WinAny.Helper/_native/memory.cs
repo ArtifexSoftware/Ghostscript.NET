@@ -36,7 +36,7 @@ namespace Microsoft.WinAny
         /// </summary>
         /// <param name="dest">New buffer.</param>
         /// <param name="src">Buffer to copy from.</param>
-        /// <param name="size">Number of characters to copy.</param>
+        /// <param name="count">Number of characters to copy.</param>
         public static void memcpy(byte* dest, byte* src, uint count)
         {
             for (uint i = 0; i < count; i++)
