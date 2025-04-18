@@ -6,16 +6,20 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Ghostscript.NET.xml</DocumentationFile>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Title>Ghostscript.NET</Title>
-    <Version>1.3.0-rc.5</Version>
+    <Version>1.3.0-rc.6</Version>
     <Authors>Jamie Lemon, Maksym Tkachuk</Authors>
     <Company>Artifex</Company>
     <Description>A C# binding for Ghostscript library</Description>
-    <Copyright>Artifex</Copyright>
+    <Copyright>Artifex Software Inc.</Copyright>
     <PackageProjectUrl>https://github.com/ArtifexSoftware/Ghostscript.NET</PackageProjectUrl>
     <PackageReadmeFile>Description.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/ArtifexSoftware/Ghostscript.NET</RepositoryUrl>
     <PackageTags>C#;F#;VB.Net;Ghostscript;DotNet;PDF</PackageTags>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageIcon>gs-icon.png</PackageIcon>
+    <PackageReleaseNotes>Consolidates PDFA Creation and ZUGFeRD packages into Ghostscript.NET</PackageReleaseNotes>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +39,10 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -45,6 +53,13 @@
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.8" />
     <PackageReference Include="System.IO.Abstractions" Version="22.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>   
+    <None Update="images\gs-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
