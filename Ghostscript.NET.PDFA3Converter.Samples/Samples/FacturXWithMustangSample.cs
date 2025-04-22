@@ -27,7 +27,7 @@ using Ghostscript.NET;
 using Ghostscript.NET.Processor;
 using System.IO;
 using Ghostscript.NET.PDFA3Converter;
-using Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD;
+using Ghostscript.NET.PDFA3Converter.ZUGFeRD;
 
 
 namespace Ghostscript.NET.PDFA3Converter.Samples
@@ -35,7 +35,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
     public class FacturXWithMustangSample : ISample
     {
         public void Start()
-        {            
+        {
+            Console.WriteLine(Environment.NewLine);
+            Console.WriteLine("Running FacturXWithMustangSample");
             Invoice i = (new Invoice()).setDueDate(DateTime.Now).setIssueDate(DateTime.Now).setDeliveryDate(DateTime.Now).setSender((new TradeParty("Test company", "Test Street 1", "55232", "Test City", "DE")).addTaxID("DE4711").addVATID("DE0815").setContact(new Contact("Hans Test", "+49123456789", "test@example.org")).addBankDetails(new BankDetails("DE12500105170648489890", "COBADEFXXX"))).setRecipient(new TradeParty("Franz Müller", "Test Steet 12", "55232", "Entenhausen", "DE")).setReferenceNumber("991-01484-64").setNumber("123").
                     addItem(new Item(new Product("Test product", "", "C62", 19m), 1.0m, 1.0m));
 
@@ -47,7 +49,11 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             string outfilename = "factur-x.xml";
             File.WriteAllBytes(outfilename, zf2p.getXML());
 
-            PDFA3Converter converter = new PDFA3Converter(@"d:\gs\gs9.56.1\bin\gsdll64.dll");
+            string gsFilePath = @"C:\Program Files\gs\gs10.05.0\bin\gsdll64.dll";
+            Console.WriteLine("Using Ghostscript filepath: " + gsFilePath);
+            Console.WriteLine("Ensure this is the filepath to your installed Ghostscript!");
+
+            PDFA3Converter converter = new PDFA3Converter(gsFilePath);
             
             converter.SetZUGFeRDProfile(Profiles.getByName("EN16931").getXMPName());
             converter.SetZUGFeRDVersion("2.3");

@@ -22,7 +22,7 @@
 // CA 94129, USA, for further information.
 using System;
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 	/// <summary>
 	/// provides e.g. the IBAN to transfer money to :-)
@@ -118,7 +118,15 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			return xml;
 		}
 
+        public string getPaymentXML()
+        {
+            // Your logic here
+            return null;
+        }
 
-
-	}
+        public string getOwnPaymentInfoText()
+        {
+            return null;
+        }
+    }
 }

@@ -21,8 +21,9 @@
 // Artifex Software, Inc., 39 Mesa Street, Suite 108A, San Francisco,
 // CA 94129, USA, for further information.
 using System.Collections.Generic;
+using System.Linq;
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 
 	/// <summary>
@@ -69,12 +70,13 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			this.country = country;
 
 		}
+		/*
 		/// <summary>
 		/// XML parsing constructor </summary>
 		/// <param name="nodes"> the nodelist returned e.g. from xpath </param>
 		//JAVA TO C# CONVERTER WARNING: The following constructor is declared outside of its associated class:
 		//ORIGINAL LINE: public TradeParty(NodeList nodes)
-
+		*/
 		public string getID()
 		{
 			return ID;
@@ -99,7 +101,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 		/// <returns> fluent setter </returns>
 		public virtual TradeParty setContact(Contact c)
 		{
-			this.contact = c;
+			contact = c;
 			return this;
 		}
 
@@ -114,17 +116,17 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			return this;
 		}
 
-		/// <summary>
+        /*/// <summary>
 		/// (optional)
 		/// </summary>
 		/// <param name="debitDetail"> </param>
 		/// <returns> fluent setter </returns>
-		/*public virtual TradeParty addDebitDetails(IZUGFeRDTradeSettlementDebit debitDetail)
+		public virtual TradeParty addDebitDetails(IZUGFeRDTradeSettlementDebit debitDetail)
 		{
 			debitDetails.add(debitDetail);
 			return this;
 		}*/
-		/*
+        /*
 			public override IZUGFeRDLegalOrganisation getLegalOrganisation()
 			{
 				return legalOrg;
@@ -136,7 +138,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 				return this;
 			}
 		*/
-		public virtual IList<BankDetails> getBankDetails()
+        public virtual IList<BankDetails> getBankDetails()
 		{
 			return bankDetails;
 		}
@@ -170,7 +172,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
 		public virtual TradeParty setVATID(string VATid)
 		{
-			this.vatID = VATid;
+			vatID = VATid;
 			return this;
 		}
 
@@ -181,7 +183,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
 		public virtual TradeParty setTaxID(string tax)
 		{
-			this.taxID = tax;
+			taxID = tax;
 			return this;
 		}
 
@@ -277,7 +279,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			return contact;
 		}
 
-		public virtual IZUGFeRDTradeSettlement[]? getAsTradeSettlement()
+		public virtual IZUGFeRDTradeSettlement[] getAsTradeSettlement()
 		{
 			if (bankDetails.Count == 0)
 			{
@@ -305,6 +307,14 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			return this;
 		}
 
+        public string getGlobalID()
+        {
+            return null;
+        }
 
-	}
+        public string getGlobalIDScheme()
+        {
+            return null;
+        }
+    }
 }

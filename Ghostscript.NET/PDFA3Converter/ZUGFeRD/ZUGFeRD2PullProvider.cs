@@ -27,14 +27,14 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 
     public class ZUGFeRD2PullProvider
     {
 
         //// MAIN CLASS
-        protected internal String zugferdDateFormatting = "yyyyMMdd";
+        protected internal string zugferdDateFormatting = "yyyyMMdd";
         protected internal byte[] zugferdData;
         protected internal IExportableTransaction trans;
         protected internal TransactionCalculator calc;
@@ -99,13 +99,13 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             {
                 xml += "	<ram:ID>" + XMLTools.encodeXML(party.getID()) + "</ram:ID>\n";
             }
-            else if ((party.getGlobalIDScheme() != null) && (party.getGlobalID() != null))
+            else if (party.getGlobalIDScheme() != null && party.getGlobalID() != null)
             {
                 xml = xml + "           <ram:GlobalID schemeID=\"" + XMLTools.encodeXML(party.getGlobalIDScheme()) + "\">" + XMLTools.encodeXML(party.getGlobalID()) + "</ram:GlobalID>\n";
             }
             xml += "	<ram:Name>" + XMLTools.encodeXML(party.getName()) + "</ram:Name>\n"; //$NON-NLS-2$
 
-            if ((party.getContact() != null) && (isSender || profile == Profiles.getByName("Extended")))
+            if (party.getContact() != null && (isSender || profile == Profiles.getByName("Extended")))
             {
                 xml = xml + "<ram:DefinedTradeContact>\n" + "     <ram:PersonName>" + XMLTools.encodeXML(party.getContact().getName()) + "</ram:PersonName>\n";
                 if (party.getContact().getPhone() != null)
@@ -114,7 +114,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                     xml = xml + "     <ram:TelephoneUniversalCommunication>\n" + "        <ram:CompleteNumber>" + XMLTools.encodeXML(party.getContact().getPhone()) + "</ram:CompleteNumber>\n" + "     </ram:TelephoneUniversalCommunication>\n";
                 }
 
-                if ((party.getContact().getFax() != null) && (profile == Profiles.getByName("Extended")))
+                if (party.getContact().getFax() != null && profile == Profiles.getByName("Extended"))
                 {
                     xml = xml + "     <ram:FaxUniversalCommunication>\n" + "        <ram:CompleteNumber>" + XMLTools.encodeXML(party.getContact().getFax()) + "</ram:CompleteNumber>\n" + "     </ram:FaxUniversalCommunication>\n";
                 }
@@ -133,11 +133,11 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 xml += "				<ram:LineTwo>" + XMLTools.encodeXML(party.getAdditionalAddress()) + "</ram:LineTwo>\n";
             }
             xml += "					<ram:CityName>" + XMLTools.encodeXML(party.getLocation()) + "</ram:CityName>\n" + "					<ram:CountryID>" + XMLTools.encodeXML(party.getCountry()) + "</ram:CountryID>\n" + "				</ram:PostalTradeAddress>\n";
-            if ((party.getVATID() != null) && (!isShipToTradeParty))
+            if (party.getVATID() != null && !isShipToTradeParty)
             {
                 xml += "				<ram:SpecifiedTaxRegistration>\n" + "					<ram:ID schemeID=\"VA\">" + XMLTools.encodeXML(party.getVATID()) + "</ram:ID>\n" + "				</ram:SpecifiedTaxRegistration>\n";
             }
-            if ((party.getTaxID() != null) && (!isShipToTradeParty))
+            if (party.getTaxID() != null && !isShipToTradeParty)
             {
                 xml += "				<ram:SpecifiedTaxRegistration>\n" + "					<ram:ID schemeID=\"FC\">" + XMLTools.encodeXML(party.getTaxID()) + "</ram:ID>\n" + "				</ram:SpecifiedTaxRegistration>\n";
 
@@ -146,14 +146,14 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
         }
 
-
+        /*
         /// <summary>
         ///*
         /// returns the XML for a charge or allowance on item level </summary>
         /// <param name="allowance"> </param>
         /// <param name="item">
         /// @return </param>
-        /*	protected internal virtual string getAllowanceChargeStr(IZUGFeRDAllowanceCharge allowance, IAbsoluteValueProvider item)
+        	protected internal virtual string getAllowanceChargeStr(IZUGFeRDAllowanceCharge allowance, IAbsoluteValueProvider item)
             {
                 string percentage = "";
                 string chargeIndicator = "false";
@@ -180,10 +180,10 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         public void generateXML(IExportableTransaction trans)
         {
             this.trans = trans;
-            this.calc = new TransactionCalculator(trans);
+            calc = new TransactionCalculator(trans);
 
             bool hasDueDate = false;
-            String germanDateFormatting = "dd.MM.yyyy";
+            string germanDateFormatting = "dd.MM.yyyy";
 
             string exemptionReason = "";
 
@@ -192,7 +192,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 paymentTermsDescription = trans.getPaymentTermDescription();
             }
 
-            if ((string.ReferenceEquals(paymentTermsDescription, null)) /*&& (trans.getDocumentCode() != org.mustangproject.ZUGFeRD.model.DocumentCodeTypeConstants.CORRECTEDINVOICE)*/)
+            if (ReferenceEquals(paymentTermsDescription, null) /*&& (trans.getDocumentCode() != org.mustangproject.ZUGFeRD.model.DocumentCodeTypeConstants.CORRECTEDINVOICE)*/)
             {
                 paymentTermsDescription = "Zahlbar ohne Abzug bis " + ((DateTime)trans.getDueDate()).ToString(germanDateFormatting);
 
@@ -256,14 +256,14 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                 
 
                 xml = xml + "					<ram:Name>" + XMLTools.encodeXML(currentItem.getProduct().getName()) + "</ram:Name>\n" + "				<ram:Description>" + XMLTools.encodeXML(currentItem.getProduct().getDescription()) + "</ram:Description>\n" + "			</ram:SpecifiedTradeProduct>\n" + "			<ram:SpecifiedLineTradeAgreement>\n" + "				<ram:GrossPriceProductTradePrice>\n" + "					<ram:ChargeAmount>" + priceFormat(lc.getPriceGross()) + "</ram:ChargeAmount>\n" + "<ram:BasisQuantity unitCode=\"" + XMLTools.encodeXML(currentItem.getProduct().getUnit()) + "\">" + quantityFormat(currentItem.getBasisQuantity()) + "</ram:BasisQuantity>\n" + allowanceChargeStr + "				</ram:GrossPriceProductTradePrice>\n" + "				<ram:NetPriceProductTradePrice>\n" + "					<ram:ChargeAmount>" + priceFormat(lc.getPrice()) + "</ram:ChargeAmount>\n" + "					<ram:BasisQuantity unitCode=\"" + XMLTools.encodeXML(currentItem.getProduct().getUnit()) + "\">" + quantityFormat(currentItem.getBasisQuantity()) + "</ram:BasisQuantity>\n" + "				</ram:NetPriceProductTradePrice>\n" + "			</ram:SpecifiedLineTradeAgreement>\n" + "			<ram:SpecifiedLineTradeDelivery>\n" + "				<ram:BilledQuantity unitCode=\"" + XMLTools.encodeXML(currentItem.getProduct().getUnit()) + "\">" + quantityFormat(currentItem.getQuantity()) + "</ram:BilledQuantity>\n" + "			</ram:SpecifiedLineTradeDelivery>\n" + "			<ram:SpecifiedLineTradeSettlement>\n" + "				<ram:ApplicableTradeTax>\n" + "					<ram:TypeCode>VAT</ram:TypeCode>\n" + exemptionReason + "					<ram:CategoryCode>" + currentItem.getProduct().getTaxCategoryCode() + "</ram:CategoryCode>\n" + "					<ram:RateApplicablePercent>" + vatFormat(currentItem.getProduct().getVATPercent()) + "</ram:RateApplicablePercent>\n" + "				</ram:ApplicableTradeTax>\n";
-                if ((currentItem.getDetailedDeliveryPeriodFrom() != null) || (currentItem.getDetailedDeliveryPeriodTo() != null))
+                if (currentItem.getDetailedDeliveryPeriodFrom() != DateTime.MinValue || currentItem.getDetailedDeliveryPeriodTo() != DateTime.MinValue)
                 {
                     xml = xml + "<ram:BillingSpecifiedPeriod>";
-                    if (currentItem.getDetailedDeliveryPeriodFrom() != null)
+                    if (currentItem.getDetailedDeliveryPeriodFrom() != DateTime.MinValue)
                     {
                         xml = xml + "<ram:StartDateTime><udt:DateTimeString format='102'>" + ((DateTime)currentItem.getDetailedDeliveryPeriodFrom()).ToString(zugferdDateFormatting) + "</udt:DateTimeString></ram:StartDateTime>";
                     }
-                    if (currentItem.getDetailedDeliveryPeriodTo() != null)
+                    if (currentItem.getDetailedDeliveryPeriodTo() != DateTime.MinValue)
                     {
                         xml = xml + "<ram:EndDateTime><udt:DateTimeString format='102'>" + ((DateTime)currentItem.getDetailedDeliveryPeriodTo()).ToString(zugferdDateFormatting) + "</udt:DateTimeString></ram:EndDateTime>";
                     }
@@ -329,7 +329,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             }
             else
             {
-                throw new System.InvalidOperationException("No delivery date provided");
+                throw new InvalidOperationException("No delivery date provided");
             }
             xml += "</ram:OccurrenceDateTime>\n";
             xml += "			</ram:ActualDeliverySupplyChainEvent>\n" + "		</ram:ApplicableHeaderTradeDelivery>\n" + "		<ram:ApplicableHeaderTradeSettlement>\n" + "			<ram:PaymentReference>" + XMLTools.encodeXML(trans.getNumber()) + "</ram:PaymentReference>\n" + "			<ram:InvoiceCurrencyCode>" + trans.getCurrency() + "</ram:InvoiceCurrencyCode>\n";
@@ -374,14 +374,14 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
                 }
             }
-            if ((trans.getDetailedDeliveryPeriodFrom() != null) || (trans.getDetailedDeliveryPeriodTo() != null))
+            if (trans.getDetailedDeliveryPeriodFrom() != DateTime.MinValue || trans.getDetailedDeliveryPeriodTo() != DateTime.MinValue)
             {
                 xml = xml + "<ram:BillingSpecifiedPeriod>";
-                if (trans.getDetailedDeliveryPeriodFrom() != null)
+                if (trans.getDetailedDeliveryPeriodFrom() != DateTime.MinValue)
                 {
                     xml = xml + "<ram:StartDateTime><udt:DateTimeString format='102'>" + ((DateTime)trans.getDetailedDeliveryPeriodFrom()).ToString(zugferdDateFormatting) + "</udt:DateTimeString></ram:StartDateTime>";
                 }
-                if (trans.getDetailedDeliveryPeriodTo() != null)
+                if (trans.getDetailedDeliveryPeriodTo() != DateTime.MinValue)
                 {
                     xml = xml + "<ram:EndDateTime><udt:DateTimeString format='102'>" + ((DateTime)trans.getDetailedDeliveryPeriodTo()).ToString(zugferdDateFormatting) + "</udt:DateTimeString></ram:EndDateTime>";
                 }
@@ -433,7 +433,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
                                 }
                             }
                 */
-                if (hasDueDate && (trans.getDueDate() != null))
+                if (hasDueDate && trans.getDueDate() != DateTime.MinValue)
                 {
                     xml = xml + "				<ram:DueDateDateTime><udt:DateTimeString format=\"102\">" + ((DateTime)trans.getDueDate()).ToString(zugferdDateFormatting) + "</udt:DateTimeString></ram:DueDateDateTime>\n"; // 20130704
 
@@ -463,8 +463,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
             xml = xml + "	</rsm:SupplyChainTradeTransaction>\n" + "</rsm:CrossIndustryInvoice>";
 
-            System.Text.UTF8Encoding encoding = new
-                     System.Text.UTF8Encoding();
+            UTF8Encoding encoding = new
+                     UTF8Encoding();
 
             byte[] zugferdRaw;
             zugferdRaw = encoding.GetBytes(xml); ;
@@ -485,7 +485,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             DateTime dueDate = paymentTerms.getDueDate();
             if (dueDate != null /*&& discountTerms != null && discountTerms.getBaseDate() != null*/)
             {
-                throw new System.InvalidOperationException("if paymentTerms.dueDate is specified, paymentTerms.discountTerms.baseDate has not to be specified");
+                throw new InvalidOperationException("if paymentTerms.dueDate is specified, paymentTerms.discountTerms.baseDate has not to be specified");
             }
             paymentTermsXml += "<ram:Description>" + paymentTerms.getDescription() + "</ram:Description>";
             if (dueDate != null)

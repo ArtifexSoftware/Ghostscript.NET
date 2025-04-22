@@ -20,7 +20,7 @@
 // For commercial licensing, see <https://www.artifex.com/> or contact
 // Artifex Software, Inc., 39 Mesa Street, Suite 108A, San Francisco,
 // CA 94129, USA, for further information.
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 
     /// <summary>
@@ -52,7 +52,44 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         /// get payment information text. e.g. Bank transfer
         /// </summary>
         /// <returns> payment information text </returns>
-        string getOwnPaymentInfoText()
+        string getOwnPaymentInfoText();
+
+        /// <summary>
+        /// BIC of the sender
+        /// </summary>
+        /// <returns> the BIC code of the recipient sender's bank </returns>
+        string getOwnBIC();
+
+
+        /// <summary>
+        /// IBAN of the sender
+        /// </summary>
+        /// <returns> the IBAN of the invoice sender's bank account </returns>
+        string getOwnIBAN();
+
+        /// <summary>
+        ///*
+        /// Account name
+        /// </summary>
+        /// <returns> the name of the account holder (if not identical to sender) </returns>
+        string getAccountName();
+
+
+        /* I'd love to implement getPaymentXML() and put <ram:DueDateDateTime> there because this is where it belongs
+         * unfortunately, the due date is part of the transaction which is not accessible here :-(
+         */
+
+
+    }
+
+    public class ZUGFeRDTradeSettlementPayment : IZUGFeRDTradeSettlementPayment
+    {
+
+        /// <summary>
+        /// get payment information text. e.g. Bank transfer
+        /// </summary>
+        /// <returns> payment information text </returns>
+        public string getOwnPaymentInfoText()
         {
             return null;
         }
@@ -61,7 +98,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         /// BIC of the sender
         /// </summary>
         /// <returns> the BIC code of the recipient sender's bank </returns>
-        string getOwnBIC()
+        public string getOwnBIC()
         {
             return null;
         }
@@ -71,7 +108,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         /// IBAN of the sender
         /// </summary>
         /// <returns> the IBAN of the invoice sender's bank account </returns>
-        string getOwnIBAN()
+        public string getOwnIBAN()
         {
             return null;
         }
@@ -81,7 +118,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         /// Account name
         /// </summary>
         /// <returns> the name of the account holder (if not identical to sender) </returns>
-        string getAccountName()
+        public string getAccountName()
         {
             return null;
         }
@@ -107,7 +144,11 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
          * unfortunately, the due date is part of the transaction which is not accessible here :-(
          */
 
-
+        public string getPaymentXML()
+        {
+            // Your logic here
+            return null;
+        }
     }
 
 }

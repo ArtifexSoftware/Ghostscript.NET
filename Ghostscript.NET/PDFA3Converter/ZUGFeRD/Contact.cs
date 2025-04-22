@@ -22,7 +22,7 @@
 // CA 94129, USA, for further information.
 using System.Xml;
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 	/// <summary>
 	///*
@@ -144,7 +144,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 		}
 
 
-		public string? getName()
+		public string getName()
 		{
 			return name;
 		}
@@ -271,5 +271,20 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			return this;
 		}
 
-	}
+        public string getID()
+        {
+            return null;
+        }
+
+        public string getVATID()
+        {
+            return null;
+        }
+
+        public string getAdditionalAddress()
+        {
+            return null;
+        }
+
+    }
 }

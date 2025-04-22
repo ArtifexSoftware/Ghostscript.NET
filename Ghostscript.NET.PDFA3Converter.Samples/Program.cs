@@ -30,7 +30,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Ghostscript.NET Samples");
+            Console.WriteLine("Ghostscript.NET PDFA3Converter.Samples");
 
             if (!GhostscriptVersionInfo.IsGhostscriptInstalled)
             {
@@ -44,7 +44,6 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
 
             sample = new FacturXWithZUGFeRDcsharpSample();
             sample.Start();
-
 
             Console.ReadLine();
         }

@@ -26,28 +26,28 @@ using System.IO;
 using System.Xml;
 
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 
     public class ZUGFeRDExporter
     {
-        protected String? gsDLL = null;
-        protected String? sourcePDF = null;
+        protected string gsDLL = null;
+        protected string sourcePDF = null;
         protected bool noSourceCopy = false;
-        protected String profile = "EN16931"; // European Norm for e-Invoicing
+        protected string profile = "EN16931"; // European Norm for e-Invoicing
         protected int version = 2;
-        protected IExportableTransaction? trans = null;
+        protected IExportableTransaction trans = null;
 
-        public ZUGFeRDExporter(String gsDLL)
+        public ZUGFeRDExporter(string gsDLL)
         {
             this.gsDLL = gsDLL;
         }
-        public ZUGFeRDExporter load(String PDFfilename)
+        public ZUGFeRDExporter load(string PDFfilename)
         {
-            String basename=Path.GetFileName(PDFfilename);
-            this.sourcePDF = Path.GetTempPath() + basename;
-            String d1=Path.GetDirectoryName(PDFfilename)+Path.DirectorySeparatorChar;
-            String d2=Path.GetTempPath();
+            string basename=Path.GetFileName(PDFfilename);
+            sourcePDF = Path.GetTempPath() + basename;
+            string d1=Path.GetDirectoryName(PDFfilename)+Path.DirectorySeparatorChar;
+            string d2=Path.GetTempPath();
             if (d1.Equals(Path.GetTempPath())) {
                 noSourceCopy=true;
             } else {
@@ -67,17 +67,17 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             return this;
         }
 
-        public ZUGFeRDExporter setProfile(String profile)
+        public ZUGFeRDExporter setProfile(string profile)
         {
             this.profile = profile;
             return this;
         }
 
 
-        public void export(String targetFilename)
+        public void export(string targetFilename)
         {
 
-            Ghostscript.NET.PDFA3Converter.PDFA3Converter pc = new Ghostscript.NET.PDFA3Converter.PDFA3Converter(gsDLL);
+            PDFA3Converter pc = new PDFA3Converter(gsDLL);
 
             ZUGFeRD2PullProvider zf2p = new ZUGFeRD2PullProvider();
             zf2p.setProfile(Profiles.getByName(profile));

@@ -22,7 +22,7 @@
 // CA 94129, USA, for further information.
 using System;
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 
 	public class VATAmount
@@ -46,7 +46,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 		}
 		public virtual VATAmount setApplicablePercent(decimal value)
 		{
-			this.applicablePercent = value;
+			applicablePercent = value;
 			return this;
 		}
 
@@ -58,7 +58,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 		}
 		public virtual VATAmount setBasis(decimal value)
 		{
-			this.basis = Math.Round(value, 2, MidpointRounding.AwayFromZero);
+			basis = Math.Round(value, 2, MidpointRounding.AwayFromZero);
 			return this;
 
 		}
@@ -74,13 +74,14 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
 		public virtual VATAmount setCalculated(decimal value) {
 
-			this.calculated = value;
+			calculated = value;
 			return this;
 		}
 
 
 		/// 
-		/// @deprecated Use <seealso cref="getCategoryCode() instead"/> 
+		/// @deprecated Use <seealso cref="getCategoryCode()"/> 
+		/// Use this instead
 		/// <returns> String with category code </returns>
 		[Obsolete("Use <seealso cref=\"getCategoryCode() instead\"/>")]
 		public virtual string getDocumentCode()
@@ -91,7 +92,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 		public virtual VATAmount setDocumentCode(string value)
 
 		{
-			this.categoryCode = value;
+			categoryCode = value;
 			return this;
 		}
 
@@ -102,9 +103,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
 			return categoryCode;
 		}
-		public virtual VATAmount setCategoryCode(String value)
+		public virtual VATAmount setCategoryCode(string value)
 		{
-			this.categoryCode = value;
+			categoryCode = value;
 			return this;
 		}
 
@@ -112,12 +113,12 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
 		public virtual VATAmount add(VATAmount v)
 		{
-			return new VATAmount(basis + v.getBasis(), calculated + v.getCalculated(), this.categoryCode);
+			return new VATAmount(basis + v.getBasis(), calculated + v.getCalculated(), categoryCode);
 		}
 
 		public virtual VATAmount subtract(VATAmount v)
 		{
-			return new VATAmount(basis - v.getBasis(), calculated - v.getCalculated(), this.categoryCode);
+			return new VATAmount(basis - v.getBasis(), calculated - v.getCalculated(), categoryCode);
 		}
 
 	}

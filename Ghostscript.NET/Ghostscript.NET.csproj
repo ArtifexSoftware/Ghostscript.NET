@@ -2,12 +2,61 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Ghostscript.NET.xml</DocumentationFile>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Title>Ghostscript.NET</Title>
+    <Version>1.3.0</Version>
+    <Authors>Artifex Software Inc.</Authors>
+    <Company>Artifex</Company>
+    <Description>A C# binding for Ghostscript library</Description>
+    <Copyright>Artifex Software Inc.</Copyright>
+    <PackageProjectUrl>https://github.com/ArtifexSoftware/Ghostscript.NET</PackageProjectUrl>
+    <PackageReadmeFile>Description.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/ArtifexSoftware/Ghostscript.NET</RepositoryUrl>
+    <PackageTags>C#;F#;VB.Net;Ghostscript;DotNet;PDF</PackageTags>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageIcon>gs-icon.png</PackageIcon>
+    <PackageReleaseNotes>Consolidates PDFA Creation and ZUGFeRD packages into Ghostscript.NET</PackageReleaseNotes>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="PDFA3Converter\assets\pdfMarkA3.template" />
+    <None Remove="PDFA3Converter\assets\pdfMarkZUGFeRD.template" />
+    <None Remove="PDFA3Converter\assets\rgb.icc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="PDFA3Converter\assets\pdfMarkA3.template" />
+    <EmbeddedResource Include="PDFA3Converter\assets\pdfMarkZUGFeRD.template" />
+    <EmbeddedResource Include="PDFA3Converter\assets\rgb.icc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Description.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+	<None Include=".\images\gs-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bin\$(Configuration)\$(TargetFramework)\Ghostscript.NET.xml" Pack="true" PackagePath="lib\netstandard2.0\" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.8" />
+    <PackageReference Include="System.IO.Abstractions" Version="22.0.12" />
   </ItemGroup>
 
 </Project>

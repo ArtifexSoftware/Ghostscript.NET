@@ -20,7 +20,7 @@
 // For commercial licensing, see <https://www.artifex.com/> or contact
 // Artifex Software, Inc., 39 Mesa Street, Suite 108A, San Francisco,
 // CA 94129, USA, for further information.
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 	
 	/// <summary>
@@ -191,5 +191,50 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			this.VATPercent = VATPercent;
 			return this;
 		}
-	}
+
+        public bool getIntraCommunitySupply()
+        {
+            return false;
+        }
+
+        public bool getReverseCharge()
+        {
+            return false;
+        }
+
+        public string getTaxCategoryCode()
+        {
+            /*	if (isIntraCommunitySupply())
+				{
+					return "K"; // "K"; // within europe
+				}
+				else if (isReverseCharge())
+				{
+					return "AE"; // "AE"; // to out of europe...
+				}
+				else if (getVATPercent().compareTo(decimal.ZERO) == 0)
+				{
+					return "Z"; // "Z"; // zero rated goods
+				}
+				else
+				{*/
+            return "S"; // "S"; // one of the "standard" rates (not
+                        // neccessarily a rate, even a deducted VAT
+                        // is standard calculation)
+                        //}
+        }
+
+        public string getTaxExemptionReason()
+        {
+            /*	if (isIntraCommunitySupply())
+				{
+					return "Intra-community supply";
+				}
+				else if (isReverseCharge())
+				{
+					return "Reverse Charge";
+				}*/
+            return null;
+        }
+    }
 }

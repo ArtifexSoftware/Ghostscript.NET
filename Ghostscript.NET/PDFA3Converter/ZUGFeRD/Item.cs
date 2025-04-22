@@ -23,7 +23,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 
 
@@ -37,7 +37,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
     public class Item : IZUGFeRDExportableItem
 	{
 		protected internal decimal price, quantity, tax, grossPrice, lineTotalAmount;
-		protected internal DateTime? detailedDeliveryPeriodFrom = null, detailedDeliveryPeriodTo = null;
+		protected internal DateTime detailedDeliveryPeriodFrom = DateTime.MinValue, detailedDeliveryPeriodTo = DateTime.MinValue;
 		protected internal string id;
 		protected internal string referencedLineID = null;
 		protected internal Product product;
@@ -210,14 +210,14 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			return this;
 		}
 
-
+/*
 		/// <summary>
 		///*
 		/// Adds a item level addition to the price (will be multiplied by quantity) </summary>
 		/// <seealso cref="org.mustangproject.Charge"/>
 		/// <param name="izac"> a relative or absolute charge </param>
 		/// <returns> fluent setter </returns>
-/*		public virtual Item addCharge(IZUGFeRDAllowanceCharge izac)
+		public virtual Item addCharge(IZUGFeRDAllowanceCharge izac)
 		{
 			Charges.Add(izac);
 			return this;
@@ -249,13 +249,13 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 			notes.Add(text);
 			return this;
 		}
-
+/*
 		/// <summary>
 		///*
 		/// adds item level Referenced documents along with their typecodes and issuerassignedIDs </summary>
 		/// <param name="doc"> the ReferencedDocument to add </param>
 		/// <returns> fluent setter </returns>
-        /*
+        
 		public virtual Item addReferencedDocument(ReferencedDocument doc)
 		{
 			if (referencedDocuments == null)
@@ -295,9 +295,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 		/// specifies the item level delivery period (there is also one on document level),
 		/// this will be included in a BillingSpecifiedPeriod element </summary>
 		/// <returns> the beginning of the delivery period </returns>
-		public virtual DateTime? getDetailedDeliveryPeriodFrom()
+		public virtual DateTime getDetailedDeliveryPeriodFrom()
 		{
-			return detailedDeliveryPeriodFrom;
+			return (DateTime)detailedDeliveryPeriodFrom;
 		}
 
 		/// <summary>
@@ -305,10 +305,27 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 		/// specifies the item level delivery period (there is also one on document level),
 		/// this will be included in a BillingSpecifiedPeriod element </summary>
 		/// <returns> the end of the delivery period </returns>
-		public virtual DateTime? getDetailedDeliveryPeriodTo()
+		public virtual DateTime getDetailedDeliveryPeriodTo()
 		{
-			return detailedDeliveryPeriodTo;
+			return (DateTime)detailedDeliveryPeriodTo;
 		}
 
-	}
+        public decimal getValue()
+        {
+
+            return getPrice();
+
+        }
+
+        public decimal getBasisQuantity()
+        {
+            return 1m;
+        }
+
+        public string getAdditionalReferencedDocumentID()
+        {
+            return null;
+        }
+
+    }
 }

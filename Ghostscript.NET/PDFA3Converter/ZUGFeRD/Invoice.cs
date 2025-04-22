@@ -23,21 +23,22 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
     /// <summary>
     ///*
     /// An invoice, with fluent setters </summary>
-    /// <seealso cref="IExportableTransaction if you want to implement an interface instead"/>
+    /// <seealso cref="IExportableTransaction"/>
+    /// Use this if you want to implement an interface instead.
     //JAVA TO C# CONVERTER TODO TASK: Most Java annotations will not have direct .NET equivalent attributes:
     //ORIGINAL LINE: @JsonIgnoreProperties(ignoreUnknown = true) public class Invoice implements IExportableTransaction
     public class Invoice : IExportableTransaction
     {
 
         protected internal string documentName = null, documentCode = null, number = null, ownOrganisationFullPlaintextInfo = null, referenceNumber = null, shipToOrganisationID = null, shipToOrganisationName = null, shipToStreet = null, shipToZIP = null, shipToLocation = null, shipToCountry = null, buyerOrderReferencedDocumentID = null, invoiceReferencedDocumentID = null, buyerOrderReferencedDocumentIssueDateTime = null, ownForeignOrganisationID = null, ownOrganisationName = null, currency = null, paymentTermDescription = null;
-        protected internal DateTime? issueDate = null, dueDate = null;
-        protected DateTime? deliveryDate = null;
-        protected internal decimal? totalPrepaidAmount = null;
+        protected internal DateTime issueDate = DateTime.MinValue, dueDate = DateTime.MinValue;
+        protected DateTime deliveryDate = DateTime.MinValue;
+        protected internal decimal totalPrepaidAmount = decimal.MinValue;
         protected internal TradeParty sender = null, recipient = null, deliveryAddress = null;
         //JAVA TO C# CONVERTER TODO TASK: Most Java annotations will not have direct .NET equivalent attributes:
         //ORIGINAL LINE: @JsonDeserialize(contentAs=Item.class) protected java.util.ArrayList<IZUGFeRDExportableItem> ZFItems = null;
@@ -47,8 +48,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         protected internal string contractReferencedDocument = null;
         //protected internal List<FileAttachment> xmlEmbeddedFiles = null;
 
-        protected internal DateTime? detailedDeliveryDateStart = null;
-        protected internal DateTime? detailedDeliveryPeriodEnd = null;
+        protected internal DateTime detailedDeliveryDateStart = DateTime.MinValue;
+        protected internal DateTime detailedDeliveryPeriodEnd = DateTime.MinValue;
 
         //protected internal List<IZUGFeRDAllowanceCharge> Allowances = new List<IZUGFeRDAllowanceCharge>(), Charges = new List<IZUGFeRDAllowanceCharge>(), LogisticsServiceCharges = new List<IZUGFeRDAllowanceCharge>();
         protected internal IZUGFeRDPaymentTerms paymentTerms = null;
@@ -480,7 +481,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             return this;
         }
 
-        public DateTime? getIssueDate()
+        public DateTime getIssueDate()
         {
 
             return issueDate;
@@ -493,7 +494,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             return this;
         }
 
-        public DateTime? getDueDate()
+        public DateTime getDueDate()
         {
 
             return dueDate;
@@ -506,10 +507,10 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             return this;
         }
 
-        public DateTime? getDeliveryDate()
+        public DateTime getDeliveryDate()
         {
 
-            return deliveryDate;
+            return (DateTime)deliveryDate;
 
         }
 
@@ -519,10 +520,10 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             return this;
         }
 
-        public decimal? getTotalPrepaidAmount()
+        public decimal getTotalPrepaidAmount()
         {
 
-            return totalPrepaidAmount;
+            return (decimal)totalPrepaidAmount;
 
         }
 
@@ -607,7 +608,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
             }
 
         */
-        public IZUGFeRDTradeSettlement[]? getTradeSettlement()
+        public IZUGFeRDTradeSettlement[] getTradeSettlement()
         {
 
 
@@ -693,26 +694,26 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         }
 
 
-        /// <summary>
+        /*/// <summary>
         ///*
         /// adds a document level addition to the price </summary>
         /// <seealso cref="Charge"/>
         /// <param name="izac"> the charge to be applied </param>
         /// <returns> fluent setter </returns>
-        /*
+        
             public virtual Invoice addCharge(IZUGFeRDAllowanceCharge izac)
             {
                 Charges.add(izac);
                 return this;
             }
         */
-        /// <summary>
+        /*/// <summary>
         ///*
         /// adds a document level rebate </summary>
         /// <seealso cref="Allowance"/>
         /// <param name="izac"> the allowance to be applied </param>
         /// <returns> fluent setter </returns>
-        /*
+        
             public virtual Invoice addAllowance(IZUGFeRDAllowanceCharge izac)
             {
                 Allowances.add(izac);
@@ -748,14 +749,14 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         }
 
 
-        public DateTime? getDetailedDeliveryPeriodFrom()
+        public DateTime getDetailedDeliveryPeriodFrom()
         {
 
             return detailedDeliveryDateStart;
 
         }
 
-        public DateTime? getDetailedDeliveryPeriodTo()
+        public DateTime getDetailedDeliveryPeriodTo()
         {
 
             return detailedDeliveryPeriodEnd;
@@ -763,8 +764,8 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         }
 
 
-        /// <summary>
         /*
+        /// <summary>
         /// adds a free text paragraph, which will become a includedNote element </summary>
         /// <param name="text"> freeform UTF8 plain text </param>
         /// <returns> fluent setter </returns>
@@ -802,6 +803,46 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         {
             this.specifiedProcuringProjectName = specifiedProcuringProjectName;
             return this;
+        }
+
+        public string getSubjectNote()
+        {
+            return null;
+        }
+
+        public IZUGFeRDTradeSettlementPayment[] getTradeSettlementPayment()
+        {
+            return null;
+        }
+
+        public bool rebateAgreementExists()
+        {
+            return false;
+        }
+
+        public string getShipToOrganisationName()
+        {
+            return null;
+        }
+
+        public string getShipToLocation()
+        {
+            return null;
+        }
+
+        public string getShipToCountry()
+        {
+            return null;
+        }
+
+        public string getSellerOrderReferencedDocumentID()
+        {
+            return null;
+        }
+
+        public string getBuyerOrderReferencedDocumentID()
+        {
+            return null;
         }
     }
 }

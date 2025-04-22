@@ -51,13 +51,13 @@ namespace Ghostscript.NET.Samples
         private void Instance1(object target)
         {
             // export pdf pages to images
-            Process(@"E:\mc-1.pdf", @"E:\_pdf_out\a_test-%03d.png", 1, 100);
+            Process(@"E:\gss_test\test.pdf", @"E:\gss_test\output\a_test-%03d.png", 1, 100);
         }
 
         private void Instance2(object target)
         {
             // export pdf pages to images
-            Process(@"E:\mc-2.pdf", @"E:\_pdf_out\b_test-%03d.png", 1, 100);
+            Process(@"E:\gss_test\test.pdf", @"E:\gss_test\output\b_test-%03d.png", 1, 100);
         }
 
         private string[] CreateTestArgs(string inputPath, string outputPath, int pageFrom, int pageTo)

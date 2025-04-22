@@ -20,9 +20,10 @@
 // For commercial licensing, see <https://www.artifex.com/> or contact
 // Artifex Software, Inc., 39 Mesa Street, Suite 108A, San Francisco,
 // CA 94129, USA, for further information.
+using System;
 using System.Collections.Generic;
 
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 
     public class TransactionCalculator
@@ -44,7 +45,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
         /// <returns> prepaid amount </returns>
         protected internal virtual decimal getTotalPrepaid()
         {
-            if (trans.getTotalPrepaidAmount() == null)
+            if (trans.getTotalPrepaidAmount() == decimal.MinValue)
             {
                 return decimal.Zero;
             }
@@ -73,13 +74,13 @@ namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
 
         }
 
-        /// <summary>
+        /*/// <summary>
         ///*
         /// returns total of charges for this tax rate </summary>
         /// <param name="percent"> a specific rate, or null for any rate </param>
         /// <returns> the total amount </returns>
 
-        /*
+        
         protected internal virtual decimal getChargesForPercent(decimal percent)
         {
             IZUGFeRDAllowanceCharge[] charges = trans.getZFCharges();

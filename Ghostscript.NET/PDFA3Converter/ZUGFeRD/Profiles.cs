@@ -22,7 +22,7 @@
 // CA 94129, USA, for further information.
 using System;
 using System.Collections.Generic;
-namespace Ghostscript.NET.PDFA3Converter.Samples.ZUGFeRD
+namespace Ghostscript.NET.PDFA3Converter.ZUGFeRD
 {
 
 	public class Profiles

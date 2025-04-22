@@ -31,7 +31,6 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualBasic;
 using Ghostscript.NET;
 using Ghostscript.NET.Processor;
 using System.Net.Http.Headers;
@@ -44,24 +43,43 @@ namespace Ghostscript.NET.PDFA3Converter
     /// </summary>
     public class PDFA3Converter
     {
-        private readonly string? RGBICCFilePath = null;
-        private readonly string? PostScriptBigScriptPath = null;  
+        private readonly string RGBICCFilePath = null;
+        private readonly string PostScriptBigScriptPath = null;  
 
-        protected string? GSDLLPath = null;
-        protected string? xmlInvoicePath = null;
-        protected string? ZUGFeRDVersion = null;
-        protected string? ZUGFeRDProfile = null;
+        protected string GSDLLPath = null;
+        protected string xmlInvoicePath = null;
+        protected string ZUGFeRDVersion = null;
+        protected string ZUGFeRDProfile = null;
 
 
         /// <summary>
         /// The constructor of the class accepts both input and output path for PDF conversion.
         /// </summary>
-        /// <param name="sourcePDFPath">PDF input path </param>
-        /// <param name="targetPDFPath">PDF-A/3 output path</param>        
+        /// <param name="gsdll">PDF input path </param>
+  
         public PDFA3Converter(String gsdll)
         {
             GSDLLPath = gsdll;
+            string rgcIccResourceName = "Ghostscript.NET.PDFA3Converter.assets.rgb.icc"; // Adjust to match your project structure
             RGBICCFilePath = System.IO.Path.Combine(Path.GetTempPath(), "rgb.icc");
+            // Get the current assembly
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            // Open resource stream
+            using (Stream resourceStream = assembly.GetManifestResourceStream(rgcIccResourceName))
+            {
+                if (resourceStream == null)
+                {
+                    Console.WriteLine("Resource not found: " + rgcIccResourceName);
+                    return;
+                }
+
+                // Write to temp file
+                using (FileStream fileStream = new FileStream(RGBICCFilePath, FileMode.Create, FileAccess.Write))
+                {
+                    resourceStream.CopyTo(fileStream);
+                }
+            }
             PostScriptBigScriptPath = System.IO.Path.Combine(Path.GetTempPath(), "pdfconvert.ps");
         }
 
@@ -175,6 +193,7 @@ namespace Ghostscript.NET.PDFA3Converter
             }
             catch (IOException generatedExceptionName)
             {
+                Console.WriteLine(generatedExceptionName.Message);
                 // handle the exception your way
                 return true;
             }
@@ -195,6 +214,7 @@ namespace Ghostscript.NET.PDFA3Converter
         /// <param name="sourcePDFPath">PDF input path </param>
         /// <param name="targetPDFPath">PDF-A/3 output path</param>  
         /// <returns>True if successful, false otherwise</returns>
+        /// </summary>
         public bool ConvertToPDFA3(string sourcePDFPath, string targetPDFPath)
         {
             // based on https://github.com/jhabjan/Ghostscript.NET/blob/master/Ghostscript.NET.Samples/Samples/ProcessorSample1.cs
@@ -215,7 +235,8 @@ namespace Ghostscript.NET.PDFA3Converter
 
             if (File.Exists(targetPDFPath))
             {
-                if (FileSystem.GetAttr(targetPDFPath) == Constants.vbReadOnly)
+                FileAttributes attributes = File.GetAttributes(targetPDFPath);
+                if ((attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
                 {
                     throw new UnauthorizedAccessException(targetPDFPath);
                 }
@@ -243,7 +264,7 @@ namespace Ghostscript.NET.PDFA3Converter
                 throw new Exception("Could not prepare postscript file");
             }
 
-            GhostscriptVersionInfo? gsVersion = new GhostscriptVersionInfo(GSDLLPath);
+            GhostscriptVersionInfo gsVersion = new GhostscriptVersionInfo(GSDLLPath);
             GhostscriptLibrary ghostscriptLibrary = new GhostscriptLibrary(gsVersion);
             GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
 
@@ -255,6 +276,7 @@ namespace Ghostscript.NET.PDFA3Converter
             switches.Add("-sColorConversionStrategy=RGB"); // necessary for PDF/A conversion
             switches.Add("-sDEVICE=pdfwrite"); // Device for rasterization. Mandatory
             switches.Add($"-o{targetPDFPath}"); // Output path
+            switches.Add("-dNOSAFER"); // Disable safe mode
             switches.Add("-dPDFACompatibilityPolicy=1"); // convert to A/3 part 2/3
             switches.Add("-dRenderIntent=3"); // convert to A/3 part 3/3            
             switches.Add(PostScriptBigScriptPath); // PDFMark program file that shall be interpreted.
