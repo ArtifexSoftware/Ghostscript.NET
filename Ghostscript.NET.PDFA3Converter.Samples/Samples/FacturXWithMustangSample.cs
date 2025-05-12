@@ -46,7 +46,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             zf2p.generateXML(i);
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
 
-            string outfilename = "factur-x.xml";
+            string outfilename = "my-factur-x-mustang-sample.xml";
             File.WriteAllBytes(outfilename, zf2p.getXML());
 
             string gsFilePath = @"C:\Program Files\gs\gs10.05.0\bin\gsdll64.dll";
@@ -59,7 +59,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outfilename);
             
-            converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-mustang.pdf");
+            converter.ConvertToPDFA3(@"Samples/blank.pdf", @"sample-invoice-mustang.pdf");
             System.IO.File.Delete(outfilename);
         }
     }

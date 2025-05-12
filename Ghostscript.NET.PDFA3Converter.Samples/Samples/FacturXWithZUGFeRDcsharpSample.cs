@@ -38,7 +38,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
         {
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Running FacturXWithZUGFeRDcsharpSample");
-            string outFilename = "factur-x.xml";
+            string outFilename = "my-factur-x-zugferd-sample.xml";
             InvoiceDescriptor invoice = CreateInvoice();
             invoice.Save(outFilename, ZUGFeRDVersion.Version22, s2industries.ZUGFeRD.Profile.Comfort);
 
@@ -49,7 +49,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             converter.SetZUGFeRDProfile("EN 16931");
             converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outFilename);
-            converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-zugferdcsharp.pdf");
+            converter.ConvertToPDFA3(@"Samples/blank.pdf", @"sample-invoice-zugferd.pdf");
 			System.IO.File.Delete(outFilename);
 		}
 
