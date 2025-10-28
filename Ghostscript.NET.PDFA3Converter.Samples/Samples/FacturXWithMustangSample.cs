@@ -49,7 +49,7 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             string outfilename = "my-factur-x-mustang-sample.xml";
             File.WriteAllBytes(outfilename, zf2p.getXML());
 
-            string gsFilePath = @"C:\Program Files\gs\gs10.05.0\bin\gsdll64.dll";
+            string gsFilePath = @"C:\Program Files\gs\gs10.06.0\bin\gsdll64.dll";
             Console.WriteLine("Using Ghostscript filepath: " + gsFilePath);
             Console.WriteLine("Ensure this is the filepath to your installed Ghostscript!");
 

@@ -24,9 +24,12 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using Microsoft.Win32;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Ghostscript.NET
 {
@@ -152,6 +155,29 @@ namespace Ghostscript.NET
         /// <returns>A GhostscriptVersionInfo list of the Ghostscript installations found on the local system.</returns>
         public static List<GhostscriptVersionInfo> GetInstalledVersions(GhostscriptLicense licenseType)
         {
+            // Check platform and use appropriate detection method
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return GetInstalledVersionsWindows(licenseType);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                return GetInstalledVersionsLinux(licenseType);
+            }
+            else
+            {
+                // For other platforms, return empty list
+                return new List<GhostscriptVersionInfo>();
+            }
+        }
+
+        /// <summary>
+        /// Gets installed Ghostscript versions on Windows systems.
+        /// </summary>
+        /// <param name="licenseType">Search for the specific Ghostscript version based on the Ghostscript license.</param>
+        /// <returns>List of GhostscriptVersionInfo objects.</returns>
+        public static List<GhostscriptVersionInfo> GetInstalledVersionsWindows(GhostscriptLicense licenseType)
+        {
             // create a search list instance
             List<GhostscriptLicense> licenses = new List<GhostscriptLicense>();
 
@@ -261,6 +287,215 @@ namespace Ghostscript.NET
             }
 
             return versions;
+        }
+
+        #endregion
+
+        #region GetInstalledVersions - Linux
+
+        /// <summary>
+        /// Gets installed Ghostscript versions on Linux systems.
+        /// </summary>
+        /// <param name="licenseType">Search for the specific Ghostscript version based on the Ghostscript license.</param>
+        /// <returns>List of GhostscriptVersionInfo objects.</returns>
+        public static List<GhostscriptVersionInfo> GetInstalledVersionsLinux(GhostscriptLicense licenseType)
+        {
+            List<GhostscriptVersionInfo> versions = new List<GhostscriptVersionInfo>();
+
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                return versions;
+            }
+
+            // Search for libgs.so in common locations
+            string[] searchPaths = CrossPlatformNativeLibraryHelper.GetCommonInstallationPaths();
+
+            foreach (string basePath in searchPaths)
+            {
+                if (Directory.Exists(basePath))
+                {
+                    // Look for libgs.so directly
+                    string libPath = Path.Combine(basePath, "libgs.so.10");
+                    if (File.Exists(libPath))
+                    {
+                        try
+                        {
+                            // Try to get version information from the library
+                            Version version = GetVersionFromLinuxLibrary(libPath);
+                            if (version != null)
+                            {
+                                versions.Add(new GhostscriptVersionInfo(version, libPath, basePath, licenseType));
+                            }
+                            else
+                            {
+                                // If we can't get version info, create a generic version
+                                versions.Add(new GhostscriptVersionInfo(new Version(0, 0), libPath, basePath, licenseType));
+                            }
+                        }
+                        catch
+                        {
+                            // If we can't get version info, create a generic version
+                            versions.Add(new GhostscriptVersionInfo(new Version(0, 0), libPath, basePath, licenseType));
+                        }
+                    }
+                    else
+                    {
+                        libPath = Path.Combine(basePath, "libgs.so");
+                        if (File.Exists(libPath))
+                        {
+                            try
+                            {
+                                // Try to get version information from the library
+                                Version version = GetVersionFromLinuxLibrary(libPath);
+                                if (version != null)
+                                {
+                                    versions.Add(new GhostscriptVersionInfo(version, libPath, basePath, licenseType));
+                                }
+                                else
+                                {
+                                    // If we can't get version info, create a generic version
+                                    versions.Add(new GhostscriptVersionInfo(new Version(0, 0), libPath, basePath, licenseType));
+                                }
+                            }
+                            catch
+                            {
+                                // If we can't get version info, create a generic version
+                                versions.Add(new GhostscriptVersionInfo(new Version(0, 0), libPath, basePath, licenseType));
+                            }
+                        }
+                    }
+
+                    // Look in subdirectories
+                    try
+                    {
+                        string[] subdirs = Directory.GetDirectories(basePath);
+                        foreach (string subdir in subdirs)
+                        {
+                            string[] possiblePaths = {
+                                Path.Combine(subdir, "lib", "libgs.so.10"),
+                                Path.Combine(subdir, "lib64", "libgs.so.10"),
+                                Path.Combine(subdir, "bin", "libgs.so.10"),
+                                Path.Combine(subdir, "lib", "libgs.so"),
+                                Path.Combine(subdir, "lib64", "libgs.so"),
+                                Path.Combine(subdir, "bin", "libgs.so")
+                            };
+
+                            foreach (string possiblePath in possiblePaths)
+                            {
+                                if (File.Exists(possiblePath))
+                                {
+                                    try
+                                    {
+                                        Version version = GetVersionFromLinuxLibrary(possiblePath);
+                                        if (version != null)
+                                        {
+                                            versions.Add(new GhostscriptVersionInfo(version, possiblePath, subdir, licenseType));
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        versions.Add(new GhostscriptVersionInfo(new Version(0, 0), possiblePath, subdir, licenseType));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // Ignore directory access errors
+                    }
+                }
+            }
+
+            return versions;
+        }
+
+        #endregion
+
+        #region GetVersionFromLinuxLibrary
+
+        /// <summary>
+        /// Attempts to get version information from a Linux library.
+        /// </summary>
+        /// <param name="libraryPath">Path to the library file.</param>
+        /// <returns>Version information or null if not found.</returns>
+        private static Version GetVersionFromLinuxLibrary(string libraryPath)
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = "readlink",
+                    Arguments = $"-f \"{libraryPath}\"",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                var process = Process.Start(psi);
+                if (process == null)
+                    return null;
+
+                string output = process.StandardOutput.ReadToEnd().Trim();
+                process.WaitForExit();
+
+                int exitCode = process.ExitCode;
+                process.Dispose();
+
+                if (exitCode == 0 && !string.IsNullOrWhiteSpace(output))
+                {
+                    return ParseVersionFromString(output);
+                }
+            }
+            catch
+            {
+                // If all methods fail, return null
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Parses version information from a string.
+        /// </summary>
+        private static Version ParseVersionFromString(string input)
+        {
+            try
+            {
+                // Look for version patterns like "9.54.0", "10.0.0", etc.
+                var versionMatch = System.Text.RegularExpressions.Regex.Match(input, @"(\d+)\.(\d+)\.(\d+)");
+                if (versionMatch.Success)
+                {
+                    int major = int.Parse(versionMatch.Groups[1].Value);
+                    int minor = int.Parse(versionMatch.Groups[2].Value);
+                    int build = int.Parse(versionMatch.Groups[3].Value);
+                    return new Version(major, minor, build);
+                }
+
+                // Look for simpler version patterns like "9.54", "10.0"
+                versionMatch = System.Text.RegularExpressions.Regex.Match(input, @"(\d+)\.(\d+)");
+                if (versionMatch.Success)
+                {
+                    int major = int.Parse(versionMatch.Groups[1].Value);
+                    int minor = int.Parse(versionMatch.Groups[2].Value);
+                    return new Version(major, minor, 0);
+                }
+
+                // Look for single number versions like "9", "10"
+                versionMatch = System.Text.RegularExpressions.Regex.Match(input, @"(\d+)");
+                if (versionMatch.Success)
+                {
+                    int major = int.Parse(versionMatch.Groups[1].Value);
+                    return new Version(major, 0, 0);
+                }
+            }
+            catch
+            {
+                // Version parsing failed
+            }
+
+            return null;
         }
 
         #endregion
