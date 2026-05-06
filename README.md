@@ -1,117 +1,428 @@
-﻿**Ghostscript.NET** - (written in C#) is the most completed managed wrapper library around the Ghostscript library (32-bit & 64-bit), an interpreter for the PostScript language, PDF, related software and documentation.
+# Ghostscript.NET
 
-**Note**: This project currently has only been tested with versions of Ghostscript < 10, see [release versions](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases).
+[![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://ghostscript.readthedocs.io)
+[![NuGet](https://img.shields.io/nuget/v/Ghostscript.NET)](https://www.nuget.org/packages/Ghostscript.NET/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Ghostscript.NET)](https://www.nuget.org/packages/Ghostscript.NET/)
+[![License: AGPL | Commercial](https://img.shields.io/badge/license-AGPL%20%7C%20Commercial-orange)](https://www.gnu.org/licenses/agpl-3.0.html)
+[![Target: .NET Standard 2.0](https://img.shields.io/badge/.NET-Standard%202.0-blue)](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
+[![Discord](https://img.shields.io/discord/770681584617652264?color=6A7EC2&logo=discord&logoColor=ffffff)](https://artifex.com/discord/artifex/)
 
-[**NuGet: PM> Install-Package Ghostscript.NET**](http://nuget.org/packages/Ghostscript.NET/)
+**Ghostscript.NET** is a managed C# wrapper for the [Ghostscript](https://ghostscript.com) native library (`gsdll64.dll` / `libgs.so`). It lets you rasterize, convert, and process PDF, PostScript, and EPS files from any .NET application without shelling out to a command-line process.
 
-**Contains**
- * GhostscriptViewer - View PDF, EPS or multi-page PostScript files on the screen
- * GhostscriptRasterizer - Rasterize PDF, EPS or multi-page PostScript files to any common image format.
- * GhostscriptProcessor - An easy way to call a Ghostscript library with a custom arguments / switches.
- * GhostscriptInterpreter - The PostScript interpreter.
-
-**Other features**
- * allows you to rasterize files in memory without storing the output to disk.
- * supports zoom-in and zoom-out.
- * supports progressive update.
- * allows you to run multiple Ghostscript instances simultaneously within a single process.
- * compatible with 32-bit and 64-bit Ghostscript native library.
-
-**Latest changes - 2021-03-09 - v.1.2.3.**
-* fixed GhostscriptRasterizer/GhostscriptViewer and Ghostscript v.9.50+ compatibility issues.
-
-**Latest changes - 2021-02-04 - v.1.2.2.**
- * fixed Ghostscript v.9.26 + (all later versions) compatibility.
- * fixed problem when opening path/file that contains non ASCII characters.
- * fixed "Arithmetic operation resulted in an overflow" when using multithread instance.
- * changed Y and Y DPI settings to match GhostscriptViewer.
- * fixed CurrentPage -> TotalPages logging.
- * fixed watermark transparency bug for PDF.
- 
-**Samples built on the top of the Ghostscript.NET library**
-
-Direct postscript interpretation via Ghostscript.NET:
-
-![Ghostscript.NET.Display](https://i.ibb.co/Fnk8rFP/ss-jj-1899.png)
-
-Ghostscript.NET.Viewer (supports viewing of the PDF, EPS and multi-page PS files):
-
-![Ghostscript.NET.Viewer](http://a.fsdn.com/con/app/proj/ghostscriptnet/screenshots/gs-net-render.png)
-
-# PDF A/3 Conversion Using Ghostscript.NET.PDFA3Converter
-
-The `Ghostscript.NET.PDFA3Converter` extension of the Ghostscript.NET library simplifies converting existing PDF files into PDF/A-3 format. This format is particularly useful for embedding XML-based representations of invoices, such as those used in **XRechnung** and **Factur-X** standards.
-
-**_NOTE:_** Please ensure to tag [stephanstapel](https://github.com/stephanstapel) with any [issues](https://github.com/ArtifexSoftware/Ghostscript.NET/issues) regarding the PDF A/3 converter.
-
-## Key Features
-- Supports the embedding of XML-based invoices into PDF/A-3 format.
-- Includes necessary ICC profiles and pdfMark templates for compliance with PDF/A-3 standards.
-- Designed to support electronic invoicing initiatives such as **XRechnung** and **Factur-X**.
-
-## Basic PDF A/3 Conversion
-
-To convert an existing PDF file to PDF/A-3, the following code snippet demonstrates the process:
-
-```csharp
-PDFA3Converter converter = new PDFA3Converter(@"%PROGRAM FILES%\gs\gs9.56.1\bin\gsdll64.dll"); // Specify the Ghostscript DLL path
-converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-pdfa3.pdf"); // Convert input PDF to PDF/A-3
+```powershell
+Install-Package Ghostscript.NET
 ```
 
-This method will generate a plain PDF/A-3 file without any embedded XML invoice.
+> **Ghostscript version compatibility:** Ghostscript.NET has been tested with Ghostscript versions up to 9.x. Compatibility with Ghostscript 10+ is not yet fully verified. See [ghostpdl-downloads](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases) for available Ghostscript releases, and install the native library separately before using this package.
 
-## Embedding XML Invoices (ZUGFeRD / Factur-X)
-The primary use case for PDF/A-3 in Europe involves embedding XML invoices within a PDF document, providing both machine-readable (XML) and human-readable (PDF) representations. This includes initiatives such as [XRechnung](https://de.wikipedia.org/wiki/XRechnung) and [Factur-X](http://fnfe-mpe.org/factur-x/factur-x_en/).
+---
 
-To understand how the Ghostscript.NET.PDFA3Converter extension works, the Ghostscript.NET.PDFA3Converter.Samples project includes a couple of samples along with a sample implementation of a ZUGFeRD generator, generated out of the [Mustang project](https://www.mustangproject.org). More ZUGFeRD/ XRechnung generators are available, for example [ZUGFeRD-csharp](https://github.com/stephanstapel/ZUGFeRD-csharp).
+## Contents
 
-### Step 1: Generate the XML Invoice
-You can generate an XML invoice using either the Mustang sample implementation or the ZUGFeRD-csharp library.
+- [Why Ghostscript.NET](#why-ghostscriptnet)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick start](#quick-start)
+- [Key capabilities](#key-capabilities)
+- [Code examples](#code-examples)
+- [API overview](#api-overview)
+- [Finding the Ghostscript native library](#finding-the-ghostscript-native-library)
+- [PDF/A-3 conversion](#pdfa-3-conversion)
+- [Documentation](#documentation)
+- [License](#license)
 
-In order to generate the xml invoice, you can use either the Mustang sample implementation like this:
+---
 
-```csharp
-Invoice i = (new Invoice()).setDueDate(DateTime.Now).setIssueDate(DateTime.Now).setDeliveryDate(DateTime.Now).setSender((new TradeParty("Test company", "Test Street 1", "55232", "Test City", "DE")).addTaxID("DE4711").addVATID("DE0815").setContact(new Contact("Hans Test", "+49123456789", "test@example.org")).addBankDetails(new BankDetails("DE12500105170648489890", "COBADEFXXX"))).setRecipient(new TradeParty("Franz Müller", "Test Steet 12", "55232", "Entenhausen", "DE")).setReferenceNumber("991-01484-64").setNumber("123").
-        addItem(new Item(new Product("Test product", "", "C62", 19m), 1.0m, 1.0m));
+## Why Ghostscript.NET
 
-ZUGFeRD2PullProvider zf2p = new ZUGFeRD2PullProvider();
-zf2p.setProfile(Profiles.getByName("XRechnung"));
-zf2p.generateXML(i);
-System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+- **In-process** — calls the Ghostscript library directly via P/Invoke; no child process, no shell, no temp-file plumbing
+- **High-fidelity rendering** — uses the same Ghostscript engine that powers commercial print workflows
+- **Memory-based rasterization** — render pages to `SKBitmap` (via SkiaSharp) without writing to disk
+- **Multi-instance** — run multiple Ghostscript instances simultaneously within a single .NET process
+- **Cross-platform** — targets .NET Standard 2.0; works on Windows and Linux
+- **32-bit and 64-bit** — auto-detects and loads the matching native library
+- **PDF/A-3 + ZUGFeRD / Factur-X** — embed XML invoices into PDF/A-3 files for European e-invoicing standards
 
-string outfilename = "factur-x.xml";
-File.WriteAllBytes(outfilename, zf2p.getXML());
+---
+
+## Requirements
+
+| Requirement | Details |
+|---|---|
+| .NET | .NET Standard 2.0 or any compatible runtime (.NET 6, 7, 8, Framework 4.6.1+) |
+| Ghostscript native library | Must be installed separately on the host machine |
+| Ghostscript version | Tested with versions ≤ 9.x; Ghostscript 10+ compatibility not fully verified |
+| OS | Windows (32-bit and 64-bit), Linux |
+| SkiaSharp | Included as a NuGet dependency; provides `SKBitmap` for rasterized output |
+
+### Installing the Ghostscript native library
+
+**Windows**
+
+[Download and install the Ghostscript installer](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases). The installer registers the DLL path in the Windows registry so `GhostscriptVersionInfo.GetLastInstalledVersion()` can find it automatically.
+
+**Linux (Debian/Ubuntu)**
+
+```bash
+sudo apt-get install ghostscript
+# Installs libgs.so to /usr/lib or /usr/lib/x86_64-linux-gnu/
 ```
 
-Using ZUGFeRD-csharp:
+---
 
-```csharp
-string outFilename = "factur-x.xml";
-InvoiceDescriptor invoice = CreateInvoice(); // please see the sample project for details on how the invoice structure is created
-invoice.Save(outFilename, ZUGFeRDVersion.Version23, s2industries.ZUGFeRD.Profile.Comfort);
+## Installation
+
+**Package Manager Console**
+
+```powershell
+Install-Package Ghostscript.NET
 ```
 
-Both examples output the XML invoice as ```factur-x.xml```.
+**.NET CLI**
 
-### Step 2: Embed the XML Invoice into the PDF/A-3 File
+```bash
+dotnet add package Ghostscript.NET
+```
 
-Once the XML invoice is generated, it can be embedded into a PDF/A-3 file using the ```PDFA3Converter``` class. The converter also supports tagging the file with the correct ZUGFeRD profile and version:
+**PackageReference**
+
+```xml
+<PackageReference Include="Ghostscript.NET" Version="1.3.3" />
+```
+
+---
+
+## Quick start
+
+**Rasterize all pages of a PDF to PNG files**
 
 ```csharp
-PDFA3Converter converter = new PDFA3Converter(@"%PROGRAM FILES%\gs9.56.1\bin\gsdll64.dll");
-converter.SetZUGFeRDProfile(...);
+using Ghostscript.NET;
+using Ghostscript.NET.Rasterizer;
+using SkiaSharp;
+
+// Auto-detect the installed Ghostscript library
+var version = GhostscriptVersionInfo.GetLastInstalledVersion();
+
+using var rasterizer = new GhostscriptRasterizer();
+rasterizer.Open("input.pdf", version, false);
+
+for (int page = 1; page <= rasterizer.PageCount; page++)
+{
+    SKBitmap image = rasterizer.GetPage(dpi: 150, pageNumber: page);
+    using var stream = File.OpenWrite($"page_{page:D3}.png");
+    image.Encode(stream, SKEncodedImageFormat.Png, 100);
+}
+```
+
+**Convert a PDF to PDF using GhostscriptProcessor**
+
+```csharp
+using Ghostscript.NET.Processor;
+
+using var processor = new GhostscriptProcessor();
+processor.Process(new[]
+{
+    "-dBATCH", "-dNOPAUSE", "-dNOSAFER",
+    "-sDEVICE=pdfwrite",
+    "-sOutputFile=output.pdf",
+    "input.pdf"
+});
+```
+
+---
+
+## Key capabilities
+
+| Area | Description |
+|---|---|
+| **Page rasterization** | Render any page of a PDF, PS, or EPS file to an `SKBitmap` at any DPI |
+| **Image export** | Save pages as PNG, JPEG, TIFF, BMP, or any SkiaSharp-supported format |
+| **In-memory rendering** | Rasterize without writing intermediate files to disk |
+| **PDF conversion** | Convert PS/EPS to PDF, compress PDFs, apply `pdfwrite` device settings |
+| **Custom switches** | Pass any Ghostscript command-line switch directly via `CustomSwitches` or `Process(args[])` |
+| **Progress events** | `GhostscriptProcessor` raises `Started`, `Processing` (per-page), `Error`, and `Completed` events |
+| **Multi-instance** | Multiple `GhostscriptProcessor` or `GhostscriptRasterizer` instances can run in parallel |
+| **Stdin/stdout capture** | Capture or redirect Ghostscript stdout/stderr via `GhostscriptStdIO` callbacks |
+| **Version detection** | Auto-discovers installed Ghostscript on Windows (registry) and Linux (common library paths) |
+| **PDF/A-3** | Convert PDFs to PDF/A-3b and embed XML invoices (XRechnung, Factur-X / ZUGFeRD) |
+| **Anti-aliasing** | Control `GraphicsAlphaBits` and `TextAlphaBits` for rendering quality |
+| **EPS cropping** | `EPSClip` property for correct EPS bounding box clipping |
+| **Zoom** | `GhostscriptViewer` supports zoom-in / zoom-out and progressive page updates |
+
+---
+
+## Code examples
+
+### Rasterize a single page to `SKBitmap`
+
+```csharp
+using Ghostscript.NET;
+using Ghostscript.NET.Rasterizer;
+
+var version = GhostscriptVersionInfo.GetLastInstalledVersion();
+
+using var rasterizer = new GhostscriptRasterizer();
+rasterizer.Open("input.pdf", version, false);
+
+// Page numbers are 1-based
+SKBitmap bitmap = rasterizer.GetPage(dpi: 300, pageNumber: 1);
+```
+
+### Rasterize with anti-aliasing and custom switches
+
+```csharp
+using Ghostscript.NET;
+using Ghostscript.NET.Rasterizer;
+
+var version = GhostscriptVersionInfo.GetLastInstalledVersion();
+
+using var rasterizer = new GhostscriptRasterizer();
+rasterizer.GraphicsAlphaBits = 4;   // 1, 2, or 4
+rasterizer.TextAlphaBits = 4;
+rasterizer.CustomSwitches.Add("-dUseCropBox");
+
+rasterizer.Open("input.pdf", version, false);
+
+for (int i = 1; i <= rasterizer.PageCount; i++)
+{
+    SKBitmap page = rasterizer.GetPage(dpi: 150, pageNumber: i);
+    // use page...
+}
+```
+
+### Rasterize from a stream (no temp file)
+
+```csharp
+using Ghostscript.NET;
+using Ghostscript.NET.Rasterizer;
+
+var version = GhostscriptVersionInfo.GetLastInstalledVersion();
+
+using var stream = File.OpenRead("input.pdf");
+using var rasterizer = new GhostscriptRasterizer();
+rasterizer.Open(stream, version, false);
+
+SKBitmap bitmap = rasterizer.GetPage(dpi: 150, pageNumber: 1);
+```
+
+### Convert PDF to PNG files using `GhostscriptPngDevice`
+
+```csharp
+using Ghostscript.NET.OutputDevices;
+
+var device = new GhostscriptPngDevice(GhostscriptPngDeviceType.Png16m);
+device.GraphicsAlphaBits = GhostscriptImageDeviceAlphaBits.V_4;
+device.TextAlphaBits    = GhostscriptImageDeviceAlphaBits.V_4;
+device.ResolutionXY     = new GhostscriptImageDeviceResolution(300, 300);
+device.InputFiles.Add("input.pdf");
+device.Pdf.FirstPage    = 1;
+device.Pdf.LastPage     = 5;
+device.OutputPath       = @"output\page_%03d.png";
+device.Process();
+```
+
+### Convert PDF to JPEG
+
+```csharp
+using Ghostscript.NET.OutputDevices;
+
+var device = new GhostscriptJpegDevice(GhostscriptJpegDeviceType.Jpeg);
+device.GraphicsAlphaBits = GhostscriptImageDeviceAlphaBits.V_4;
+device.TextAlphaBits    = GhostscriptImageDeviceAlphaBits.V_4;
+device.ResolutionXY     = new GhostscriptImageDeviceResolution(150, 150);
+device.JpegQuality      = 85;
+device.InputFiles.Add("input.pdf");
+device.OutputPath       = @"output\page_%03d.jpg";
+device.Process();
+```
+
+### Run with custom arguments and capture output
+
+```csharp
+using Ghostscript.NET;
+using Ghostscript.NET.Processor;
+
+public class MyStdIO : GhostscriptStdIO
+{
+    public override void StdIn(out string input, int count) => input = string.Empty;
+    public override void StdOut(string output) => Console.Write(output);
+    public override void StdError(string error) => Console.Error.Write(error);
+}
+
+using var processor = new GhostscriptProcessor();
+processor.Processing += (sender, e) =>
+    Console.WriteLine($"Processing page {e.CurrentPage} of {e.TotalPages}");
+processor.Error += (sender, e) =>
+    Console.Error.WriteLine($"Error: {e.Message}");
+
+processor.Process(new[]
+{
+    "-dBATCH", "-dNOPAUSE",
+    "-sDEVICE=pdfwrite",
+    "-dPDFSETTINGS=/ebook",       // compress for screen/ebook
+    "-sOutputFile=compressed.pdf",
+    "input.pdf"
+}, new MyStdIO());
+```
+
+### Specify the Ghostscript DLL explicitly
+
+```csharp
+using Ghostscript.NET;
+using Ghostscript.NET.Rasterizer;
+
+// Point directly to a specific DLL — useful when Ghostscript is not installed system-wide
+var version = new GhostscriptVersionInfo(@"C:\gs\gs9.56.1\bin\gsdll64.dll");
+
+using var rasterizer = new GhostscriptRasterizer();
+rasterizer.Open("input.pdf", version, false);
+```
+
+### Load the DLL from memory (embedded resource)
+
+```csharp
+using Ghostscript.NET;
+using Ghostscript.NET.Rasterizer;
+
+byte[] dllBytes = File.ReadAllBytes(@"C:\gs\gs9.56.1\bin\gsdll64.dll");
+
+using var rasterizer = new GhostscriptRasterizer();
+rasterizer.Open("input.pdf", dllBytes);
+```
+
+---
+
+## API overview
+
+### Core classes
+
+| Class | Namespace | Purpose |
+|---|---|---|
+| `GhostscriptRasterizer` | `Ghostscript.NET.Rasterizer` | Render PDF/PS/EPS pages to `SKBitmap` |
+| `GhostscriptProcessor` | `Ghostscript.NET.Processor` | Run Ghostscript with any argument array; exposes progress events |
+| `GhostscriptViewer` | `Ghostscript.NET.Viewer` | Interactive viewer with zoom and progressive rendering |
+| `GhostscriptVersionInfo` | `Ghostscript.NET` | Discover installed Ghostscript versions; specify DLL path |
+| `GhostscriptLibrary` | `Ghostscript.NET` | Low-level native library loader and P/Invoke surface |
+| `GhostscriptStdIO` | `Ghostscript.NET` | Abstract base class for stdin/stdout/stderr callbacks |
+| `GhostscriptPngDevice` | `Ghostscript.NET.OutputDevices` | Typed device for PNG output with all PNG switches |
+| `GhostscriptJpegDevice` | `Ghostscript.NET.OutputDevices` | Typed device for JPEG output with quality and DPI settings |
+| `PDFA3Converter` | `Ghostscript.NET` | Convert PDF to PDF/A-3b; embed XML invoices (ZUGFeRD / Factur-X) |
+
+### `GhostscriptRasterizer` key members
+
+| Member | Type | Description |
+|---|---|---|
+| `Open(string path)` | Method | Open a file; auto-detects installed Ghostscript |
+| `Open(string path, GhostscriptVersionInfo, bool fromMemory)` | Method | Open with explicit version info |
+| `Open(Stream stream, ...)` | Method | Open from a stream; no temp file written to disk |
+| `Open(string path, byte[] library)` | Method | Open with DLL loaded from a byte array |
+| `GetPage(int dpi, int pageNumber)` | Method | Render page to `SKBitmap`; pages are **1-based** |
+| `PageCount` | Property | Total number of pages in the open document |
+| `GraphicsAlphaBits` | Property | Anti-aliasing for graphics: 1, 2, or 4 |
+| `TextAlphaBits` | Property | Anti-aliasing for text: 1, 2, or 4 |
+| `EPSClip` | Property | Apply EPS bounding box clip when rasterizing EPS files |
+| `CustomSwitches` | Property | `List<string>` of additional Ghostscript switches |
+| `Close()` | Method | Release the open document |
+| `Dispose()` | Method | Release all resources including the native library instance |
+
+### `GhostscriptProcessor` key members
+
+| Member | Type | Description |
+|---|---|---|
+| `Process(string[] args)` | Method | Run Ghostscript with a raw argument array |
+| `Process(GhostscriptDevice device)` | Method | Run using a typed device object |
+| `Process(string[] args, GhostscriptStdIO callback)` | Method | Run with stdout/stderr capture |
+| `StartProcessing(...)` | Method | Alias for `Process`; included for API compatibility |
+| `StopProcessing()` | Method | Signal Ghostscript to abort the current job |
+| `IsRunning` | Property | `true` while a job is in progress |
+| `IsStopping` | Property | `true` if `StopProcessing()` has been called but the job hasn't exited yet |
+| `Started` | Event | Raised when processing begins |
+| `Processing` | Event | Raised once per page; `args.CurrentPage`, `args.TotalPages` |
+| `Error` | Event | Raised on Ghostscript error output; `args.Message` |
+| `Completed` | Event | Raised when processing finishes (success or error) |
+
+### `GhostscriptVersionInfo` key members
+
+| Member | Type | Description |
+|---|---|---|
+| `GetLastInstalledVersion()` | Static method | Returns the highest-version Ghostscript found on the system |
+| `GetLastInstalledVersion(license, priority)` | Static method | Filter by `GhostscriptLicense`: `GPL`, `AFPL`, or `Artifex` |
+| `GetInstalledVersions()` | Static method | Returns all installed Ghostscript versions as a list |
+| `IsGhostscriptInstalled` | Static property | `true` if any Ghostscript installation is detected |
+| `new GhostscriptVersionInfo(string dllPath)` | Constructor | Point to a specific DLL file path |
+| `.DllPath` | Property | Path to the native library file |
+| `.Version` | Property | `System.Version` of the detected installation |
+
+---
+
+## Finding the Ghostscript native library
+
+`GhostscriptVersionInfo.GetLastInstalledVersion()` searches for the native library automatically:
+
+- **Windows:** reads the registry keys `HKLM\SOFTWARE\GPL Ghostscript\`, `HKLM\SOFTWARE\AFPL Ghostscript\`, and `HKLM\SOFTWARE\Artifex Ghostscript\`. It matches the DLL bitness (32-bit `gsdll32.dll` / 64-bit `gsdll64.dll`) to the current process.
+- **Linux:** searches common paths including `/usr/lib`, `/usr/lib/x86_64-linux-gnu`, and `/usr/local/lib` for `libgs.so.10`, `libgs.so.9`, or `libgs.so`.
+
+If Ghostscript is not installed in a standard location, pass the path directly:
+
+```csharp
+// Explicit path
+var version = new GhostscriptVersionInfo(@"C:\MyApp\gs\gsdll64.dll");
+
+// From embedded byte array (deploy DLL as an embedded resource)
+byte[] dll = GetEmbeddedResource("gsdll64.dll");
+rasterizer.Open("input.pdf", dll);
+```
+
+---
+
+## PDF/A-3 conversion
+
+The `PDFA3Converter` class converts any PDF to PDF/A-3b format and optionally embeds a ZUGFeRD or Factur-X XML invoice. This is the format required by XRechnung (Germany) and Factur-X (France/EU) electronic invoicing standards.
+
+### Convert to plain PDF/A-3
+
+```csharp
+using Ghostscript.NET;
+
+var converter = new PDFA3Converter(@"C:\gs\gs9.56.1\bin\gsdll64.dll");
+converter.ConvertToPDFA3("invoice.pdf", "invoice-pdfa3.pdf");
+```
+
+### Embed a ZUGFeRD / Factur-X XML invoice
+
+```csharp
+using Ghostscript.NET;
+
+var converter = new PDFA3Converter(@"C:\gs\gs9.56.1\bin\gsdll64.dll");
+converter.SetZUGFeRDProfile(ZUGFeRDProfile.Comfort);
 converter.SetZUGFeRDVersion("2.3");
-converter.SetEmbeddedXMLFile(outfilename); // the xml invoice file that was just generated
-converter.ConvertToPDFA3(@"sample-invoice.pdf", @"sample-invoice-pdfa3.pdf");
+converter.SetEmbeddedXMLFile("factur-x.xml");
+converter.ConvertToPDFA3("invoice.pdf", "invoice-pdfa3-zugferd.pdf");
 ```
 
+> Issues with `PDFA3Converter` should be tagged to [@stephanstapel](https://github.com/stephanstapel) on GitHub.
 
-# License and Copyright
+---
 
-Available under both, open-source AGPL and commercial license agreements.
+## Documentation
 
-Please read the full text of the [AGPL license agreement](https://www.gnu.org/licenses/agpl-3.0.html) (which is also included here in file COPYING) to ensure that your use case complies with the guidelines of this license. If you determine you cannot meet the requirements of the AGPL, please contact [Artifex](https://artifex.com/contact/ghostscript-inquiry.php) for more information regarding a commercial license.
+| Resource | URL |
+|---|---|
+| NuGet package | https://www.nuget.org/packages/Ghostscript.NET/ |
+| GitHub repository | https://github.com/ArtifexSoftware/Ghostscript.NET |
+| Sample projects | `Ghostscript.NET.Samples/` in this repository |
+| Ghostscript documentation | https://ghostscript.readthedocs.io |
+| Ghostscript binary downloads | https://github.com/ArtifexSoftware/ghostpdl-downloads/releases |
+| Ghostscript command-line reference | https://ghostscript.readthedocs.io/en/latest/Use.html |
+| Bug reports | https://github.com/ArtifexSoftware/Ghostscript.NET/issues |
+| Artifex commercial licensing | https://artifex.com/contact/ghostscript-net |
 
-Artifex is the exclusive commercial licensing agent for Ghostscript.
+---
 
+## License
 
+Ghostscript.NET is available under two licences:
+
+- **[GNU AGPL v3](https://www.gnu.org/licenses/agpl-3.0.html)** — free for open-source projects. Any application that uses or distributes Ghostscript.NET must release its complete source code under a compatible open-source licence. See `COPYING` in this repository for the full licence text.
+- **Commercial licence** — required for proprietary or closed-source applications. [Contact Artifex](https://artifex.com/contact/ghostscript-net) for licensing. Artifex is the exclusive commercial licensing agent for Ghostscript.
