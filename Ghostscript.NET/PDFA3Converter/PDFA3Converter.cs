@@ -217,7 +217,7 @@ namespace Ghostscript.NET.PDFA3Converter
         /// </summary>
         public bool ConvertToPDFA3(string sourcePDFPath, string targetPDFPath)
         {
-            // based on https://github.com/jhabjan/Ghostscript.NET/blob/master/Ghostscript.NET.Samples/Samples/ProcessorSample1.cs
+            // based on Ghostscript.NET.Samples/Samples/ProcessorSample1.cs
             if (!File.Exists(GSDLLPath))
             {
                 throw new FileNotFoundException(GSDLLPath);
