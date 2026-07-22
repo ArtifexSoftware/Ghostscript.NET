@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -9,9 +9,9 @@
     <SccProvider></SccProvider>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyTitle>Ghostscript.NET.Samples</AssemblyTitle>
-    <Company>Habjan</Company>
+    <Company>Artifex</Company>
     <Product>Ghostscript.NET.Samples</Product>
-    <Copyright>Copyright © 2026 Artifex Software Inc.</Copyright>
+    <Copyright>Copyright � 2026 Artifex Software Inc.</Copyright>
     <AssemblyVersion>1.3.1</AssemblyVersion>
     <FileVersion>1.3.1</FileVersion>
     <Platforms>AnyCPU;x64</Platforms>
@@ -33,6 +33,7 @@
     <ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Ghostscript.NativeAssets" Version="$(GhostscriptNativeAssetsVersion)" />
     <PackageReference Include="IKVM" Version="8.1.5717.0" />
     <PackageReference Include="itext" Version="8.0.3" />
     <PackageReference Include="itext.commons" Version="8.0.3" />

@@ -6,20 +6,13 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Ghostscript.NET.xml</DocumentationFile>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Title>Ghostscript.NET</Title>
-    <Version>1.3.3</Version>
-    <Authors>Artifex Software Inc.</Authors>
-    <Company>Artifex</Company>
+    <Version>$(GhostscriptNetVersion)</Version>
     <Description>A C# binding for Ghostscript library</Description>
-    <Copyright>Artifex Software Inc.</Copyright>
-    <PackageProjectUrl>https://github.com/ArtifexSoftware/Ghostscript.NET</PackageProjectUrl>
     <PackageReadmeFile>Description.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/ArtifexSoftware/Ghostscript.NET</RepositoryUrl>
     <PackageTags>C#;F#;VB.Net;Ghostscript;DotNet;PDF</PackageTags>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>gs-icon.png</PackageIcon>
-    <PackageReleaseNotes>Consolidates PDFA Creation and ZUGFeRD packages into Ghostscript.NET</PackageReleaseNotes>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>Adds bundled native-library discovery and the optional Ghostscript.NativeAssets companion package.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

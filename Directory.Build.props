@@ -1,0 +1,15 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)Versions.props" />
+
+  <!-- Shared NuGet package metadata for Ghostscript.NET and Ghostscript.NativeAssets -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Ghostscript.NET' Or '$(MSBuildProjectName)' == 'Ghostscript.NativeAssets'">
+    <Authors>Artifex Software Inc.</Authors>
+    <Company>Artifex</Company>
+    <Copyright>Artifex Software Inc.</Copyright>
+    <PackageProjectUrl>https://github.com/ArtifexSoftware/Ghostscript.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ArtifexSoftware/Ghostscript.NET</RepositoryUrl>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageIcon>gs-icon.png</PackageIcon>
+  </PropertyGroup>
+</Project>

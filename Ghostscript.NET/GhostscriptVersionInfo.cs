@@ -45,6 +45,7 @@ namespace Ghostscript.NET
         private string _dllPath;
         private string _libPath;
         private GhostscriptLicense _licenseType;
+        private GhostscriptDiscoverySource _source;
 
         #endregion
 
@@ -58,11 +59,25 @@ namespace Ghostscript.NET
         /// <param name="libPath">Ghostscript lib path.</param>
         /// <param name="licenseType">Ghostscript license type.</param>
         public GhostscriptVersionInfo(Version version, string dllPath, string libPath, GhostscriptLicense licenseType)
+            : this(version, dllPath, libPath, licenseType, GhostscriptDiscoverySource.System)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Ghostscript.NET.GhostscriptVersionInfo class.
+        /// </summary>
+        /// <param name="version">Ghostscript version.</param>
+        /// <param name="dllPath">Ghostscript native library path.</param>
+        /// <param name="libPath">Ghostscript lib path.</param>
+        /// <param name="licenseType">Ghostscript license type.</param>
+        /// <param name="source">How this native library was located.</param>
+        public GhostscriptVersionInfo(Version version, string dllPath, string libPath, GhostscriptLicense licenseType, GhostscriptDiscoverySource source)
         {
             _version = version;
             _dllPath = dllPath;
             _libPath = libPath;
             _licenseType = licenseType;
+            _source = source;
         }
 
         #endregion
@@ -73,6 +88,7 @@ namespace Ghostscript.NET
             _dllPath = customDllPath;
             _libPath = string.Empty;
             _licenseType = GhostscriptLicense.GPL;
+            _source = GhostscriptDiscoverySource.Custom;
         }
 
         #region Version
@@ -123,6 +139,18 @@ namespace Ghostscript.NET
 
         #endregion
 
+        #region Source
+
+        /// <summary>
+        /// Gets how this Ghostscript native library was located.
+        /// </summary>
+        public GhostscriptDiscoverySource Source
+        {
+            get { return _source; }
+        }
+
+        #endregion
+
         #region ToString
 
         /// <summary>
@@ -130,7 +158,7 @@ namespace Ghostscript.NET
         /// </summary>
         public override string ToString()
         {
-            return string.Format("Licence: {0}, Version: {1}, Dll: {2}, Lib: {3}", _licenseType, _version, _dllPath, _libPath);
+            return string.Format("Licence: {0}, Version: {1}, Source: {2}, Dll: {3}, Lib: {4}", _licenseType, _version, _source, _dllPath, _libPath);
         }
 
         #endregion
@@ -482,11 +510,11 @@ namespace Ghostscript.NET
         #region GetLastInstalledVersion
 
         /// <summary>
-        /// Gets top installed Ghostscript version.
+        /// Gets the preferred Ghostscript version (bundled NativeAssets first, then the newest system install).
         /// </summary>
         public static GhostscriptVersionInfo GetLastInstalledVersion()
         {
-            return GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL | GhostscriptLicense.Artifex, GhostscriptLicense.GPL);
+            return GetPreferredVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL | GhostscriptLicense.Artifex, GhostscriptLicense.GPL);
         }
 
         #endregion
@@ -494,55 +522,277 @@ namespace Ghostscript.NET
         #region GetLastInstalledVersion
 
         /// <summary>
-        /// Gets top installed Ghostscript version.
+        /// Gets the preferred Ghostscript version (bundled NativeAssets first, then the newest matching system install).
         /// </summary>
-        /// <param name="licenseType">Serch for the specific Ghostscript version based on the Ghostscript license.</param>
-        /// <param name="licensePriority">If there are both license types installed, which one should have the prilorty.</param>
-        /// <returns>GhostscriptVersionInfo object of the last installed Ghostscript version based on priority license.</returns>
+        /// <param name="licenseType">Search for the specific Ghostscript version based on the Ghostscript license.</param>
+        /// <param name="licensePriority">If there are both license types installed, which one should have the priority.</param>
+        /// <returns>GhostscriptVersionInfo for the preferred Ghostscript native library.</returns>
         public static GhostscriptVersionInfo GetLastInstalledVersion(GhostscriptLicense licenseType, GhostscriptLicense licensePriority)
         {
-            // gets installed Ghostscript versions list
-            List<GhostscriptVersionInfo> gsVerList = GetInstalledVersions(licenseType);
+            return GetPreferredVersion(licenseType, licensePriority);
+        }
 
-            // cache the list count
+        #endregion
+
+        #region GetPreferredVersion
+
+        /// <summary>
+        /// Gets the preferred Ghostscript version (bundled NativeAssets first, then the newest system install).
+        /// </summary>
+        public static GhostscriptVersionInfo GetPreferredVersion()
+        {
+            return GetPreferredVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL | GhostscriptLicense.Artifex, GhostscriptLicense.GPL);
+        }
+
+        /// <summary>
+        /// Gets the preferred Ghostscript version (bundled NativeAssets first, then the newest matching system install).
+        /// </summary>
+        /// <param name="licenseType">Search for the specific Ghostscript version based on the Ghostscript license.</param>
+        /// <param name="licensePriority">If there are both license types installed, which one should have the priority.</param>
+        /// <returns>GhostscriptVersionInfo for the preferred Ghostscript native library.</returns>
+        public static GhostscriptVersionInfo GetPreferredVersion(GhostscriptLicense licenseType, GhostscriptLicense licensePriority)
+        {
+            GhostscriptVersionInfo bundled;
+            if (TryGetBundledVersion(out bundled))
+            {
+                return bundled;
+            }
+
+            GhostscriptVersionInfo system = TryGetLastInstalledSystemVersion(licenseType, licensePriority);
+            if (system != null)
+            {
+                return system;
+            }
+
+            throw new GhostscriptLibraryNotInstalledException();
+        }
+
+        #endregion
+
+        #region TryGetBundledVersion / GetBundledVersion
+
+        /// <summary>
+        /// Tries to locate a Ghostscript native library shipped with the application
+        /// (for example via the Ghostscript.NativeAssets package).
+        /// </summary>
+        /// <param name="version">Located bundled version information when found.</param>
+        /// <returns>True when a compatible bundled native library was found.</returns>
+        public static bool TryGetBundledVersion(out GhostscriptVersionInfo version)
+        {
+            version = null;
+
+            string libraryPath = FindBundledLibraryPath();
+            if (string.IsNullOrEmpty(libraryPath))
+            {
+                return false;
+            }
+
+            if (!CrossPlatformNativeLibraryHelper.IsLibraryCompatible(libraryPath))
+            {
+                return false;
+            }
+
+            string directory = Path.GetDirectoryName(libraryPath) ?? string.Empty;
+            Version gsVersion = ReadBundledVersionMetadata(directory) ?? ParseVersionFromString(Path.GetFileName(libraryPath)) ?? new Version(0, 0);
+
+            version = new GhostscriptVersionInfo(
+                gsVersion,
+                libraryPath,
+                directory,
+                GhostscriptLicense.Artifex,
+                GhostscriptDiscoverySource.Bundled);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Gets the Ghostscript native library shipped with the application
+        /// (for example via the Ghostscript.NativeAssets package).
+        /// </summary>
+        /// <returns>GhostscriptVersionInfo for the bundled native library.</returns>
+        /// <exception cref="GhostscriptLibraryNotInstalledException">Thrown when no bundled library is found.</exception>
+        public static GhostscriptVersionInfo GetBundledVersion()
+        {
+            GhostscriptVersionInfo version;
+            if (TryGetBundledVersion(out version))
+            {
+                return version;
+            }
+
+            throw new GhostscriptLibraryNotInstalledException();
+        }
+
+        #endregion
+
+        #region Bundled discovery helpers
+
+        private static GhostscriptVersionInfo TryGetLastInstalledSystemVersion(GhostscriptLicense licenseType, GhostscriptLicense licensePriority)
+        {
+            List<GhostscriptVersionInfo> gsVerList = GetInstalledVersions(licenseType);
             int versionsCount = gsVerList.Count;
 
-            // check if there is only 1 version of the Ghostscript installed
-            // if yes, then we don't need a deeper search
             if (versionsCount == 1)
             {
-                // simply return the first one
                 return gsVerList[0];
             }
-            else if (versionsCount > 1)
+
+            if (versionsCount > 1)
             {
-                // get the first one
                 GhostscriptVersionInfo lastGsVer = gsVerList[0];
 
-                // loop through all others
                 for (int index = 1; index < versionsCount; index++)
                 {
-                    // get one from the list
                     GhostscriptVersionInfo gs = gsVerList[index];
 
-                    // compare if it's a newer version
                     if (gs.Version > lastGsVer.Version)
                     {
-                        // check if this version has license with larger priority
                         if (gs.LicenseType == licensePriority)
                         {
-                            // set top version
                             lastGsVer = gsVerList[index];
                         }
                     }
                 }
 
-                // return top GhostscriptVersionInfo instance
                 return lastGsVer;
             }
 
-            // inform the user that we didn't find Ghostscript installed on this system
-            throw new GhostscriptLibraryNotInstalledException();
+            return null;
+        }
+
+        private static string FindBundledLibraryPath()
+        {
+            string baseDirectory = AppContext.BaseDirectory;
+            if (string.IsNullOrEmpty(baseDirectory))
+            {
+                baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
+            string rid = GetCurrentRuntimeIdentifier();
+            string[] libraryNames = GetBundledLibraryNames();
+
+            List<string> probeDirectories = new List<string>();
+            AddProbeDirectory(probeDirectories, baseDirectory);
+            AddProbeDirectory(probeDirectories, Path.Combine(baseDirectory, "native"));
+
+            if (!string.IsNullOrEmpty(rid))
+            {
+                AddProbeDirectory(probeDirectories, Path.Combine(baseDirectory, "runtimes", rid, "native"));
+                AddProbeDirectory(probeDirectories, Path.Combine(baseDirectory, rid, "native"));
+            }
+
+            foreach (string directory in probeDirectories)
+            {
+                foreach (string libraryName in libraryNames)
+                {
+                    string candidate = Path.Combine(directory, libraryName);
+                    if (File.Exists(candidate))
+                    {
+                        return candidate;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private static void AddProbeDirectory(List<string> directories, string directory)
+        {
+            if (!string.IsNullOrEmpty(directory) && !directories.Contains(directory))
+            {
+                directories.Add(directory);
+            }
+        }
+
+        private static string[] GetBundledLibraryNames()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return new[]
+                {
+                    CrossPlatformNativeLibraryHelper.GetGhostscriptLibraryName(Environment.Is64BitProcess)
+                };
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                return new[] { "libgs.so.10", "libgs.so.9", "libgs.so" };
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return new[] { "libgs.dylib", "libgs.so" };
+            }
+
+            return new[]
+            {
+                CrossPlatformNativeLibraryHelper.GetGhostscriptLibraryName(Environment.Is64BitProcess)
+            };
+        }
+
+        private static string GetCurrentRuntimeIdentifier()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                switch (RuntimeInformation.ProcessArchitecture)
+                {
+                    case Architecture.X86:
+                        return "win-x86";
+                    case Architecture.Arm64:
+                        return "win-arm64";
+                    default:
+                        return "win-x64";
+                }
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                switch (RuntimeInformation.ProcessArchitecture)
+                {
+                    case Architecture.Arm64:
+                        return "linux-arm64";
+                    case Architecture.Arm:
+                        return "linux-arm";
+                    default:
+                        return "linux-x64";
+                }
+            }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                switch (RuntimeInformation.ProcessArchitecture)
+                {
+                    case Architecture.Arm64:
+                        return "osx-arm64";
+                    default:
+                        return "osx-x64";
+                }
+            }
+
+            return null;
+        }
+
+        private static Version ReadBundledVersionMetadata(string directory)
+        {
+            if (string.IsNullOrEmpty(directory))
+            {
+                return null;
+            }
+
+            string versionFile = Path.Combine(directory, "ghostscript.version");
+            if (!File.Exists(versionFile))
+            {
+                return null;
+            }
+
+            try
+            {
+                string text = File.ReadAllText(versionFile).Trim();
+                return ParseVersionFromString(text);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         #endregion
@@ -550,13 +800,18 @@ namespace Ghostscript.NET
         #region IsGhostscriptInstalled
 
         /// <summary>
-        /// Gets if the Ghostscript is installed on the local system.
+        /// Gets if Ghostscript is available via a bundled native library or a system installation.
         /// </summary>
         public static bool IsGhostscriptInstalled
         {
             get
             {
-                // check for any, GPL or AFPL version
+                GhostscriptVersionInfo bundled;
+                if (TryGetBundledVersion(out bundled))
+                {
+                    return true;
+                }
+
                 return GetInstalledVersions(GhostscriptLicense.GPL | GhostscriptLicense.AFPL | GhostscriptLicense.Artifex).Count > 0;
             }
         }

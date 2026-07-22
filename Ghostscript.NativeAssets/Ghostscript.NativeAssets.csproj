@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <Title>Ghostscript.NativeAssets</Title>
+    <Version>$(GhostscriptNativeAssetsVersion)</Version>
+    <Description>Ghostscript $(GhostscriptProductVersion) native binaries for Ghostscript.NET (win-x64, win-x86, and linux-x64). Distributing Ghostscript binaries is subject to AGPL or Artifex commercial licensing.</Description>
+    <PackageId>Ghostscript.NativeAssets</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>C#;Ghostscript;NativeAssets;PDF</PackageTags>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.md" Pack="true" PackagePath="\" />
+    <None Include="..\Ghostscript.NET\images\gs-icon.png" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="build\Ghostscript.NativeAssets.targets" Pack="true" PackagePath="build\" />
+    <None Include="build\Ghostscript.NativeAssets.targets" Pack="true" PackagePath="buildTransitive\" />
+  </ItemGroup>
+
+  <!--
+    When binaries are present, pack them under runtimes/<rid>/native/.
+    Placeholder .gitkeep files are excluded so empty scaffolds do not ship empty paths.
+  -->
+  <ItemGroup>
+    <Content Include="native\win-x64\**\*"
+             Exclude="native\win-x64\**\.gitkeep"
+             Pack="true"
+             PackagePath="runtimes\win-x64\native\"
+             CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="native\win-x86\**\*"
+             Exclude="native\win-x86\**\.gitkeep"
+             Pack="true"
+             PackagePath="runtimes\win-x86\native\"
+             CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="native\linux-x64\**\*"
+             Exclude="native\linux-x64\**\.gitkeep"
+             Pack="true"
+             PackagePath="runtimes\linux-x64\native\"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -11,9 +11,11 @@
 
 ```powershell
 Install-Package Ghostscript.NET
+# Optional: ship Ghostscript natives with the app (no system install required)
+Install-Package Ghostscript.NativeAssets
 ```
 
-> **Ghostscript version compatibility:** Ghostscript.NET has been tested with Ghostscript versions up to 9.x. Compatibility with Ghostscript 10+ is not yet fully verified. See [ghostpdl-downloads](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases) for available Ghostscript releases, and install the native library separately before using this package.
+> **Ghostscript version compatibility:** Ghostscript.NET has been tested with Ghostscript versions up to 9.x. Compatibility with Ghostscript 10+ is not yet fully verified, though `Ghostscript.NativeAssets` currently ships Ghostscript 10.07.1. See [ghostpdl-downloads](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases) for available Ghostscript releases. Provide the native library via a system install **or** the optional `Ghostscript.NativeAssets` package.
 
 ---
 
@@ -50,22 +52,38 @@ Install-Package Ghostscript.NET
 | Requirement | Details |
 |---|---|
 | .NET | .NET Standard 2.0 or any compatible runtime (.NET 6, 7, 8, Framework 4.6.1+) |
-| Ghostscript native library | Must be installed separately on the host machine |
-| Ghostscript version | Tested with versions ≤ 9.x; Ghostscript 10+ compatibility not fully verified |
+| Ghostscript native library | Install separately **or** reference `Ghostscript.NativeAssets` |
+| Ghostscript version | Tested with versions ≤ 9.x; Ghostscript 10+ not fully verified (`NativeAssets` ships 10.07.1) |
 | OS | Windows (32-bit and 64-bit), Linux |
 | SkiaSharp | Included as a NuGet dependency; provides `SKBitmap` for rasterized output |
 
 ### Installing the Ghostscript native library
 
-**Windows**
+Ghostscript.NET resolves the native library in this order:
 
-[Download and install the Ghostscript installer](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases). The installer registers the DLL path in the Windows registry so `GhostscriptVersionInfo.GetLastInstalledVersion()` can find it automatically.
+1. Explicit path / `GhostscriptVersionInfo` supplied by the caller
+2. Bundled binaries from `Ghostscript.NativeAssets` (app-local)
+3. System Ghostscript installation (Windows registry / Linux common paths)
 
-**Linux (Debian/Ubuntu)**
+**Option A — NuGet native assets (recommended for seamless installs)**
+
+```xml
+<PackageReference Include="Ghostscript.NET" Version="1.3.4" />
+<PackageReference Include="Ghostscript.NativeAssets" Version="10.7.1" />
+```
+
+> Package versions are managed in `Versions.props`. `Ghostscript.NativeAssets` currently includes Ghostscript 10.07.1 for `win-x64`, `win-x86`, and `linux-x64`. NuGet uses `10.7.1` because numeric version components cannot contain leading zeroes.
+
+**Option B — system install (Windows)**
+
+[Download and install the Ghostscript installer](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases). The installer registers the DLL path in the Windows registry so `GhostscriptVersionInfo.GetLastInstalledVersion()` / `GetPreferredVersion()` can find it automatically.
+
+**Option C — system install (Linux / Debian/Ubuntu)**
 
 ```bash
 sudo apt-get install ghostscript
 # Installs libgs.so to /usr/lib or /usr/lib/x86_64-linux-gnu/
+# Note: removing the ghostscript package may leave libgs*.so installed via libgs10 / libgs9
 ```
 
 ---
@@ -87,7 +105,9 @@ dotnet add package Ghostscript.NET
 **PackageReference**
 
 ```xml
-<PackageReference Include="Ghostscript.NET" Version="1.3.3" />
+<PackageReference Include="Ghostscript.NET" Version="1.3.4" />
+<!-- Optional companion package for app-local Ghostscript binaries -->
+<PackageReference Include="Ghostscript.NativeAssets" Version="10.7.1" />
 ```
 
 ---
@@ -101,8 +121,8 @@ using Ghostscript.NET;
 using Ghostscript.NET.Rasterizer;
 using SkiaSharp;
 
-// Auto-detect the installed Ghostscript library
-var version = GhostscriptVersionInfo.GetLastInstalledVersion();
+// Prefers Ghostscript.NativeAssets (if referenced), then a system install
+var version = GhostscriptVersionInfo.GetPreferredVersion();
 
 using var rasterizer = new GhostscriptRasterizer();
 rasterizer.Open("input.pdf", version, false);
@@ -144,7 +164,7 @@ processor.Process(new[]
 | **Progress events** | `GhostscriptProcessor` raises `Started`, `Processing` (per-page), `Error`, and `Completed` events |
 | **Multi-instance** | Multiple `GhostscriptProcessor` or `GhostscriptRasterizer` instances can run in parallel |
 | **Stdin/stdout capture** | Capture or redirect Ghostscript stdout/stderr via `GhostscriptStdIO` callbacks |
-| **Version detection** | Auto-discovers installed Ghostscript on Windows (registry) and Linux (common library paths) |
+| **Version detection** | Prefers bundled `Ghostscript.NativeAssets`, then system Ghostscript (Windows registry / Linux library paths) |
 | **PDF/A-3** | Convert PDFs to PDF/A-3b and embed XML invoices (XRechnung, Factur-X / ZUGFeRD) |
 | **Anti-aliasing** | Control `GraphicsAlphaBits` and `TextAlphaBits` for rendering quality |
 | **EPS cropping** | `EPSClip` property for correct EPS bounding box clipping |
@@ -279,12 +299,14 @@ using var rasterizer = new GhostscriptRasterizer();
 rasterizer.Open("input.pdf", version, false);
 ```
 
-### Load the DLL from memory (embedded resource)
+### Load the DLL from memory (Windows only)
 
 ```csharp
 using Ghostscript.NET;
 using Ghostscript.NET.Rasterizer;
 
+// In-memory loading is supported on Windows only.
+// On Linux/macOS, pass fromMemory: false (or omit it) so the library is loaded from disk.
 byte[] dllBytes = File.ReadAllBytes(@"C:\gs\gs9.56.1\bin\gsdll64.dll");
 
 using var rasterizer = new GhostscriptRasterizer();
@@ -346,22 +368,27 @@ rasterizer.Open("input.pdf", dllBytes);
 
 | Member | Type | Description |
 |---|---|---|
-| `GetLastInstalledVersion()` | Static method | Returns the highest-version Ghostscript found on the system |
-| `GetLastInstalledVersion(license, priority)` | Static method | Filter by `GhostscriptLicense`: `GPL`, `AFPL`, or `Artifex` |
-| `GetInstalledVersions()` | Static method | Returns all installed Ghostscript versions as a list |
-| `IsGhostscriptInstalled` | Static property | `true` if any Ghostscript installation is detected |
+| `GetPreferredVersion()` | Static method | Prefers bundled NativeAssets, then the newest system install |
+| `GetLastInstalledVersion()` | Static method | Same as `GetPreferredVersion()` (kept for compatibility) |
+| `GetLastInstalledVersion(license, priority)` | Static method | Same preference order; system installs filtered by license |
+| `TryGetBundledVersion(out version)` | Static method | Locates app-local / NativeAssets binaries without throwing |
+| `GetBundledVersion()` | Static method | Returns bundled NativeAssets library or throws |
+| `GetInstalledVersions()` | Static method | Returns all system-installed Ghostscript versions as a list |
+| `IsGhostscriptInstalled` | Static property | `true` if a bundled or system Ghostscript library is detected |
 | `new GhostscriptVersionInfo(string dllPath)` | Constructor | Point to a specific DLL file path |
 | `.DllPath` | Property | Path to the native library file |
 | `.Version` | Property | `System.Version` of the detected installation |
+| `.Source` | Property | `Bundled`, `System`, or `Custom` |
 
 ---
 
 ## Finding the Ghostscript native library
 
-`GhostscriptVersionInfo.GetLastInstalledVersion()` searches for the native library automatically:
+`GhostscriptVersionInfo.GetLastInstalledVersion()` / `GetPreferredVersion()` searches automatically:
 
-- **Windows:** reads the registry keys `HKLM\SOFTWARE\GPL Ghostscript\`, `HKLM\SOFTWARE\AFPL Ghostscript\`, and `HKLM\SOFTWARE\Artifex Ghostscript\`. It matches the DLL bitness (32-bit `gsdll32.dll` / 64-bit `gsdll64.dll`) to the current process.
-- **Linux:** searches common paths including `/usr/lib`, `/usr/lib/x86_64-linux-gnu`, and `/usr/local/lib` for `libgs.so.10`, `libgs.so.9`, or `libgs.so`.
+1. **Bundled / NativeAssets** — app base directory, `native/`, and `runtimes/<rid>/native/` for `gsdll64.dll` / `gsdll32.dll` / `libgs.so*`
+2. **Windows system install:** registry keys `HKLM\SOFTWARE\GPL Ghostscript\`, `HKLM\SOFTWARE\AFPL Ghostscript\`, and `HKLM\SOFTWARE\Artifex Ghostscript\`. Matches DLL bitness to the current process.
+3. **Linux system install:** common paths including `/usr/lib`, `/usr/lib/x86_64-linux-gnu`, and `/usr/local/lib` for `libgs.so.10`, `libgs.so.9`, or `libgs.so`.
 
 If Ghostscript is not installed in a standard location, pass the path directly:
 
@@ -410,8 +437,9 @@ converter.ConvertToPDFA3("invoice.pdf", "invoice-pdfa3-zugferd.pdf");
 | Resource | URL |
 |---|---|
 | NuGet package | https://www.nuget.org/packages/Ghostscript.NET/ |
+| Native assets package | https://www.nuget.org/packages/Ghostscript.NativeAssets/ |
 | GitHub repository | https://github.com/ArtifexSoftware/Ghostscript.NET |
-| Sample projects | `Ghostscript.NET.Samples/` in this repository |
+| Sample projects | `Ghostscript.NET.Samples/` (project-references local `Ghostscript.NET` source; may reference `Ghostscript.NativeAssets` via NuGet) |
 | Ghostscript documentation | https://ghostscript.readthedocs.io |
 | Ghostscript binary downloads | https://github.com/ArtifexSoftware/ghostpdl-downloads/releases |
 | Ghostscript command-line reference | https://ghostscript.readthedocs.io/en/latest/Use.html |
