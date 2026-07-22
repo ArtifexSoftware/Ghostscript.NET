@@ -108,7 +108,8 @@ namespace Ghostscript.NET
         /// from the GhostscriptVersionInfo object.
         /// </summary>
         /// <param name="version">GhostscriptVersionInfo instance that tells which Ghostscript library to use.</param>
-        /// <param name="fromMemory">Tells if the Ghostscript should be loaded from the memory or directly from the disk.</param>
+        /// <param name="fromMemory">When true on Windows, loads the native library from a memory buffer.
+        /// On non-Windows platforms this is ignored and the library is always loaded from disk.</param>
         public GhostscriptLibrary(GhostscriptVersionInfo version, bool fromMemory)
         {
             // check if Ghostscript version is specified
@@ -124,8 +125,9 @@ namespace Ghostscript.NET
             }
 
             _version = version;
-            _loadedFromMemory = fromMemory;
             _isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            // In-memory PE loading is Windows-only; on Linux/macOS always load from disk.
+            _loadedFromMemory = fromMemory && _isWindows;
 
             // check if library is compatibile with a running process
             if (!CrossPlatformNativeLibraryHelper.IsLibraryCompatible(version.DllPath))
@@ -135,31 +137,21 @@ namespace Ghostscript.NET
             }
 
             // check wether we need to load Ghostscript native library from the memory or a disk
-            if (fromMemory)
+            if (_loadedFromMemory)
             {
-                if (_isWindows)
-                {
-                    // load native Ghostscript library into the memory (Windows only)
-                    byte[] buffer = File.ReadAllBytes(version.DllPath);
-                    _library = new DynamicNativeLibrary(buffer);
-                }
-                else
-                {
-                    throw new NotSupportedException("Loading libraries from memory is only supported on Windows.");
-                }
+                // load native Ghostscript library into the memory (Windows only)
+                byte[] buffer = File.ReadAllBytes(version.DllPath);
+                _library = new DynamicNativeLibrary(buffer);
+            }
+            else if (_isWindows)
+            {
+                // create DynamicNativeLibrary instance from the local disk file (Windows)
+                _library = new DynamicNativeLibrary(version.DllPath);
             }
             else
             {
-                if (_isWindows)
-                {
-                    // create DynamicNativeLibrary instance from the local disk file (Windows)
-                    _library = new DynamicNativeLibrary(version.DllPath);
-                }
-                else
-                {
-                    // create CrossPlatformNativeLibrary instance for Linux
-                    _crossPlatformLibrary = new CrossPlatformNativeLibrary(version.DllPath);
-                }
+                // create CrossPlatformNativeLibrary instance for Linux/macOS
+                _crossPlatformLibrary = new CrossPlatformNativeLibrary(version.DllPath);
             }
 
             // get and map native library symbols

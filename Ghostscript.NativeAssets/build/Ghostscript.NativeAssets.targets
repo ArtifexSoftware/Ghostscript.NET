@@ -1,0 +1,67 @@
+<Project>
+
+  <!--
+    Copies Ghostscript native libraries from NuGet runtimes/<rid>/native into the app output
+    so GhostscriptVersionInfo.TryGetBundledVersion() can find them next to the application.
+
+    Uses Content + CopyToOutputDirectory so classic .NET Framework (packages.config) projects
+    copy native binaries reliably via the standard MSBuild pipeline.
+  -->
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <Content Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\**\*"
+             Condition="Exists('$(MSBuildThisFileDirectory)..\runtimes\win-x86\native')">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)..\runtimes\win-x64\native\**\*"
+             Condition="Exists('$(MSBuildThisFileDirectory)..\runtimes\win-x64\native')">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <Content Include="$(MSBuildThisFileDirectory)..\runtimes\linux-x64\native\**\*"
+             Condition="Exists('$(MSBuildThisFileDirectory)..\runtimes\linux-x64\native')">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+  <!-- Keep NuGet-style runtime layout as a fallback for bundled discovery -->
+  <Target Name="GhostscriptCopyNativeAssetsLayout"
+          AfterTargets="Build"
+          Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+    <ItemGroup>
+      <_GhostscriptNativeWinX86 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\**\*"
+                                 Condition="Exists('$(MSBuildThisFileDirectory)..\runtimes\win-x86\native')" />
+      <_GhostscriptNativeWinX64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x64\native\**\*"
+                                 Condition="Exists('$(MSBuildThisFileDirectory)..\runtimes\win-x64\native')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_GhostscriptNativeWinX86)"
+          DestinationFolder="$(OutputPath)runtimes\win-x86\native\%(RecursiveDir)"
+          SkipUnchangedFiles="true"
+          Condition="'@(_GhostscriptNativeWinX86)' != ''" />
+    <Copy SourceFiles="@(_GhostscriptNativeWinX64)"
+          DestinationFolder="$(OutputPath)runtimes\win-x64\native\%(RecursiveDir)"
+          SkipUnchangedFiles="true"
+          Condition="'@(_GhostscriptNativeWinX64)' != ''" />
+  </Target>
+
+  <Target Name="GhostscriptCopyNativeAssetsLayoutLinux"
+          AfterTargets="Build"
+          Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+    <ItemGroup>
+      <_GhostscriptNativeLinuxX64 Include="$(MSBuildThisFileDirectory)..\runtimes\linux-x64\native\**\*"
+                                  Condition="Exists('$(MSBuildThisFileDirectory)..\runtimes\linux-x64\native')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_GhostscriptNativeLinuxX64)"
+          DestinationFolder="$(OutputPath)runtimes\linux-x64\native\%(RecursiveDir)"
+          SkipUnchangedFiles="true"
+          Condition="'@(_GhostscriptNativeLinuxX64)' != ''" />
+  </Target>
+
+</Project>

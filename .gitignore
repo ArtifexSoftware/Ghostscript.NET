@@ -218,3 +218,7 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+# NativeAssets package build integration is source, not generated output.
+!Ghostscript.NativeAssets/build/
+!Ghostscript.NativeAssets/build/Ghostscript.NativeAssets.targets

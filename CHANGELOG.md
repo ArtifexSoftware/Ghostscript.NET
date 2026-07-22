@@ -2,6 +2,14 @@
 
 
 
+### [1.3.4] - 2026-07-20
+
+- **Bundled native library discovery:** `GhostscriptVersionInfo` can locate app-local Ghostscript binaries (for example from `Ghostscript.NativeAssets`) via `TryGetBundledVersion`, `GetBundledVersion`, and `GetPreferredVersion`. `GetLastInstalledVersion` now prefers bundled assets before falling back to a system installation.
+
+- **Ghostscript.NativeAssets:** New optional companion NuGet package ships Ghostscript 10.07.1 native libraries for `win-x64`, `win-x86`, and `linux-x64`, with MSBuild targets to copy binaries into the application output.
+
+- **Linux/macOS fromMemory fallback:** Passing `fromMemory: true` to `GhostscriptLibrary` / `GhostscriptProcessor` no longer throws on non-Windows platforms; the native library is loaded from disk instead.
+
 ### [1.3.3] - 2026-04-06
 
 - **Unicode in arguments and file paths:** Ghostscript is invoked with native-encoded argv (UTF-16LE on Windows, UTF-8 elsewhere) via pointer-based `gsapi_init_with_args` when available, and `gsapi_run_file` uses the same encoding model where supported. Non-ASCII characters in paths and switches are preserved instead of being mangled by the legacy string-based API. New bindings: `gsapi_init_with_args_ptr`, `gsapi_run_file_ptr`; `GhostscriptProcessor`, `GhostscriptInterpreter`, and related helpers route through these when the loaded Ghostscript library reports support.
