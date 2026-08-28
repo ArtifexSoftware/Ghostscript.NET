@@ -85,6 +85,63 @@ namespace Ghostscript.NET
         }
 
         /// <summary>
+        /// Gets the expected GhostPDL library name for the current platform.
+        /// </summary>
+        public static string GetGhostPdlLibraryName(bool is64Bit)
+        {
+            if (CurrentPlatform == OSPlatform.Windows)
+                return is64Bit ? "gpdldll64.dll" : "gpdldll32.dll";
+            else if (CurrentPlatform == OSPlatform.Linux)
+                return "libgpdl.so";
+            else if (CurrentPlatform == OSPlatform.OSX)
+                return "libgpdl.dylib";
+            else
+                return is64Bit ? "gpdldll64.dll" : "gpdldll32.dll";
+        }
+
+        /// <summary>
+        /// Filenames to probe when locating a GhostPDL native library.
+        /// </summary>
+        public static string[] GetGhostPdlLibraryNames(bool is64Bit)
+        {
+            if (CurrentPlatform == OSPlatform.Windows)
+            {
+                return new[] { GetGhostPdlLibraryName(is64Bit) };
+            }
+
+            if (CurrentPlatform == OSPlatform.Linux)
+            {
+                return new[] { "libgpdl.so.10", "libgpdl.so.9", "libgpdl.so" };
+            }
+
+            if (CurrentPlatform == OSPlatform.OSX)
+            {
+                return new[] { "libgpdl.dylib", "libgpdl.so" };
+            }
+
+            return new[] { GetGhostPdlLibraryName(is64Bit) };
+        }
+
+        /// <summary>
+        /// Returns true when the path looks like a GhostPDL native library.
+        /// </summary>
+        public static bool IsGhostPdlLibrary(string libraryPath)
+        {
+            if (string.IsNullOrWhiteSpace(libraryPath))
+            {
+                return false;
+            }
+
+            string name = Path.GetFileName(libraryPath);
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            return name.IndexOf("gpdl", StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+
+        /// <summary>
         /// Checks if a native library is compatible with the current process architecture.
         /// </summary>
         /// <param name="libraryPath">Path to the native library.</param>

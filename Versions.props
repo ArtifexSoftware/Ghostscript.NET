@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <!-- Ghostscript.NET NuGet package version -->
-    <GhostscriptNetVersion>1.3.4</GhostscriptNetVersion>
+    <GhostscriptNetVersion>1.3.5</GhostscriptNetVersion>
 
     <!-- Ghostscript.NativeAssets NuGet package version (tracks Ghostscript release) -->
     <GhostscriptNativeAssetsVersion>10.7.1</GhostscriptNativeAssetsVersion>

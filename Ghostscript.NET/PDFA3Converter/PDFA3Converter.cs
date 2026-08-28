@@ -53,9 +53,18 @@ namespace Ghostscript.NET.PDFA3Converter
 
 
         /// <summary>
-        /// The constructor of the class accepts both input and output path for PDF conversion.
+        /// Creates a converter that uses the preferred Ghostscript library
+        /// (NativeAssets, then a system install).
         /// </summary>
-        /// <param name="gsdll">PDF input path </param>
+        public PDFA3Converter()
+            : this(GhostscriptVersionInfo.GetPreferredVersion().DllPath)
+        {
+        }
+
+        /// <summary>
+        /// Creates a converter that loads Ghostscript from <paramref name="gsdll"/>.
+        /// </summary>
+        /// <param name="gsdll">Full path to the Ghostscript native library.</param>
   
         public PDFA3Converter(String gsdll)
         {
@@ -265,36 +274,28 @@ namespace Ghostscript.NET.PDFA3Converter
             }
 
             GhostscriptVersionInfo gsVersion = new GhostscriptVersionInfo(GSDLLPath);
-            GhostscriptLibrary ghostscriptLibrary = new GhostscriptLibrary(gsVersion);
-            GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
 
             List<string> switches = new List<string>();            
-            switches.Add(""); // first parameter might be ignored 
+            switches.Add("-ghostscript.net");
+            switches.Add("-dNOPAUSE");
+            switches.Add("-dBATCH");
             switches.Add("-P"); // allow access to resources within the current directory
-            switches.Add("-dPDFA=3"); // convert to A/3 pat 1/3
-                                      // switches.Add("-dCompressStreams=false") hat problems as apparently XMP Metadata was compressed by ZUGFeRD. Obsolete in the meantime
+            switches.Add("-dPDFA=3"); // convert to A/3 part 1/3
             switches.Add("-sColorConversionStrategy=RGB"); // necessary for PDF/A conversion
             switches.Add("-sDEVICE=pdfwrite"); // Device for rasterization. Mandatory
-            switches.Add($"-o{targetPDFPath}"); // Output path
+            switches.Add("-sOutputFile=" + targetPDFPath); // Output path
             switches.Add("-dNOSAFER"); // Disable safe mode
             switches.Add("-dPDFACompatibilityPolicy=1"); // convert to A/3 part 2/3
             switches.Add("-dRenderIntent=3"); // convert to A/3 part 3/3            
-            switches.Add(PostScriptBigScriptPath); // PDFMark program file that shall be interpreted.
-                                             // see https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/pdfmark_reference.pdf
-                                             // and https://gitlab.com/crossref/pdfmark
-            switches.Add(sourcePDFPath); // PDF input file
+            switches.Add(PostScriptBigScriptPath);
+            switches.Add(sourcePDFPath);
 
-            bool success = false;
-            using (GhostscriptProcessor processor = new GhostscriptProcessor(ghostscriptLibrary))
+            using (GhostscriptProcessor processor = new GhostscriptProcessor(gsVersion, false))
             {
-                VerboseMsgBoxOutput stdio = new VerboseMsgBoxOutput();
-                processor.StartProcessing(switches.ToArray(), stdio);
-
-                // (erfolglose) Versuche, das Hngen zu vermeiden...
-                processor.Dispose();
+                processor.Process(switches.ToArray(), new VerboseMsgBoxOutput());
             }
-            success = true;
-            return success;
+
+            return File.Exists(targetPDFPath);
         } // !ConvertToPDFA3()
 
 

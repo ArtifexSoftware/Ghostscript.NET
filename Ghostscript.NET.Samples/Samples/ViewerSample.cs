@@ -25,12 +25,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using SkiaSharp;
 
 // required Ghostscript.NET namespaces
 using Ghostscript.NET;
+using Ghostscript.NET.Processor;
 using Ghostscript.NET.Viewer;
 
 namespace Ghostscript.NET.Samples
@@ -58,8 +60,11 @@ namespace Ghostscript.NET.Samples
                 GhostscriptVersionInfo.GetLastInstalledVersion();
 
             _firstPageDone = new ManualResetEventSlim(false);
+            bool pageReady = false;
             try
             {
+                string inputPath = PrepareViewerInput();
+
                 // create a new instance of the viewer
                 _viewer = new GhostscriptViewer();
 
@@ -74,23 +79,56 @@ namespace Ghostscript.NET.Samples
                 _viewer.DisplayUpdate += new GhostscriptViewerViewEventHandler(_viewer_DisplayUpdate);
                 _viewer.DisplayPage += new GhostscriptViewerViewEventHandler(_viewer_DisplayPage);
 
-                // Use TestFiles\PipedOutputSample.ps (included). For PDF, place e.g.
-                // ProcessorSample1.pdf in TestFiles and change the path below.
-                // If you want to use multiple viewers within a single process then pass
-                // true as the last parameter so Ghostscript loads from memory.
+                // Open a PDF. Opening PipedOutputSample.ps directly with GhostscriptViewer
+                // can block forever inside gsapi_run_string (DisplaySize fires, DisplayPage does not).
                 Console.WriteLine("Rendering first page to Output\\ViewerSample.png ...");
-                _viewer.Open(@"..\..\..\TestFiles\PipedOutputSample.ps", _lastInstalledVersion, false);
 
-                if (!_firstPageDone.Wait(TimeSpan.FromSeconds(120)))
+                // Open on a background thread so a stuck gsapi call cannot freeze the sample runner.
+                Exception openError = null;
+                Thread openThread = new Thread(() =>
+                {
+                    try
+                    {
+                        _viewer.Open(inputPath, _lastInstalledVersion, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        openError = ex;
+                        try { _firstPageDone?.Set(); } catch { }
+                    }
+                });
+                openThread.IsBackground = true;
+                openThread.Name = "GhostscriptViewer.Open";
+                openThread.Start();
+
+                pageReady = _firstPageDone.Wait(TimeSpan.FromSeconds(30));
+                if (!pageReady)
                 {
                     Console.WriteLine("Timed out waiting for the first page (check Ghostscript and the input file).");
+                }
+
+                if (openError != null)
+                {
+                    throw openError;
                 }
             }
             finally
             {
-                if (_viewer != null)
+                if (pageReady && _viewer != null)
                 {
-                    _viewer.Dispose();
+                    try
+                    {
+                        _viewer.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Viewer dispose: " + ex.Message);
+                    }
+
+                    _viewer = null;
+                }
+                else
+                {
                     _viewer = null;
                 }
 
@@ -146,8 +184,8 @@ namespace Ghostscript.NET.Samples
                     return;
                 }
 
-                Directory.CreateDirectory("Output");
-                string outPath = Path.Combine("Output", "ViewerSample.png");
+                Directory.CreateDirectory(SampleFiles.OutputDirectory);
+                string outPath = Path.Combine(SampleFiles.OutputDirectory, "ViewerSample.png");
                 using (SKImage image = SKImage.FromBitmap(bmp))
                 using (SKData data = image.Encode(SKEncodedImageFormat.Png, 100))
                 using (Stream stream = File.Create(outPath))
@@ -165,6 +203,44 @@ namespace Ghostscript.NET.Samples
             {
                 _firstPageDone?.Set();
             }
+        }
+
+        private static string PrepareViewerInput()
+        {
+            string pdfPath;
+            if (SampleFiles.TryGet("ViewerSample.pdf", out pdfPath))
+            {
+                return pdfPath;
+            }
+
+            if (SampleFiles.TryGet("ProcessorSample1.pdf", out pdfPath))
+            {
+                return pdfPath;
+            }
+
+            string psPath;
+            if (!SampleFiles.TryGet("PipedOutputSample.ps", out psPath))
+            {
+                throw new FileNotFoundException("No viewer sample input file was found.");
+            }
+
+            string outputPdf = Path.Combine(SampleFiles.OutputDirectory, "ViewerSample-input.pdf");
+            using (GhostscriptProcessor processor = new GhostscriptProcessor())
+            {
+                processor.Process(new[]
+                {
+                    "-dBATCH",
+                    "-dNOPAUSE",
+                    "-dNOPROMPT",
+                    "-dNOSAFER",
+                    "-sDEVICE=pdfwrite",
+                    "-sOutputFile=" + outputPdf,
+                    "-f",
+                    psPath
+                });
+            }
+
+            return outputPdf;
         }
 
         // dummy method just to list other viewer properties and methods

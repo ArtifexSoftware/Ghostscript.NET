@@ -9,10 +9,10 @@
     <Version>$(GhostscriptNetVersion)</Version>
     <Description>A C# binding for Ghostscript library</Description>
     <PackageReadmeFile>Description.md</PackageReadmeFile>
-    <PackageTags>C#;F#;VB.Net;Ghostscript;DotNet;PDF</PackageTags>
+    <PackageTags>C#;F#;VB.Net;Ghostscript;DotNet;PDF;Office;DOCX</PackageTags>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageIcon>gs-icon.png</PackageIcon>
-    <PackageReleaseNotes>Adds bundled native-library discovery and the optional Ghostscript.NativeAssets companion package.</PackageReleaseNotes>
+    <PackageReleaseNotes>Adds Microsoft Office support when a licensed GhostPDL (SmartOffice) native library is placed in the application.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

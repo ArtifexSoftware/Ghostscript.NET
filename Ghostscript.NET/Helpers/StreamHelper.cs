@@ -56,6 +56,12 @@ namespace Ghostscript.NET
 
             stream.Position = 0;
 
+            string officeExtension;
+            if (GhostscriptOffice.TryDetectOfficeExtension(stream, out officeExtension))
+            {
+                return officeExtension;
+            }
+
             string extension = string.Empty;
 
             if (test[0] == 0x25 && test[1] == 0x21) // standard ps or eps signature
@@ -123,7 +129,7 @@ namespace Ghostscript.NET
 
             if (string.IsNullOrWhiteSpace(extension))
             {
-                throw new FormatException("Stream format is not valid! Please make sure it's PDF, PS or EPS.");
+                throw new FormatException("Stream format is not valid! Please make sure it's PDF, PS, EPS, or a supported Office file.");
             }
 
             return extension;

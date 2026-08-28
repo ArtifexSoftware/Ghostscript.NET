@@ -34,6 +34,7 @@
 // Copyright (C) 2004-2012 Joachim Bauch (mail@joachim-bauch.de). 
 
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.WinAny.Interop
@@ -680,12 +681,61 @@ namespace Microsoft.WinAny.Interop
         {
             IntPtr procAddress = this.GetProcAddress(procName);
 
+            // 32-bit GhostPDL (MSVC) exports stdcall names such as _gsapi_revision@8.
+            // NativeAssets gsdll32.dll uses undecorated names; try both.
+            if (procAddress == IntPtr.Zero && !Environment.Is64BitProcess)
+            {
+                string decorated = GetStdcallExportName(procName, delegateType);
+                if (decorated != procName)
+                {
+                    procAddress = this.GetProcAddress(decorated);
+                }
+            }
+
             if (procAddress != IntPtr.Zero)
             {
                 return Marshal.GetDelegateForFunctionPointer(procAddress, delegateType);
             }
 
             return null;
+        }
+
+        private static string GetStdcallExportName(string procName, Type delegateType)
+        {
+            if (string.IsNullOrEmpty(procName) || delegateType == null || procName[0] == '_')
+            {
+                return procName;
+            }
+
+            MethodInfo invoke = delegateType.GetMethod("Invoke");
+            if (invoke == null)
+            {
+                return procName;
+            }
+
+            int stackBytes = 0;
+            ParameterInfo[] parameters = invoke.GetParameters();
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                Type type = parameters[i].ParameterType;
+                int size;
+                if (type.IsByRef || !type.IsValueType)
+                {
+                    size = IntPtr.Size;
+                }
+                else if (type.IsEnum)
+                {
+                    size = Marshal.SizeOf(Enum.GetUnderlyingType(type));
+                }
+                else
+                {
+                    size = Marshal.SizeOf(type);
+                }
+
+                stackBytes += (size + 3) & ~3;
+            }
+
+            return "_" + procName + "@" + stackBytes.ToString();
         }
 
         #endregion

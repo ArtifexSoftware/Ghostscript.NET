@@ -49,6 +49,11 @@ namespace Ghostscript.NET
 
         #endregion
 
+        internal GhostscriptVersionInfo VersionInfo
+        {
+            get { return _version; }
+        }
+
         #region Constructor - buffer
 
         /// <summary>

@@ -42,7 +42,9 @@ namespace Ghostscript.NET.Samples
     {
         public void Start()
         {
-            string inputFile = @"..\..\..\TestFiles\PipedOutputSample.ps";
+            string inputFile = SampleFiles.TryGet("PipedOutputSample.ps", out string ps)
+                ? ps
+                : @"..\..\..\TestFiles\PipedOutputSample.ps";
 
             GhostscriptPipedOutput gsPipedOutput = new GhostscriptPipedOutput();
 
@@ -76,7 +78,8 @@ namespace Ghostscript.NET.Samples
                     //}
                     //else if (writeToDisk)
                     //{
-                        File.WriteAllBytes(@".\output\PipedOutputSample.pdf", rawDocumentData);
+                    Directory.CreateDirectory(SampleFiles.OutputDirectory);
+                    File.WriteAllBytes(Path.Combine(SampleFiles.OutputDirectory, "PipedOutputSample.pdf"), rawDocumentData);
                     //}
                 }
                 catch (Exception ex)

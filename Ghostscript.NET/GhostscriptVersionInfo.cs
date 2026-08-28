@@ -46,6 +46,7 @@ namespace Ghostscript.NET
         private string _libPath;
         private GhostscriptLicense _licenseType;
         private GhostscriptDiscoverySource _source;
+        private GhostscriptNativeKind _nativeKind;
 
         #endregion
 
@@ -78,6 +79,7 @@ namespace Ghostscript.NET
             _libPath = libPath;
             _licenseType = licenseType;
             _source = source;
+            _nativeKind = DetectNativeKind(dllPath);
         }
 
         #endregion
@@ -89,6 +91,7 @@ namespace Ghostscript.NET
             _libPath = string.Empty;
             _licenseType = GhostscriptLicense.GPL;
             _source = GhostscriptDiscoverySource.Custom;
+            _nativeKind = DetectNativeKind(customDllPath);
         }
 
         #region Version
@@ -151,6 +154,27 @@ namespace Ghostscript.NET
 
         #endregion
 
+        #region NativeKind
+
+        /// <summary>
+        /// Gets whether this library is Ghostscript or GhostPDL.
+        /// GhostPDL is required for Microsoft Office files.
+        /// </summary>
+        public GhostscriptNativeKind NativeKind
+        {
+            get { return _nativeKind; }
+        }
+
+        /// <summary>
+        /// True when this native library is GhostPDL (<c>gpdldll64.dll</c> / <c>libgpdl.so</c>).
+        /// </summary>
+        public bool IsGhostPdl
+        {
+            get { return _nativeKind == GhostscriptNativeKind.GhostPdl; }
+        }
+
+        #endregion
+
         #region ToString
 
         /// <summary>
@@ -158,7 +182,7 @@ namespace Ghostscript.NET
         /// </summary>
         public override string ToString()
         {
-            return string.Format("Licence: {0}, Version: {1}, Source: {2}, Dll: {3}, Lib: {4}", _licenseType, _version, _source, _dllPath, _libPath);
+            return string.Format("Licence: {0}, Version: {1}, Kind: {2}, Source: {3}, Dll: {4}, Lib: {5}", _licenseType, _version, _nativeKind, _source, _dllPath, _libPath);
         }
 
         #endregion
@@ -567,6 +591,72 @@ namespace Ghostscript.NET
             throw new GhostscriptLibraryNotInstalledException();
         }
 
+        /// <summary>
+        /// Preferred Ghostscript library for viewing. Falls back to Ghostscript next to GhostPDL,
+        /// then GhostPDL itself, so Office files work when only a GhostPDL install is present.
+        /// </summary>
+        public static GhostscriptVersionInfo GetPreferredVersionOrPdl()
+        {
+            GhostscriptVersionInfo bundled;
+            if (TryGetBundledVersion(out bundled))
+            {
+                return bundled;
+            }
+
+            GhostscriptVersionInfo system = TryGetLastInstalledSystemVersion(
+                GhostscriptLicense.GPL | GhostscriptLicense.AFPL | GhostscriptLicense.Artifex,
+                GhostscriptLicense.GPL);
+            if (system != null)
+            {
+                return system;
+            }
+
+            GhostscriptVersionInfo pdl;
+            if (TryGetGhostPdlVersion(out pdl))
+            {
+                GhostscriptVersionInfo gsBesidePdl;
+                if (TryGetGhostscriptBeside(pdl.DllPath, out gsBesidePdl))
+                {
+                    return gsBesidePdl;
+                }
+
+                return pdl;
+            }
+
+            throw new GhostscriptLibraryNotInstalledException();
+        }
+
+        private static bool TryGetGhostscriptBeside(string nativeLibraryPath, out GhostscriptVersionInfo version)
+        {
+            version = null;
+
+            if (string.IsNullOrWhiteSpace(nativeLibraryPath))
+            {
+                return false;
+            }
+
+            string directory = Path.GetDirectoryName(nativeLibraryPath);
+            string found = FindLibraryInDirectory(directory, GetBundledLibraryNames());
+            if (string.IsNullOrEmpty(found) || CrossPlatformNativeLibraryHelper.IsGhostPdlLibrary(found))
+            {
+                return false;
+            }
+
+            if (!CrossPlatformNativeLibraryHelper.IsLibraryCompatible(found))
+            {
+                return false;
+            }
+
+            Version gsVersion = ReadBundledVersionMetadata(directory) ?? ParseVersionFromString(Path.GetFileName(found)) ?? new Version(0, 0);
+            version = new GhostscriptVersionInfo(
+                gsVersion,
+                found,
+                directory,
+                GhostscriptLicense.Artifex,
+                GhostscriptDiscoverySource.Custom);
+            return true;
+        }
+
         #endregion
 
         #region TryGetBundledVersion / GetBundledVersion
@@ -793,6 +883,212 @@ namespace Ghostscript.NET
             {
                 return null;
             }
+        }
+
+        #endregion
+
+        #region GetPreferredVersionForInput
+
+        /// <summary>
+        /// Returns GhostPDL when <paramref name="inputPath"/> is an Office file, otherwise the preferred Ghostscript library.
+        /// </summary>
+        public static GhostscriptVersionInfo GetPreferredVersionForInput(string inputPath)
+        {
+            if (GhostscriptOffice.IsOfficeFile(inputPath))
+            {
+                return GetGhostPdlVersion();
+            }
+
+            return GetPreferredVersion();
+        }
+
+        #endregion
+
+        #region GhostPDL discovery
+
+        /// <summary>
+        /// True when a GhostPDL native library can be located.
+        /// </summary>
+        public static bool IsGhostPdlInstalled
+        {
+            get
+            {
+                GhostscriptVersionInfo version;
+                return TryGetGhostPdlVersion(out version);
+            }
+        }
+
+        /// <summary>
+        /// Gets a GhostPDL native library. Throws if none is found.
+        /// Office files require GhostPDL, not standard Ghostscript.
+        /// </summary>
+        public static GhostscriptVersionInfo GetGhostPdlVersion()
+        {
+            GhostscriptVersionInfo version;
+            if (TryGetGhostPdlVersion(out version))
+            {
+                return version;
+            }
+
+            throw new GhostscriptPdlLibraryNotFoundException();
+        }
+
+        /// <summary>
+        /// Tries to locate a GhostPDL native library.
+        /// Search order: <c>GHOSTPDL_DLL</c> / <c>GPDL_DLL</c>, the application folder
+        /// (drop-in <c>gpdldll</c> / <c>libgpdl</c> from Ghostscript.NET.Office),
+        /// then the same directory as a discovered Ghostscript DLL.
+        /// </summary>
+        public static bool TryGetGhostPdlVersion(out GhostscriptVersionInfo version)
+        {
+            version = null;
+
+            string libraryPath = FindGhostPdlLibraryPath();
+            if (string.IsNullOrEmpty(libraryPath) || !File.Exists(libraryPath))
+            {
+                return false;
+            }
+
+            if (!CrossPlatformNativeLibraryHelper.IsLibraryCompatible(libraryPath))
+            {
+                return false;
+            }
+
+            string directory = Path.GetDirectoryName(libraryPath) ?? string.Empty;
+            Version gsVersion = ReadBundledVersionMetadata(directory) ?? ParseVersionFromString(Path.GetFileName(libraryPath)) ?? new Version(0, 0);
+
+            version = new GhostscriptVersionInfo(
+                gsVersion,
+                libraryPath,
+                directory,
+                GhostscriptLicense.Artifex,
+                FileIsBundled(libraryPath) ? GhostscriptDiscoverySource.Bundled : GhostscriptDiscoverySource.Custom);
+
+            return true;
+        }
+
+        private static string FindGhostPdlLibraryPath()
+        {
+            string envPath = Environment.GetEnvironmentVariable("GHOSTPDL_DLL");
+            if (string.IsNullOrWhiteSpace(envPath))
+            {
+                envPath = Environment.GetEnvironmentVariable("GPDL_DLL");
+            }
+
+            if (!string.IsNullOrWhiteSpace(envPath) && File.Exists(envPath))
+            {
+                return envPath;
+            }
+
+            string[] libraryNames = CrossPlatformNativeLibraryHelper.GetGhostPdlLibraryNames(Environment.Is64BitProcess);
+
+            string bundled = FindLibraryInProbeDirectories(libraryNames);
+            if (!string.IsNullOrEmpty(bundled))
+            {
+                return bundled;
+            }
+
+            GhostscriptVersionInfo gs;
+            if (TryGetBundledVersion(out gs))
+            {
+                string besideGs = FindLibraryInDirectory(Path.GetDirectoryName(gs.DllPath), libraryNames);
+                if (!string.IsNullOrEmpty(besideGs))
+                {
+                    return besideGs;
+                }
+            }
+
+            GhostscriptVersionInfo systemGs = TryGetLastInstalledSystemVersion(
+                GhostscriptLicense.GPL | GhostscriptLicense.AFPL | GhostscriptLicense.Artifex,
+                GhostscriptLicense.GPL);
+            if (systemGs != null)
+            {
+                string besideGs = FindLibraryInDirectory(Path.GetDirectoryName(systemGs.DllPath), libraryNames);
+                if (!string.IsNullOrEmpty(besideGs))
+                {
+                    return besideGs;
+                }
+            }
+
+            return null;
+        }
+
+        private static string FindLibraryInProbeDirectories(string[] libraryNames)
+        {
+            string baseDirectory = AppContext.BaseDirectory;
+            if (string.IsNullOrEmpty(baseDirectory))
+            {
+                baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            }
+
+            string rid = GetCurrentRuntimeIdentifier();
+
+            List<string> probeDirectories = new List<string>();
+            AddProbeDirectory(probeDirectories, baseDirectory);
+            AddProbeDirectory(probeDirectories, Path.Combine(baseDirectory, "native"));
+
+            if (!string.IsNullOrEmpty(rid))
+            {
+                AddProbeDirectory(probeDirectories, Path.Combine(baseDirectory, "runtimes", rid, "native"));
+                AddProbeDirectory(probeDirectories, Path.Combine(baseDirectory, rid, "native"));
+            }
+
+            foreach (string directory in probeDirectories)
+            {
+                string found = FindLibraryInDirectory(directory, libraryNames);
+                if (!string.IsNullOrEmpty(found))
+                {
+                    return found;
+                }
+            }
+
+            return null;
+        }
+
+        private static string FindLibraryInDirectory(string directory, string[] libraryNames)
+        {
+            if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory) || libraryNames == null)
+            {
+                return null;
+            }
+
+            foreach (string libraryName in libraryNames)
+            {
+                string candidate = Path.Combine(directory, libraryName);
+                if (File.Exists(candidate))
+                {
+                    return candidate;
+                }
+            }
+
+            return null;
+        }
+
+        private static bool FileIsBundled(string libraryPath)
+        {
+            string baseDirectory = AppContext.BaseDirectory ?? AppDomain.CurrentDomain.BaseDirectory;
+            if (string.IsNullOrEmpty(baseDirectory) || string.IsNullOrEmpty(libraryPath))
+            {
+                return false;
+            }
+
+            try
+            {
+                string fullLibrary = Path.GetFullPath(libraryPath);
+                string fullBase = Path.GetFullPath(baseDirectory);
+                return fullLibrary.StartsWith(fullBase, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static GhostscriptNativeKind DetectNativeKind(string dllPath)
+        {
+            return CrossPlatformNativeLibraryHelper.IsGhostPdlLibrary(dllPath)
+                ? GhostscriptNativeKind.GhostPdl
+                : GhostscriptNativeKind.Ghostscript;
         }
 
         #endregion
