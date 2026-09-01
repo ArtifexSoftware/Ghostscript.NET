@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ghostscript.NativeAssets" Version="$(GhostscriptNativeAssetsVersion)" />
     <PackageReference Include="ZUGFeRD-csharp" Version="14.1.0" />
   </ItemGroup>
 

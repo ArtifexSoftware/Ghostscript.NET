@@ -7,7 +7,7 @@
 [![Target: .NET Standard 2.0](https://img.shields.io/badge/.NET-Standard%202.0-blue)](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
 [![Discord](https://img.shields.io/discord/770681584617652264?color=6A7EC2&logo=discord&logoColor=ffffff)](https://artifex.com/discord/artifex/)
 
-**Ghostscript.NET** is a managed C# wrapper for the [Ghostscript](https://ghostscript.com) native library (`gsdll64.dll` / `libgs.so`). It lets you rasterize, convert, and process PDF, PostScript, and EPS files from any .NET application without shelling out to a command-line process.
+**Ghostscript.NET** is a managed C# wrapper for the [Ghostscript](https://ghostscript.com) native library (`gsdll64.dll` / `libgs.so`). It lets you rasterize, convert, and process PDF, PostScript, EPS, and (with a licensed GhostPDL library) Microsoft Office files from any .NET application without shelling out to a command-line process.
 
 ```powershell
 Install-Package Ghostscript.NET
@@ -29,6 +29,7 @@ Install-Package Ghostscript.NativeAssets
 - [Code examples](#code-examples)
 - [API overview](#api-overview)
 - [Finding the Ghostscript native library](#finding-the-ghostscript-native-library)
+- [Office files (GhostPDL)](#office-files-ghostpdl)
 - [PDF/A-3 conversion](#pdfa-3-conversion)
 - [Documentation](#documentation)
 - [License](#license)
@@ -160,6 +161,7 @@ processor.Process(new[]
 | **Image export** | Save pages as PNG, JPEG, TIFF, BMP, or any SkiaSharp-supported format |
 | **In-memory rendering** | Rasterize without writing intermediate files to disk |
 | **PDF conversion** | Convert PS/EPS to PDF, compress PDFs, apply `pdfwrite` device settings |
+| **Office files** | Convert and rasterize Word, Excel, PowerPoint (and related) files when a licensed GhostPDL library is present |
 | **Custom switches** | Pass any Ghostscript command-line switch directly via `CustomSwitches` or `Process(args[])` |
 | **Progress events** | `GhostscriptProcessor` raises `Started`, `Processing` (per-page), `Error`, and `Completed` events |
 | **Multi-instance** | Multiple `GhostscriptProcessor` or `GhostscriptRasterizer` instances can run in parallel |
@@ -325,6 +327,7 @@ rasterizer.Open("input.pdf", dllBytes);
 | `GhostscriptProcessor` | `Ghostscript.NET.Processor` | Run Ghostscript with any argument array; exposes progress events |
 | `GhostscriptViewer` | `Ghostscript.NET.Viewer` | Interactive viewer with zoom and progressive rendering |
 | `GhostscriptVersionInfo` | `Ghostscript.NET` | Discover installed Ghostscript versions; specify DLL path |
+| `GhostscriptOffice` | `Ghostscript.NET` | Convert Office files to PDF via GhostPDL; detect supported extensions |
 | `GhostscriptLibrary` | `Ghostscript.NET` | Low-level native library loader and P/Invoke surface |
 | `GhostscriptStdIO` | `Ghostscript.NET` | Abstract base class for stdin/stdout/stderr callbacks |
 | `GhostscriptPngDevice` | `Ghostscript.NET.OutputDevices` | Typed device for PNG output with all PNG switches |
@@ -352,7 +355,8 @@ rasterizer.Open("input.pdf", dllBytes);
 
 | Member | Type | Description |
 |---|---|---|
-| `Process(string[] args)` | Method | Run Ghostscript with a raw argument array |
+| `CreateForInput(string path)` | Static method | Optional: load GhostPDL up front for an Office path |
+| `Process(string[] args)` | Method | Run Ghostscript; loads GhostPDL automatically if args include an Office file |
 | `Process(GhostscriptDevice device)` | Method | Run using a typed device object |
 | `Process(string[] args, GhostscriptStdIO callback)` | Method | Run with stdout/stderr capture |
 | `StartProcessing(...)` | Method | Alias for `Process`; included for API compatibility |
@@ -379,6 +383,10 @@ rasterizer.Open("input.pdf", dllBytes);
 | `.DllPath` | Property | Path to the native library file |
 | `.Version` | Property | `System.Version` of the detected installation |
 | `.Source` | Property | `Bundled`, `System`, or `Custom` |
+| `.NativeKind` / `.IsGhostPdl` | Property | Ghostscript vs GhostPDL native library |
+| `GetGhostPdlVersion()` | Static method | Locates `gpdldll64.dll` / `libgpdl.so` (required for Office files) |
+| `TryGetGhostPdlVersion(out version)` | Static method | Same lookup without throwing |
+| `GetPreferredVersionForInput(path)` | Static method | GhostPDL for Office paths, otherwise preferred Ghostscript |
 
 ---
 
@@ -400,6 +408,65 @@ var version = new GhostscriptVersionInfo(@"C:\MyApp\gs\gsdll64.dll");
 byte[] dll = GetEmbeddedResource("gsdll64.dll");
 rasterizer.Open("input.pdf", dll);
 ```
+
+---
+
+## Office files (GhostPDL)
+
+Standard Ghostscript (`gsdll64.dll` / `Ghostscript.NativeAssets`) cannot open Word, Excel, or PowerPoint files. Office support uses **GhostPDL** (`gpdldll64.dll` / `gpdldll32.dll` / `libgpdl.so`), which includes **SmartOffice** and exposes the same `gsapi_*` API.
+
+SmartOffice is commercial, in-house technology. The GhostPDL native library is **not** published on nuget.org and is **not** included in `Ghostscript.NativeAssets`. Without a commercial Ghostscript.NET license, opening an Office file throws `GhostscriptPdlLibraryNotFoundException` and directs you to [Artifex](https://artifex.com/contact/ghostscript). Licensed users obtain the matching library from the **Ghostscript.NET.Office** repository and copy it into the .NET project.
+
+Place the file next to your application, under `runtimes/<rid>/native/`, or set `GHOSTPDL_DLL` (or `GPDL_DLL`) to its full path. After that, **existing Ghostscript.NET processor code does not need to change**: if the argument list includes an Office file, `GhostscriptProcessor` loads GhostPDL automatically (and ignores `-dSAFER` for that job). `CreateForInput` is optional. If `gsdll64.dll` sits beside GhostPDL, the viewer/rasterizer uses it to display the converted PDF.
+
+**Convert Office to PDF**
+
+```csharp
+using Ghostscript.NET;
+
+GhostscriptOffice.ConvertToPdf(@"D:\report.docx", @"D:\report.pdf");
+```
+
+**Rasterize an Office file** (`GhostscriptRasterizer` / `GhostscriptViewer` convert to a temporary PDF automatically)
+
+```csharp
+using Ghostscript.NET.Rasterizer;
+
+using var rasterizer = new GhostscriptRasterizer();
+rasterizer.Open(@"D:\report.docx");
+
+for (int page = 1; page <= rasterizer.PageCount; page++)
+{
+    SKBitmap image = rasterizer.GetPage(dpi: 150, pageNumber: page);
+}
+```
+
+**Run GhostPDL with any device**
+
+Existing `GhostscriptProcessor` samples keep working. Pass an Office path in the argument list and place `gpdldll64.dll` next to the app:
+
+```csharp
+using Ghostscript.NET;
+using Ghostscript.NET.Processor;
+
+GhostscriptVersionInfo gv = GhostscriptVersionInfo.GetLastInstalledVersion();
+using var processor = new GhostscriptProcessor(gv, true);
+processor.Process(new[]
+{
+    "-dBATCH", "-dNOPAUSE", "-dSAFER",
+    "-sDEVICE=png16m",
+    "-sOutputFile=page-%03d.png",
+    @"D:\report.docx"
+});
+```
+
+`CreateForInput` still loads GhostPDL up front when you already know the input is Office.
+
+Use **full paths** for Office input and output. GhostPDL allows only one interpreter instance per process.
+
+Supported extensions include `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, `.odt`, `.ods`, `.odp`, `.rtf`, and `.csv`.
+
+Usage with Ghostscript.NET, including sample code, is documented in **Ghostscript.NET.Office**. Maintainers who produce the native libraries see **Ghostscript.NET.Office/BUILD.md**.
 
 ---
 

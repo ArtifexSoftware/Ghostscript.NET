@@ -1,5 +1,12 @@
 # Changelog
 
+### [1.3.5] - 2026-08-28
+
+- **Office files:** Word, Excel, and PowerPoint can be converted and rasterized when a licensed GhostPDL library is present. Without it, Office APIs throw `GhostscriptPdlLibraryNotFoundException` and point users to Artifex for a commercial Ghostscript.NET license.
+- **Existing processor code:** `GhostscriptProcessor` detects an Office path in the argument list, loads `gpdldll` if it is on the search path, and treats `-dSAFER` as `-dNOSAFER` for that job. Callers can keep `GetLastInstalledVersion()`.
+- **32-bit GhostPDL:** `gpdldll32.dll` exports stdcall names (`_gsapi_revision@8`). Ghostscript.NET now resolves those in x86 processes. NativeAssets `gsdll32.dll` already used undecorated names, so it was unaffected.
+- GhostPDL/SmartOffice is **commercial**. It is not in `Ghostscript.NativeAssets` or on nuget.org. Licensed users copy the library from Ghostscript.NET.Office into their project.
+
 ### [1.3.4] - 2026-07-20
 
 - **Bundled native library discovery:** `GhostscriptVersionInfo` can locate app-local Ghostscript binaries (for example from `Ghostscript.NativeAssets`) via `TryGetBundledVersion`, `GetBundledVersion`, and `GetPreferredVersion`. `GetLastInstalledVersion` now prefers bundled assets before falling back to a system installation.

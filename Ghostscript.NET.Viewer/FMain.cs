@@ -147,8 +147,8 @@ namespace Ghostscript.NET.Viewer
         private void mnuFileOpen_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Title = "Open PDF file";
-            ofd.Filter = "PDF, PS, EPS files|*.pdf;*.ps;*.eps";
+            ofd.Title = "Open document";
+            ofd.Filter = "Documents|*.pdf;*.ps;*.eps;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.odt;*.ods;*.odp;*.rtf|PDF, PS, EPS files|*.pdf;*.ps;*.eps|Office files|*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.odt;*.ods;*.odp;*.rtf|All files|*.*";
 
             if (ofd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
             {

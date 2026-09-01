@@ -1,6 +1,6 @@
-**Ghostscript.NET** is the most completed managed wrapper library around the [Ghostscript](https://ghostscript.com) library - an interpreter for PDF and PostScript files.
+**Ghostscript.NET** is the most completed managed wrapper library around the [Ghostscript](https://ghostscript.com) library - an interpreter for PDF and PostScript files. With a licensed GhostPDL library (`gpdldll` / `libgpdl`) it also converts Microsoft Office documents.
 
-Ghostscript can be provided via a system install or the optional `Ghostscript.NativeAssets` NuGet package (app-local binaries).
+Ghostscript can be provided via a system install or the optional `Ghostscript.NativeAssets` NuGet package (app-local binaries). Office/SmartOffice natives are **not** in that package; licensed users obtain them from Ghostscript.NET.Office.
 
 ### Features
 

@@ -33,6 +33,9 @@
     <ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="TestFiles\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Ghostscript.NativeAssets" Version="$(GhostscriptNativeAssetsVersion)" />
     <PackageReference Include="IKVM" Version="8.1.5717.0" />
     <PackageReference Include="itext" Version="8.0.3" />

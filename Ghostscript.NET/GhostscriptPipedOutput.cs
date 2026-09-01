@@ -112,11 +112,10 @@ namespace Ghostscript.NET
 
                     if (_thread != null)
                     {
-                        // check if the thread is still running
-                        if (_thread.ThreadState == ThreadState.Running)
+                        // Thread.Abort is not supported on .NET Core; closing the pipe unblocks Read.
+                        if (_thread.IsAlive)
                         {
-                            // abort the thread
-                            _thread.Abort();
+                            _thread.Join(TimeSpan.FromSeconds(2));
                         }
 
                         _thread = null;
@@ -181,7 +180,11 @@ namespace Ghostscript.NET
         {
             get
             {
-                _thread.Join();
+                if (!_thread.Join(TimeSpan.FromSeconds(30)))
+                {
+                    throw new TimeoutException("Timed out reading Ghostscript piped output.");
+                }
+
                 return _data.ToArray();
             }
         }

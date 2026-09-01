@@ -25,23 +25,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Ghostscript.NET;
-using Ghostscript.NET.Processor;
-using Ghostscript.NET.Rasterizer;
 using Ghostscript.NET.Samples;
-using javax.print.attribute.standard;
-using SkiaSharp;
-using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 Console.WriteLine("Ghostscript.NET Samples");
 
 if (!GhostscriptVersionInfo.IsGhostscriptInstalled)
 {
-    throw new Exception("You don't have Ghostscript installed on this machine!");
+    throw new Exception("Ghostscript was not found. Install Ghostscript or reference Ghostscript.NativeAssets.");
 }
+
+Console.WriteLine("Using Ghostscript: " + GhostscriptVersionInfo.GetPreferredVersion().DllPath);
 
 List<ISample> samples = new()
 {
@@ -57,18 +53,34 @@ List<ISample> samples = new()
     new DeviceUsageSample(),
     new PipedOutputSample(),
     new SendToPrinterSample(),
-    new UnicodeTestSample()
+    new UnicodeTestSample(),
+    new OfficeSupportSample()
 };
 
+string outputDir = SampleFiles.OutputDirectory;
+Directory.CreateDirectory(outputDir);
+Directory.CreateDirectory("Output");
+
+int failed = 0;
 foreach (ISample sample in samples)
 {
-    string path = @"Output";
-
-    if (!Directory.Exists(path))
+    string name = sample.GetType().Name;
+    Console.WriteLine();
+    Console.WriteLine("--- " + name + " ---");
+    try
     {
-        Directory.CreateDirectory(path);
+        sample.Start();
+        Console.WriteLine("Sample '" + name + "' completed.");
     }
-
-    sample.Start();
-    Console.WriteLine($"Sample '{sample.GetType().Name}' run successful!");
+    catch (Exception ex)
+    {
+        failed++;
+        Console.WriteLine("Sample '" + name + "' failed: " + ex.Message);
+    }
 }
+
+Console.WriteLine();
+Console.WriteLine(failed == 0
+    ? "All samples completed. Exiting."
+    : failed + " sample(s) failed. Exiting.");
+Environment.Exit(failed == 0 ? 0 : 1);

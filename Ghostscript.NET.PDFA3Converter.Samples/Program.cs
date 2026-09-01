@@ -34,18 +34,36 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
 
             if (!GhostscriptVersionInfo.IsGhostscriptInstalled)
             {
-                throw new Exception("You don't have Ghostscript installed on this machine!");
+                throw new Exception("Ghostscript was not found. Install Ghostscript or reference Ghostscript.NativeAssets.");
             }
 
-            ISample sample;
+            Console.WriteLine("Using Ghostscript: " + SamplePaths.ResolveGhostscriptDll());
 
-            sample = new FacturXWithMustangSample();
-            sample.Start();
+            int failed = 0;
+            ISample[] samples =
+            {
+                new FacturXWithMustangSample(),
+                new FacturXWithZUGFeRDcsharpSample()
+            };
 
-            sample = new FacturXWithZUGFeRDcsharpSample();
-            sample.Start();
+            foreach (ISample sample in samples)
+            {
+                string name = sample.GetType().Name;
+                try
+                {
+                    sample.Start();
+                    Console.WriteLine(name + " completed.");
+                }
+                catch (Exception ex)
+                {
+                    failed++;
+                    Console.WriteLine(name + " failed: " + ex.Message);
+                }
+            }
 
-            Console.ReadLine();
+            Console.WriteLine(failed == 0
+                ? "PDFA3Converter samples completed."
+                : failed + " sample(s) failed.");
         }
     }
 }

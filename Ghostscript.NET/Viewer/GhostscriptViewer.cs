@@ -186,7 +186,7 @@ namespace Ghostscript.NET.Viewer
                 throw new FileNotFoundException("Could not find input file.", path);
             }
 
-            this.Open(path, GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL), false);
+            this.Open(path, GhostscriptVersionInfo.GetPreferredVersionOrPdl(), false);
         }
 
         #endregion
@@ -230,7 +230,7 @@ namespace Ghostscript.NET.Viewer
 
             this.Close();
 
-            _filePath = path;
+            _filePath = ResolveInputPath(path);
 
             _interpreter = new GhostscriptInterpreter(versionInfo, dllFromMemory);
 
@@ -273,7 +273,7 @@ namespace Ghostscript.NET.Viewer
 
             this.Close();
 
-            _filePath = path;
+            _filePath = ResolveInputPath(path);
 
             _interpreter = new GhostscriptInterpreter(library);
 
@@ -307,6 +307,21 @@ namespace Ghostscript.NET.Viewer
         public void RegisterTempFile(string path)
         {
             _fileCleanupHelper.Add(path);
+        }
+
+        /// <summary>
+        /// Converts Office files to a temporary PDF via GhostPDL so the existing PDF viewer path can be used.
+        /// </summary>
+        private string ResolveInputPath(string path)
+        {
+            if (!GhostscriptOffice.IsOfficeFile(path))
+            {
+                return path;
+            }
+
+            string pdfPath = GhostscriptOffice.ConvertToTemporaryPdf(path);
+            _fileCleanupHelper.Add(pdfPath);
+            return pdfPath;
         }
 
         #endregion
@@ -373,6 +388,8 @@ namespace Ghostscript.NET.Viewer
 
             List<string> args = new List<string>();
             args.Add("-gsnet");
+            args.Add("-dNOPAUSE");
+            args.Add("-dNOPROMPT");
             args.Add("-sDEVICE=display");
 
             if (Environment.Is64BitProcess)

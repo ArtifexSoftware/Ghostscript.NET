@@ -34,10 +34,19 @@ namespace Ghostscript.NET.Samples
     {
         public void Start()
         {
-            // YOU NEED TO HAVE ADMINISTRATOR RIGHTS TO RUN THIS CODE
+            // mswinpr2 + "Microsoft Print to PDF" opens a Save dialog and never returns,
+            // which keeps Ghostscript.NET.Samples from exiting.
+            string runPrinter = Environment.GetEnvironmentVariable("GHOSTSCRIPT_NET_RUN_PRINTER");
+            if (!string.Equals(runPrinter, "1", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("Skipping SendToPrinterSample (would wait on a printer/save dialog). Set GHOSTSCRIPT_NET_RUN_PRINTER=1 to run it.");
+                return;
+            }
 
             string printerName = "Microsoft Print to PDF";
-            string inputFile = @"..\..\..\TestFiles\SendToPrinterSample.pdf";
+            string inputFile = SampleFiles.TryGet("SendToPrinterSample.pdf", out string pdf)
+                ? pdf
+                : @"..\..\..\TestFiles\SendToPrinterSample.pdf";
 
             using (GhostscriptProcessor processor = new GhostscriptProcessor())
             {

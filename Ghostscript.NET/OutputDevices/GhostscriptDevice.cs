@@ -249,6 +249,12 @@ namespace Ghostscript.NET
 
         public void Process(GhostscriptStdIO stdIO_callback)
         {
+            if (GhostscriptOffice.ContainsOfficeFile(this.InputFiles))
+            {
+                this.Process(GhostscriptVersionInfo.GetGhostPdlVersion(), false, stdIO_callback);
+                return;
+            }
+
             this.Process(GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL), 
                          true,
                          stdIO_callback); 

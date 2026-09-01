@@ -118,6 +118,15 @@ namespace Ghostscript.NET.Processor
             : this(GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL), false)
         { }
 
+        /// <summary>
+        /// Creates a processor that loads GhostPDL when <paramref name="inputPath"/> is an Office file,
+        /// otherwise the preferred Ghostscript library.
+        /// </summary>
+        public static GhostscriptProcessor CreateForInput(string inputPath)
+        {
+            return new GhostscriptProcessor(GhostscriptVersionInfo.GetPreferredVersionForInput(inputPath), false);
+        }
+
         #endregion
 
         #region Constructor - library
@@ -208,6 +217,24 @@ namespace Ghostscript.NET.Processor
 
         #endregion
 
+        private void EnsureGhostPdlLibrary()
+        {
+            if (_gs != null && _gs.VersionInfo != null && _gs.VersionInfo.IsGhostPdl)
+            {
+                return;
+            }
+
+            GhostscriptLibrary replacement = new GhostscriptLibrary(GhostscriptVersionInfo.GetGhostPdlVersion(), false);
+
+            if (_processorOwnsLibrary && _gs != null)
+            {
+                _gs.Dispose();
+            }
+
+            _gs = replacement;
+            _processorOwnsLibrary = true;
+        }
+
         #region Process - device
 
         public void Process(GhostscriptDevice device)
@@ -275,6 +302,12 @@ namespace Ghostscript.NET.Processor
             if (args.Length < 3)
             {
                 throw new ArgumentOutOfRangeException("args");
+            }
+
+            if (GhostscriptOffice.ContainsOfficeFile(args))
+            {
+                EnsureGhostPdlLibrary();
+                args = GhostscriptOffice.PrepareProcessorArgs(args);
             }
 
             // Prepare arguments: if the native gsapi_set_arg_encoding API is supported

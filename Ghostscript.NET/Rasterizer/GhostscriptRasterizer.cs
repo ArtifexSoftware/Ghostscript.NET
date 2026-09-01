@@ -143,7 +143,7 @@ namespace Ghostscript.NET.Rasterizer
                 throw new ArgumentNullException("stream");
             }
 
-            this.Open(stream, GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL), false);
+            this.Open(stream, GhostscriptVersionInfo.GetPreferredVersionOrPdl(), false);
         }
 
         #endregion
@@ -157,7 +157,7 @@ namespace Ghostscript.NET.Rasterizer
                 throw new FileNotFoundException("Could not find input file.", path);
             }
 
-            this.Open(path, GhostscriptVersionInfo.GetLastInstalledVersion(GhostscriptLicense.GPL | GhostscriptLicense.AFPL, GhostscriptLicense.GPL), false);
+            this.Open(path, GhostscriptVersionInfo.GetPreferredVersionOrPdl(), false);
         }
 
         #endregion

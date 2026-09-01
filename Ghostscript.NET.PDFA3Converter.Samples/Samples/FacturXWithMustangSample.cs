@@ -46,12 +46,11 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             zf2p.generateXML(i);
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
 
-            string outfilename = "my-factur-x-mustang-sample.xml";
+            string outfilename = SamplePaths.GetOutputPath("my-factur-x-mustang-sample.xml");
             File.WriteAllBytes(outfilename, zf2p.getXML());
 
-            string gsFilePath = @"C:\Program Files\gs\gs10.06.0\bin\gsdll64.dll";
-            Console.WriteLine("Using Ghostscript filepath: " + gsFilePath);
-            Console.WriteLine("Ensure this is the filepath to your installed Ghostscript!");
+            string gsFilePath = SamplePaths.ResolveGhostscriptDll();
+            Console.WriteLine("Using Ghostscript: " + gsFilePath);
 
             PDFA3Converter converter = new PDFA3Converter(gsFilePath);
             
@@ -59,7 +58,9 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
             converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outfilename);
             
-            converter.ConvertToPDFA3(@"Samples/blank.pdf", @"sample-invoice-mustang.pdf");
+            string outputPdf = SamplePaths.GetOutputPath("sample-invoice-mustang.pdf");
+            converter.ConvertToPDFA3(SamplePaths.GetBlankPdf(), outputPdf);
+            Console.WriteLine("Wrote " + outputPdf);
             System.IO.File.Delete(outfilename);
         }
     }

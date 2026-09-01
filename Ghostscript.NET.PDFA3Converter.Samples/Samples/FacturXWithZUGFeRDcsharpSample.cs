@@ -38,18 +38,19 @@ namespace Ghostscript.NET.PDFA3Converter.Samples
         {
             Console.WriteLine(Environment.NewLine);
             Console.WriteLine("Running FacturXWithZUGFeRDcsharpSample");
-            string outFilename = "my-factur-x-zugferd-sample.xml";
+            string outFilename = SamplePaths.GetOutputPath("my-factur-x-zugferd-sample.xml");
             InvoiceDescriptor invoice = CreateInvoice();
             invoice.Save(outFilename, ZUGFeRDVersion.Version22, s2industries.ZUGFeRD.Profile.Comfort);
 
-            string gsFilePath = @"C:\Program Files\gs\gs10.06.0\bin\gsdll64.dll";
-            Console.WriteLine("Using Ghostscript filepath: "+ gsFilePath);
-            Console.WriteLine("Ensure this is the filepath to your installed Ghostscript!");
+            string gsFilePath = SamplePaths.ResolveGhostscriptDll();
+            Console.WriteLine("Using Ghostscript: " + gsFilePath);
             PDFA3Converter converter = new PDFA3Converter(gsFilePath);
             converter.SetZUGFeRDProfile("EN 16931");
             converter.SetZUGFeRDVersion("2.3");
             converter.SetEmbeddedXMLFile(outFilename);
-            converter.ConvertToPDFA3(@"Samples/blank.pdf", @"sample-invoice-zugferd.pdf");
+            string outputPdf = SamplePaths.GetOutputPath("sample-invoice-zugferd.pdf");
+            converter.ConvertToPDFA3(SamplePaths.GetBlankPdf(), outputPdf);
+            Console.WriteLine("Wrote " + outputPdf);
 			System.IO.File.Delete(outFilename);
 		}
 
