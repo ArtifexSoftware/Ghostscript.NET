@@ -1,5 +1,13 @@
 # Changelog
 
+### [1.3.6-rc.2] - 2026-09-09
+
+- **Rasterizer / Viewer (Ghostscript 10.01+):** Call `pdfshowpage_setpage` before drawing so pdfi can set `PageUsesTransparency` and spot colors. The previous 10.01 split only ran empty `pdfshowpage_init` then `pdfshowpage_finish`, which could kill the process on a later page with no C# exception. Fixes [#131](https://github.com/ArtifexSoftware/Ghostscript.NET/issues/131).
+
+### [1.3.6-rc.1] - 2026-09-09
+
+- **GhostscriptPipedOutput (.NET 6+):** Stop using `SetHandleAsInvalid()` and `Thread.Abort()`. Release the local client pipe handle with `DisposeLocalCopyOfClientHandle()`, read the pipe without disposing it from `BinaryReader`, and swallow expected close exceptions on the reader so `Dispose()` cannot crash the process. Fixes [#146](https://github.com/ArtifexSoftware/Ghostscript.NET/issues/146).
+
 ### [1.3.5] - 2026-08-28
 
 - **Office files:** Word, Excel, and PowerPoint can be converted and rasterized when a licensed GhostPDL library is present. Without it, Office APIs throw `GhostscriptPdlLibraryNotFoundException` and point users to Artifex for a commercial Ghostscript.NET license.

@@ -28,6 +28,7 @@ using System;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ghostscript.NET
 {
@@ -40,9 +41,11 @@ namespace Ghostscript.NET
         #region Private variables
 
         private bool _disposed = false;
+        private int _localClientHandleReleased = 0;
         private AnonymousPipeServerStream _pipe;
-        private Thread _thread = null;
-        private MemoryStream _data = new MemoryStream();
+        private Task _readTask;
+        private readonly MemoryStream _data = new MemoryStream();
+        private readonly object _dataSync = new object();
 
         #endregion
 
@@ -54,8 +57,7 @@ namespace Ghostscript.NET
         public GhostscriptPipedOutput()
         {
             _pipe = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
-            _thread = new Thread(new System.Threading.ParameterizedThreadStart(ReadGhostscriptPipeOutput));
-            _thread.Start();
+            _readTask = Task.Factory.StartNew(() => ReadGhostscriptPipeOutput(null), CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         #endregion
@@ -95,30 +97,37 @@ namespace Ghostscript.NET
             {
                 if (disposing)
                 {
+                    ReleaseLocalClientHandle();
+
                     if (_pipe != null)
                     {
-                        // _pipe.DisposeLocalCopyOfClientHandle();
-
-                        // for some reason at this point the handle is invalid for real.
-                        // DisposeLocalCopyOfClientHandle should be called instead, but it 
-                        // throws an exception saying that the handle is invalid pointing to 
-                        // CloseHandle method in the dissasembled code.
-                        // this is a workaround, if we don't set the handle as invalid, when
-                        // garbage collector tries to dispose this handle, exception is thrown
-                        _pipe.ClientSafePipeHandle.SetHandleAsInvalid();
-                        
-                        _pipe.Dispose(); _pipe = null;
-                    }
-
-                    if (_thread != null)
-                    {
-                        // Thread.Abort is not supported on .NET Core; closing the pipe unblocks Read.
-                        if (_thread.IsAlive)
+                        try
                         {
-                            _thread.Join(TimeSpan.FromSeconds(2));
+                            _pipe.Dispose();
+                        }
+                        catch
+                        {
                         }
 
-                        _thread = null;
+                        _pipe = null;
+                    }
+
+                    if (_readTask != null)
+                    {
+                        try
+                        {
+                            _readTask.Wait(TimeSpan.FromSeconds(2));
+                        }
+                        catch (AggregateException)
+                        {
+                        }
+
+                        _readTask = null;
+                    }
+
+                    lock (_dataSync)
+                    {
+                        _data.Dispose();
                     }
                 }
 
@@ -139,7 +148,43 @@ namespace Ghostscript.NET
         {
             get 
             {
+                if (_disposed || _pipe == null)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+
                 return _pipe.GetClientHandleAsString();
+            }
+        }
+
+        #endregion
+
+        #region ReleaseLocalClientHandle
+
+        /// <summary>
+        /// Closes the server's extra copy of the write end. Ghostscript keeps its own handle
+        /// after <c>%handle%</c> is opened; until this copy is released, Read never sees EOF.
+        /// Call after Ghostscript has received the handle (typically from <see cref="Data"/>).
+        /// </summary>
+        private void ReleaseLocalClientHandle()
+        {
+            if (Interlocked.Exchange(ref _localClientHandleReleased, 1) == 1)
+            {
+                return;
+            }
+
+            AnonymousPipeServerStream pipe = _pipe;
+            if (pipe == null)
+            {
+                return;
+            }
+
+            try
+            {
+                pipe.DisposeLocalCopyOfClientHandle();
+            }
+            catch
+            {
             }
         }
 
@@ -152,20 +197,41 @@ namespace Ghostscript.NET
         /// </summary>
         public void ReadGhostscriptPipeOutput(object state)
         {
-            // create BinaryReader instance through which we will read out Ghostscript output
-            using(BinaryReader reader = new BinaryReader(_pipe))
+            AnonymousPipeServerStream pipe = _pipe;
+            if (pipe == null)
             {
-                // allocate memory space for the incoming output data
-                byte[] buffer = new byte[_pipe.InBufferSize];
+                return;
+            }
 
-                int readCount = 0;
+            byte[] buffer = new byte[8192];
 
-                // read untill we have something to read
-                while ((readCount = reader.Read(buffer, 0, buffer.Length)) > 0)
+            try
+            {
+                int readCount;
+
+                while ((readCount = pipe.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    // write the output to our local memory stream
-                    _data.Write(buffer, 0, readCount);
+                    lock (_dataSync)
+                    {
+                        try
+                        {
+                            _data.Write(buffer, 0, readCount);
+                        }
+                        catch (ObjectDisposedException)
+                        {
+                            return;
+                        }
+                    }
                 }
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (IOException)
+            {
             }
         }
 
@@ -180,12 +246,22 @@ namespace Ghostscript.NET
         {
             get
             {
-                if (!_thread.Join(TimeSpan.FromSeconds(30)))
+                if (_disposed)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+
+                ReleaseLocalClientHandle();
+
+                if (!_readTask.Wait(TimeSpan.FromSeconds(30)))
                 {
                     throw new TimeoutException("Timed out reading Ghostscript piped output.");
                 }
 
-                return _data.ToArray();
+                lock (_dataSync)
+                {
+                    return _data.ToArray();
+                }
             }
         }
 
