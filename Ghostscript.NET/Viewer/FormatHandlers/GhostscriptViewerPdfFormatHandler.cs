@@ -346,7 +346,13 @@ namespace Ghostscript.NET.Viewer
 
                 if (this.Viewer.Interpreter.LibraryRevision >= 10010)
                 {
+                    // pdfi (Ghostscript 10.01+): pdfshowpage_init is a no-op.
+                    // pdfshowpage_setpage runs newpdf_device_setup (PageUsesTransparency /
+                    // PageSpotColors). That must happen before GhostscriptViewer setpagedevice
+                    // so erasepage and the compositor are correct. Without it, page 2+ of some
+                    // PDFs can abort inside .PDFDrawPage with no managed exception (#131).
                     this.Execute("Page pdfshowpage_init");
+                    this.Execute("Page pdfshowpage_setpage pop");
                 }
             }
             else
