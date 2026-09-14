@@ -111,7 +111,7 @@ namespace Ghostscript.NET
 
             if (CurrentPlatform == OSPlatform.Linux)
             {
-                return new[] { "libgpdl.so.10", "libgpdl.so.9", "libgpdl.so" };
+                return new[] { GetGhostPdlLibraryName(is64Bit) };
             }
 
             if (CurrentPlatform == OSPlatform.OSX)

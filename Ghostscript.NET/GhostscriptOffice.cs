@@ -39,24 +39,79 @@ namespace Ghostscript.NET
     /// </summary>
     public static class GhostscriptOffice
     {
+        private static readonly object UnlockSync = new object();
+        private static string _unlockKey;
+
         /// <summary>
         /// Artifex contact page for a commercial Ghostscript.NET license (Office / SmartOffice).
         /// </summary>
         public const string CommercialLicenseUrl = "https://artifex.com/contact/ghostscript";
 
         /// <summary>
-        /// Message shown when Office files are used without a commercial Ghostscript.NET license
-        /// (no SmartOffice-enabled GhostPDL library).
+        /// Message shown when Office conversion cannot use GhostPDL, or when a key is required for the full document.
         /// </summary>
         public static string CommercialLicenseRequiredMessage
         {
             get
             {
                 return
-                    "Microsoft Office files are a commercial Ghostscript.NET feature and are not included in the open-source (AGPL) package. " +
-                    "To convert Word, Excel, PowerPoint, and related files, obtain a commercial Ghostscript.NET license from Artifex: " +
-                    CommercialLicenseUrl + " " +
-                    "Licensed customers receive the SmartOffice-enabled GhostPDL native library (Ghostscript.NET.Office).";
+                    "Microsoft Office conversion uses GhostPDL. Ghostscript.NativeAssets includes that library. " +
+                    "Call GhostscriptOffice.Unlock with a Ghostscript.NET.Office key for the full document; without a key, only the first 3 pages are converted. " +
+                    "License keys: " + CommercialLicenseUrl + ".";
+            }
+        }
+
+        /// <summary>
+        /// Supplies the Ghostscript.NET.Office license key. Ghostscript.NET adds
+        /// <c>-sSOKEY</c> to GhostPDL automatically. The native library checks the
+        /// product bits (GS.NET.Office); callers do not pass a product id.
+        /// Without this call, a key-enabled GhostPDL build runs in restricted mode (first 3 pages).
+        /// </summary>
+        public static void Unlock(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentNullException("key");
+            }
+
+            lock (UnlockSync)
+            {
+                _unlockKey = key.Trim();
+            }
+        }
+
+        /// <summary>
+        /// Clears a key previously passed to <see cref="Unlock"/>. Later Office jobs run restricted
+        /// until <see cref="Unlock"/> is called again.
+        /// </summary>
+        public static void ClearUnlock()
+        {
+            lock (UnlockSync)
+            {
+                _unlockKey = null;
+            }
+        }
+
+        /// <summary>
+        /// True when <see cref="Unlock"/> has been given a non-empty key.
+        /// Does not validate the key with GhostPDL.
+        /// </summary>
+        public static bool IsUnlocked
+        {
+            get
+            {
+                lock (UnlockSync)
+                {
+                    return !string.IsNullOrEmpty(_unlockKey);
+                }
+            }
+        }
+
+        private static string GetUnlockKey()
+        {
+            lock (UnlockSync)
+            {
+                return _unlockKey;
             }
         }
 
@@ -139,12 +194,24 @@ namespace Ghostscript.NET
         /// </summary>
         internal static string[] PrepareProcessorArgs(string[] args)
         {
-            List<string> result = new List<string>(args.Length + 1);
+            List<string> result = new List<string>(args.Length + 2);
             bool hasNoSafer = false;
+            string unlockKey = GetUnlockKey();
+            bool keepCallerSokey = unlockKey == null;
 
             for (int i = 0; i < args.Length; i++)
             {
                 string arg = args[i];
+
+                if (IsSokeySwitch(arg))
+                {
+                    if (keepCallerSokey)
+                    {
+                        result.Add(arg);
+                    }
+
+                    continue;
+                }
 
                 if (IsSaferSwitch(arg))
                 {
@@ -182,10 +249,17 @@ namespace Ghostscript.NET
                 result.Add(arg);
             }
 
+            int insertAt = result.Count > 0 ? 1 : 0;
+
             if (!hasNoSafer)
             {
-                int insertAt = result.Count > 0 ? 1 : 0;
                 result.Insert(insertAt, "-dNOSAFER");
+                insertAt++;
+            }
+
+            if (unlockKey != null)
+            {
+                result.Insert(insertAt, "-sSOKEY=" + unlockKey);
             }
 
             return result.ToArray();
@@ -206,6 +280,12 @@ namespace Ghostscript.NET
         {
             return !string.IsNullOrEmpty(arg)
                 && string.Equals(arg, "-dNOSAFER", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsSokeySwitch(string arg)
+        {
+            return !string.IsNullOrEmpty(arg)
+                && arg.StartsWith("-sSOKEY=", StringComparison.OrdinalIgnoreCase);
         }
 
         private static string TryGetFullPath(string path)

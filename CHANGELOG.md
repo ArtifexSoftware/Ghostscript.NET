@@ -1,11 +1,10 @@
 # Changelog
 
-### [1.3.6-rc.2] - 2026-09-09
+### [1.3.6] - 2026-09-14
 
+- **Office license key:** Call `GhostscriptOffice.Unlock(key)` once with your Ghostscript.NET.Office key. After that, Word, Excel, and PowerPoint conversions use the full document. Without `Unlock`, only the first 3 pages are converted.
+- **Ghostscript.NativeAssets 10.8.0:** Ships Ghostscript / GhostPDL **10.08.0**, including `gpdldll` on Windows and `libgpdl` on Linux. Referencing NativeAssets is enough for Office conversion; you still call `Unlock` for the full document. Linux ships a single `libgs.so` and `libgpdl.so`; Ghostscript.NET looks for those unversioned names only.
 - **Rasterizer / Viewer (Ghostscript 10.01+):** Call `pdfshowpage_setpage` before drawing so pdfi can set `PageUsesTransparency` and spot colors. The previous 10.01 split only ran empty `pdfshowpage_init` then `pdfshowpage_finish`, which could kill the process on a later page with no C# exception. Fixes [#131](https://github.com/ArtifexSoftware/Ghostscript.NET/issues/131).
-
-### [1.3.6-rc.1] - 2026-09-09
-
 - **GhostscriptPipedOutput (.NET 6+):** Stop using `SetHandleAsInvalid()` and `Thread.Abort()`. Release the local client pipe handle with `DisposeLocalCopyOfClientHandle()`, read the pipe without disposing it from `BinaryReader`, and swallow expected close exceptions on the reader so `Dispose()` cannot crash the process. Fixes [#146](https://github.com/ArtifexSoftware/Ghostscript.NET/issues/146).
 
 ### [1.3.5] - 2026-08-28

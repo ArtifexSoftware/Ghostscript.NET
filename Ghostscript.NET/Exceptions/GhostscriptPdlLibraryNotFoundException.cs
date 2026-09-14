@@ -50,10 +50,9 @@ namespace Ghostscript.NET
             string bitness = Environment.Is64BitProcess ? "64-bit" : "32-bit";
             string dllName = Environment.Is64BitProcess ? "gpdldll64.dll" : "gpdldll32.dll";
             return
-                GhostscriptOffice.CommercialLicenseRequiredMessage +
-                " If you already have that license, copy the " + bitness + " GhostPDL library (" + dllName + ") " +
-                "from Ghostscript.NET.Office into your application folder, set GHOSTPDL_DLL to its full path, " +
-                "or pass a GhostscriptVersionInfo that points at GhostPDL.";
+                "The GhostPDL native library (" + dllName + ") was not found for this " + bitness + " process. " +
+                "Reference Ghostscript.NativeAssets 10.8.0 or later (it includes gpdldll / libgpdl), " +
+                "set GHOSTPDL_DLL to the full path, or copy the library into your application folder.";
         }
     }
 }

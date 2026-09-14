@@ -359,8 +359,7 @@ namespace Ghostscript.NET
                 return versions;
             }
 
-            // Library names to search for (in order of preference - newer versions first)
-            string[] libraryNames = { "libgs.so.10", "libgs.so.9", "libgs.so" };
+            string[] libraryNames = { CrossPlatformNativeLibraryHelper.GetGhostscriptLibraryName(Environment.Is64BitProcess) };
 
             // Search for libgs.so in common locations
             string[] searchPaths = CrossPlatformNativeLibraryHelper.GetCommonInstallationPaths();
@@ -805,7 +804,7 @@ namespace Ghostscript.NET
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return new[] { "libgs.so.10", "libgs.so.9", "libgs.so" };
+                return new[] { CrossPlatformNativeLibraryHelper.GetGhostscriptLibraryName(Environment.Is64BitProcess) };
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -936,7 +935,7 @@ namespace Ghostscript.NET
         /// <summary>
         /// Tries to locate a GhostPDL native library.
         /// Search order: <c>GHOSTPDL_DLL</c> / <c>GPDL_DLL</c>, the application folder
-        /// (drop-in <c>gpdldll</c> / <c>libgpdl</c> from Ghostscript.NET.Office),
+        /// (NativeAssets copies <c>gpdldll</c> / <c>libgpdl</c> there),
         /// then the same directory as a discovered Ghostscript DLL.
         /// </summary>
         public static bool TryGetGhostPdlVersion(out GhostscriptVersionInfo version)

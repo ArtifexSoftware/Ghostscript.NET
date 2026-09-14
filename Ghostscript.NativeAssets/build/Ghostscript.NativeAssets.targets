@@ -1,8 +1,8 @@
 <Project>
 
   <!--
-    Copies Ghostscript native libraries from NuGet runtimes/<rid>/native into the app output
-    so GhostscriptVersionInfo.TryGetBundledVersion() can find them next to the application.
+    Copies Ghostscript and GhostPDL native libraries from NuGet runtimes/<rid>/native into the app output
+    so GhostscriptVersionInfo can find gsdll / gpdldll next to the application.
 
     Uses Content + CopyToOutputDirectory so classic .NET Framework (packages.config) projects
     copy native binaries reliably via the standard MSBuild pipeline.
