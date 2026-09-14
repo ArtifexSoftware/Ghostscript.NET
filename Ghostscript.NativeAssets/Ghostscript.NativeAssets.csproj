@@ -7,7 +7,7 @@
     <NoWarn>$(NoWarn);NU5128</NoWarn>
     <Title>Ghostscript.NativeAssets</Title>
     <Version>$(GhostscriptNativeAssetsVersion)</Version>
-    <Description>Ghostscript $(GhostscriptProductVersion) native binaries for Ghostscript.NET (win-x64, win-x86, and linux-x64). Distributing Ghostscript binaries is subject to AGPL or Artifex commercial licensing.</Description>
+    <Description>Ghostscript $(GhostscriptProductVersion) native binaries for Ghostscript.NET (gsdll / libgs and gpdldll / libgpdl). Distributing these binaries is subject to AGPL or Artifex commercial licensing. Office conversion also requires GhostscriptOffice.Unlock with a license key.</Description>
     <PackageId>Ghostscript.NativeAssets</PackageId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>C#;Ghostscript;NativeAssets;PDF</PackageTags>

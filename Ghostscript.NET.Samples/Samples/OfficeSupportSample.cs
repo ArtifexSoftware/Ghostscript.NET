@@ -33,9 +33,9 @@ using SkiaSharp;
 namespace Ghostscript.NET.Samples
 {
     /// <summary>
-    /// Office files require a licensed GhostPDL library (<c>gpdldll64.dll</c> / <c>libgpdl.so</c>),
-    /// not standard Ghostscript. Place the DLL from Ghostscript.NET.Office in the app folder
-    /// or set <c>GHOSTPDL_DLL</c>.
+    /// Office files require GhostPDL (<c>gpdldll64.dll</c> / <c>libgpdl.so</c>),
+    /// not standard Ghostscript. <c>Ghostscript.NativeAssets</c> 10.8.0 includes
+    /// <c>gpdldll</c> / <c>libgpdl</c>. Otherwise place the library in the app folder or set <c>GHOSTPDL_DLL</c>.
     /// </summary>
     public class OfficeSupportSample : ISample
     {
@@ -58,6 +58,17 @@ namespace Ghostscript.NET.Samples
 
             Console.WriteLine("Using GhostPDL: " + pdl.DllPath);
             Console.WriteLine("Input: " + inputPath);
+
+            string officeKey = Environment.GetEnvironmentVariable("GHOSTSCRIPT_NET_OFFICE_KEY");
+            if (!string.IsNullOrWhiteSpace(officeKey))
+            {
+                GhostscriptOffice.Unlock(officeKey);
+                Console.WriteLine("Office unlock key: set (GHOSTSCRIPT_NET_OFFICE_KEY)");
+            }
+            else
+            {
+                Console.WriteLine("Office unlock key: not set (restricted mode on key-enabled gpdl)");
+            }
 
             string outputDir = Path.GetFullPath("Output");
             Directory.CreateDirectory(outputDir);

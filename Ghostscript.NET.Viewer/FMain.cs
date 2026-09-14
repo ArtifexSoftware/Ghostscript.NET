@@ -34,6 +34,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
+using Ghostscript.NET;
 using Ghostscript.NET.Viewer;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
@@ -150,15 +151,50 @@ namespace Ghostscript.NET.Viewer
             ofd.Title = "Open document";
             ofd.Filter = "Documents|*.pdf;*.ps;*.eps;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.odt;*.ods;*.odp;*.rtf|PDF, PS, EPS files|*.pdf;*.ps;*.eps|Office files|*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.odt;*.ods;*.odp;*.rtf|All files|*.*";
 
-            if (ofd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            if (ofd.ShowDialog(this) != DialogResult.OK)
             {
-                mnuFileClose_Click(this, null);
+                return;
+            }
 
-                _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> OPEN");
+            if (GhostscriptOffice.IsOfficeFile(ofd.FileName) && !TryApplyOfficeKey())
+            {
+                return;
+            }
 
+            mnuFileClose_Click(this, null);
+
+            _stdOut.AppendLine("@GSNET_VIEWER -> COMMAND -> OPEN");
+
+            try
+            {
                 _viewer.Open(ofd.FileName, _gsVersion, false);
+                this.Text = Path.GetFileName(ofd.FileName) + " - " + Program.NAME;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, Program.NAME, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
-                this.Text = System.IO.Path.GetFileName(ofd.FileName) + " - " + Program.NAME;
+        private bool TryApplyOfficeKey()
+        {
+            using (FOfficeKey dialog = new FOfficeKey())
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                {
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(dialog.Key))
+                {
+                    GhostscriptOffice.ClearUnlock();
+                }
+                else
+                {
+                    GhostscriptOffice.Unlock(dialog.Key);
+                }
+
+                return true;
             }
         }
 

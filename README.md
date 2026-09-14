@@ -7,7 +7,7 @@
 [![Target: .NET Standard 2.0](https://img.shields.io/badge/.NET-Standard%202.0-blue)](https://docs.microsoft.com/en-us/dotnet/standard/net-standard)
 [![Discord](https://img.shields.io/discord/770681584617652264?color=6A7EC2&logo=discord&logoColor=ffffff)](https://artifex.com/discord/artifex/)
 
-**Ghostscript.NET** is a managed C# wrapper for the [Ghostscript](https://ghostscript.com) native library (`gsdll64.dll` / `libgs.so`). It lets you rasterize, convert, and process PDF, PostScript, EPS, and (with a licensed GhostPDL library) Microsoft Office files from any .NET application without shelling out to a command-line process.
+**Ghostscript.NET** is a managed C# wrapper for the [Ghostscript](https://ghostscript.com) native library (`gsdll64.dll` / `libgs.so`). It lets you rasterize, convert, and process PDF, PostScript, EPS, and (with GhostPDL) Microsoft Office files from any .NET application without shelling out to a command-line process.
 
 ```powershell
 Install-Package Ghostscript.NET
@@ -15,7 +15,7 @@ Install-Package Ghostscript.NET
 Install-Package Ghostscript.NativeAssets
 ```
 
-> **Ghostscript version compatibility:** Ghostscript.NET has been tested with Ghostscript versions up to 9.x. Compatibility with Ghostscript 10+ is not yet fully verified, though `Ghostscript.NativeAssets` currently ships Ghostscript 10.07.1. See [ghostpdl-downloads](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases) for available Ghostscript releases. Provide the native library via a system install **or** the optional `Ghostscript.NativeAssets` package.
+> **Ghostscript version compatibility:** Ghostscript.NET has been tested with Ghostscript versions up to 9.x. Compatibility with Ghostscript 10+ is not yet fully verified, though `Ghostscript.NativeAssets` currently ships Ghostscript 10.08.0. See [ghostpdl-downloads](https://github.com/ArtifexSoftware/ghostpdl-downloads/releases) for available Ghostscript releases. Provide the native library via a system install **or** the optional `Ghostscript.NativeAssets` package.
 
 ---
 
@@ -54,7 +54,7 @@ Install-Package Ghostscript.NativeAssets
 |---|---|
 | .NET | .NET Standard 2.0 or any compatible runtime (.NET 6, 7, 8, Framework 4.6.1+) |
 | Ghostscript native library | Install separately **or** reference `Ghostscript.NativeAssets` |
-| Ghostscript version | Tested with versions ≤ 9.x; Ghostscript 10+ not fully verified (`NativeAssets` ships 10.07.1) |
+| Ghostscript version | Tested with versions ≤ 9.x; Ghostscript 10+ not fully verified (`NativeAssets` ships 10.08.0) |
 | OS | Windows (32-bit and 64-bit), Linux |
 | SkiaSharp | Included as a NuGet dependency; provides `SKBitmap` for rasterized output |
 
@@ -69,11 +69,11 @@ Ghostscript.NET resolves the native library in this order:
 **Option A — NuGet native assets (recommended for seamless installs)**
 
 ```xml
-<PackageReference Include="Ghostscript.NET" Version="1.3.4" />
-<PackageReference Include="Ghostscript.NativeAssets" Version="10.7.1" />
+<PackageReference Include="Ghostscript.NET" Version="1.3.6" />
+<PackageReference Include="Ghostscript.NativeAssets" Version="10.8.0" />
 ```
 
-> Package versions are managed in `Versions.props`. `Ghostscript.NativeAssets` currently includes Ghostscript 10.07.1 for `win-x64`, `win-x86`, and `linux-x64`. NuGet uses `10.7.1` because numeric version components cannot contain leading zeroes.
+> Package versions are managed in `Versions.props`. `Ghostscript.NativeAssets` currently includes Ghostscript 10.08.0 (`gsdll` / `libgs` and `gpdldll` / `libgpdl`) for `win-x64`, `win-x86`, and `linux-x64`. NuGet uses `10.8.0` because numeric version components cannot contain leading zeroes.
 
 **Option B — system install (Windows)**
 
@@ -106,9 +106,9 @@ dotnet add package Ghostscript.NET
 **PackageReference**
 
 ```xml
-<PackageReference Include="Ghostscript.NET" Version="1.3.4" />
-<!-- Optional companion package for app-local Ghostscript binaries -->
-<PackageReference Include="Ghostscript.NativeAssets" Version="10.7.1" />
+<PackageReference Include="Ghostscript.NET" Version="1.3.6" />
+<!-- Optional: app-local Ghostscript (gsdll / libgs) and GhostPDL (gpdldll / libgpdl) -->
+<PackageReference Include="Ghostscript.NativeAssets" Version="10.8.0" />
 ```
 
 ---
@@ -394,9 +394,9 @@ rasterizer.Open("input.pdf", dllBytes);
 
 `GhostscriptVersionInfo.GetLastInstalledVersion()` / `GetPreferredVersion()` searches automatically:
 
-1. **Bundled / NativeAssets** — app base directory, `native/`, and `runtimes/<rid>/native/` for `gsdll64.dll` / `gsdll32.dll` / `libgs.so*`
+1. **Bundled / NativeAssets** — app base directory, `native/`, and `runtimes/<rid>/native/` for `gsdll64.dll` / `gsdll32.dll` / `libgs.so` and `gpdldll64.dll` / `gpdldll32.dll` / `libgpdl.so`
 2. **Windows system install:** registry keys `HKLM\SOFTWARE\GPL Ghostscript\`, `HKLM\SOFTWARE\AFPL Ghostscript\`, and `HKLM\SOFTWARE\Artifex Ghostscript\`. Matches DLL bitness to the current process.
-3. **Linux system install:** common paths including `/usr/lib`, `/usr/lib/x86_64-linux-gnu`, and `/usr/local/lib` for `libgs.so.10`, `libgs.so.9`, or `libgs.so`.
+3. **Linux system install:** common paths including `/usr/lib`, `/usr/lib/x86_64-linux-gnu`, and `/usr/local/lib` for `libgs.so`.
 
 If Ghostscript is not installed in a standard location, pass the path directly:
 
@@ -413,17 +413,20 @@ rasterizer.Open("input.pdf", dll);
 
 ## Office files (GhostPDL)
 
-Standard Ghostscript (`gsdll64.dll` / `Ghostscript.NativeAssets`) cannot open Word, Excel, or PowerPoint files. Office support uses **GhostPDL** (`gpdldll64.dll` / `gpdldll32.dll` / `libgpdl.so`), which includes **SmartOffice** and exposes the same `gsapi_*` API.
+Standard Ghostscript (`gsdll64.dll`) cannot open Word, Excel, or PowerPoint files. Office support uses **GhostPDL** (`gpdldll64.dll` / `gpdldll32.dll` / `libgpdl.so`).
 
-SmartOffice is commercial, in-house technology. The GhostPDL native library is **not** published on nuget.org and is **not** included in `Ghostscript.NativeAssets`. Without a commercial Ghostscript.NET license, opening an Office file throws `GhostscriptPdlLibraryNotFoundException` and directs you to [Artifex](https://artifex.com/contact/ghostscript). Licensed users obtain the matching library from the **Ghostscript.NET.Office** repository and copy it into the .NET project.
+`Ghostscript.NativeAssets` 10.8.0 ships GhostPDL next to Ghostscript (`gpdldll` on Windows, `libgpdl` on Linux). Referencing that package is enough for Ghostscript.NET to find GhostPDL. If you are not using NativeAssets, place the library next to the application, under `runtimes/<rid>/native/`, or set `GHOSTPDL_DLL` (or `GPDL_DLL`) to its full path.
 
-Place the file next to your application, under `runtimes/<rid>/native/`, or set `GHOSTPDL_DLL` (or `GPDL_DLL`) to its full path. After that, **existing Ghostscript.NET processor code does not need to change**: if the argument list includes an Office file, `GhostscriptProcessor` loads GhostPDL automatically (and ignores `-dSAFER` for that job). `CreateForInput` is optional. If `gsdll64.dll` sits beside GhostPDL, the viewer/rasterizer uses it to display the converted PDF.
+After that, **existing Ghostscript.NET processor code does not need to change**: if the argument list includes an Office file, `GhostscriptProcessor` loads GhostPDL automatically (and ignores `-dSAFER` for that job). `CreateForInput` is optional. If `gsdll64.dll` sits beside GhostPDL, the viewer/rasterizer uses it to display the converted PDF.
+
+Call `GhostscriptOffice.Unlock(key)` once with your Ghostscript.NET.Office key. Without `Unlock`, conversion is limited to the first 3 pages.
 
 **Convert Office to PDF**
 
 ```csharp
 using Ghostscript.NET;
 
+GhostscriptOffice.Unlock(customerKey); // once per process
 GhostscriptOffice.ConvertToPdf(@"D:\report.docx", @"D:\report.pdf");
 ```
 
@@ -443,7 +446,7 @@ for (int page = 1; page <= rasterizer.PageCount; page++)
 
 **Run GhostPDL with any device**
 
-Existing `GhostscriptProcessor` samples keep working. Pass an Office path in the argument list and place `gpdldll64.dll` next to the app:
+Existing `GhostscriptProcessor` samples keep working. Pass an Office path in the argument list. With `Ghostscript.NativeAssets` 10.8.0, GhostPDL is already next to the app:
 
 ```csharp
 using Ghostscript.NET;
@@ -466,7 +469,7 @@ Use **full paths** for Office input and output. GhostPDL allows only one interpr
 
 Supported extensions include `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, `.odt`, `.ods`, `.odp`, `.rtf`, and `.csv`.
 
-Usage with Ghostscript.NET, including sample code, is documented in **Ghostscript.NET.Office**. Maintainers who produce the native libraries see **Ghostscript.NET.Office/BUILD.md**.
+Maintainers who produce the native libraries see **Ghostscript.NET.Office/BUILD.md**.
 
 ---
 

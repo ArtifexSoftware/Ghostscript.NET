@@ -30,7 +30,10 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj" />
+    <!-- Keep Ghostscript.NET.dll next to the exe (same layout as GitHub 1.3.3 binaries). -->
+    <ProjectReference Include="..\Ghostscript.NET\Ghostscript.NET.csproj">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="_res\ghostscript-dotnet.png" />
