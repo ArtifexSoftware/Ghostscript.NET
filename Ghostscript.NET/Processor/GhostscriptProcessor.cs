@@ -527,7 +527,7 @@ namespace Ghostscript.NET.Processor
         {
             lock (_errorMessages)
             {
-                _outputMessages.Append(error);
+                _errorMessages.Append(error);
 
                 int rIndex = _errorMessages.ToString().IndexOf("\r\n");
 
