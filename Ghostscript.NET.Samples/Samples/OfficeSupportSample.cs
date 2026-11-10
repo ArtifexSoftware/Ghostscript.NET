@@ -34,7 +34,7 @@ namespace Ghostscript.NET.Samples
 {
     /// <summary>
     /// Office files require GhostPDL (<c>gpdldll64.dll</c> / <c>libgpdl.so</c>),
-    /// not standard Ghostscript. <c>Ghostscript.NativeAssets</c> 10.8.0 includes
+    /// not standard Ghostscript. <c>Ghostscript.NativeAssets</c> 10.8.2 includes
     /// <c>gpdldll</c> / <c>libgpdl</c>. Otherwise place the library in the app folder or set <c>GHOSTPDL_DLL</c>.
     /// </summary>
     public class OfficeSupportSample : ISample
@@ -76,7 +76,7 @@ namespace Ghostscript.NET.Samples
             string pdfPath = Path.Combine(outputDir, "OfficeSupportSample.pdf");
             GhostscriptOffice.ConvertToPdf(inputPath, pdfPath, pdl);
             Console.WriteLine("PDF: " + pdfPath);
-
+            
             using (GhostscriptProcessor processor = GhostscriptProcessor.CreateForInput(inputPath))
             {
                 processor.Process(new[]
@@ -91,7 +91,7 @@ namespace Ghostscript.NET.Samples
                     Path.GetFullPath(inputPath)
                 });
             }
-
+            /*
             using (GhostscriptRasterizer rasterizer = new GhostscriptRasterizer())
             {
                 rasterizer.Open(inputPath);
@@ -114,6 +114,7 @@ namespace Ghostscript.NET.Samples
                     }
                 }
             }
+            */
         }
 
         private static string FindSampleOfficeFile()

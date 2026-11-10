@@ -1,10 +1,10 @@
 <Project>
   <PropertyGroup>
     <!-- Ghostscript.NET NuGet package version -->
-    <GhostscriptNetVersion>1.3.6</GhostscriptNetVersion>
+    <GhostscriptNetVersion>1.3.8</GhostscriptNetVersion>
 
-    <!-- Ghostscript.NativeAssets NuGet package version (tracks Ghostscript 10.08.0; NuGet drops the leading zero) -->
-    <GhostscriptNativeAssetsVersion>10.8.0</GhostscriptNativeAssetsVersion>
+    <!-- Ghostscript.NativeAssets NuGet package version (10.8.2 ships Ghostscript 10.08.0 plus an updated Linux libgpdl.so; NuGet drops the leading zero) -->
+    <GhostscriptNativeAssetsVersion>10.8.2</GhostscriptNativeAssetsVersion>
 
     <!-- Ghostscript product version shipped in NativeAssets (for docs/descriptions) -->
     <GhostscriptProductVersion>10.08.0</GhostscriptProductVersion>

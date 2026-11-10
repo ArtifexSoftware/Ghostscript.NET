@@ -1,5 +1,11 @@
 # Changelog
 
+### [1.3.8] - 2026-11-10
+
+- **Ghostscript.NativeAssets 10.8.2:** Ships Ghostscript / GhostPDL **10.08.0**, with an updated Linux `libgpdl.so`.
+- **Office status pipe:** An Office job creates an anonymous pipe and passes `-sSOPIPE` to GhostPDL. A reader thread watches the pipe while `gsapi_init_with_args` is still running. The first zero ends the JSON record (`message`, `key_ok`, `flags`, `product`). Each later zero is one Office file. `GhostscriptOffice.LastMessage`, `LastFlags`, `LastProduct`, `LastKeyOk`, and `LastDocumentCount` are updated as those bytes arrive. A non-empty message is passed to the stdio stdout callback when the JSON arrives. `key_ok` is 0 when GhostPDL rejects the key or when no key was passed. Volume reporting uses `LastFlags`. `gsapi_delete_instance` runs after GhostPDL returns, and that is when the pipe is closed.
+- **Volume-license reporting:** Each Ghostscript call has its own reporter. Ghostscript.NET posts a volume key for Ghostscript.NET.Office (or all products) from those flags while GhostPDL is still converting. C# does not decode the key. The first document count is posted as soon as it is counted. Later counts are posted about every 10 seconds, and whatever remains is posted when that call's pipe reaches EOF. A later call starts another reporter. `GhostscriptOffice.FlushActivity()` waits for reporters that are still sending (10 second cap). The POST URL is `Unlock(key, volumeMonitorUrl)`, else `GHOSTSCRIPT_NET_OFFICE_VOLUME_MONITOR_URL`, else `https://lp2piszqpd.execute-api.us-east-1.amazonaws.com/usage`. Set `GHOSTSCRIPT_NET_OFFICE_ACTIVITY_VERBOSE=1` for the send log.
+
 ### [1.3.6] - 2026-09-14
 
 - **Office license key:** Call `GhostscriptOffice.Unlock(key)` once with your Ghostscript.NET.Office key. After that, Word, Excel, and PowerPoint conversions use the full document. Without `Unlock`, only the first 3 pages are converted.

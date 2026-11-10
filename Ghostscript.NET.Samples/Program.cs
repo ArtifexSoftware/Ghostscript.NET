@@ -54,7 +54,8 @@ List<ISample> samples = new()
     new PipedOutputSample(),
     new SendToPrinterSample(),
     new UnicodeTestSample(),
-    new OfficeSupportSample()
+    new OfficeSupportSample(),
+    new VolumeLicenseSample()
 };
 
 string outputDir = SampleFiles.OutputDirectory;

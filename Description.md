@@ -1,6 +1,6 @@
 **Ghostscript.NET** is the most completed managed wrapper library around the [Ghostscript](https://ghostscript.com) library - an interpreter for PDF and PostScript files. With GhostPDL (`gpdldll` / `libgpdl`) it also converts Microsoft Office documents.
 
-Ghostscript and GhostPDL can be provided via a system install or the optional `Ghostscript.NativeAssets` NuGet package (app-local binaries, including `gpdldll` / `libgpdl`). Call `GhostscriptOffice.Unlock(key)` for a full Office document; without a key, conversion is limited to the first 3 pages.
+Ghostscript and GhostPDL can be provided via a system install or the optional `Ghostscript.NativeAssets` NuGet package (app-local binaries, including `gpdldll` / `libgpdl`). Call `GhostscriptOffice.Unlock(key)` for a full Office document; without a key, conversion is limited to the first 3 pages. Office jobs read GhostPDL's `-sSOPIPE` status into `GhostscriptOffice.LastMessage`. Volume-license counts are posted by Ghostscript.NET.
 
 ### Features
 

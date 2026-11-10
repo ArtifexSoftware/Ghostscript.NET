@@ -37,10 +37,46 @@ namespace Ghostscript.NET
     /// Ghostscript itself cannot open these files; GhostPDL converts them
     /// internally (Office → PDF) then runs the Ghostscript pipeline.
     /// </summary>
+    /// <remarks>
+    /// An Office job in <c>GhostscriptProcessor</c> does this:
+    /// <list type="number">
+    /// <item><c>Unlock</c> stores the key string only. C# does not decode it.</item>
+    /// <item>The processor creates an anonymous pipe and passes <c>-sSOKEY</c> and
+    /// <c>-sSOPIPE</c> (a decimal HANDLE / fd, no quotes).</item>
+    /// <item>GhostPDL writes one JSON block and a 0 the first time it opens an
+    /// Office file, then one extra 0 per Office file. Nothing is written if no
+    /// Office file is opened.</item>
+    /// <item>A reader thread consumes those bytes during <c>gsapi_init_with_args</c>.
+    /// Each extra 0 can start a volume POST without waiting for GhostPDL to exit.</item>
+    /// <item>After <c>gsapi_delete_instance</c> the write handle is closed, the
+    /// reader sees EOF, and any remaining count is posted.</item>
+    /// </list>
+    /// <c>LastMessage</c> and the other <c>Last*</c> properties are the most recent
+    /// job. Two processors at once would overwrite them.
+    /// </remarks>
     public static class GhostscriptOffice
     {
+        /// <summary>Volume-license flag bit (bit 0) reported by GhostPDL.</summary>
+        public const int KeyFlagVolumeLicense = 1;
+
+        /// <summary>Disable-SmartOffice flag bit (bit 1) reported by GhostPDL.</summary>
+        public const int KeyFlagDisableSo = 2;
+
+        /// <summary>Ghostscript.NET.Office product id in the SOPIPE <c>product</c> field.</summary>
+        public const int ProductGsNetOffice = 1;
+
+        /// <summary>All-products id in the SOPIPE <c>product</c> field.</summary>
+        public const int ProductAll = 7;
+
         private static readonly object UnlockSync = new object();
         private static string _unlockKey;
+        private static string _lastMessage = string.Empty;
+        private static int _lastFlags;
+        private static int _lastProduct = -1;
+        private static int _lastKeyOk = -1;
+        private static int _lastDocumentCount;
+        private static string _observeKey;
+        private static bool _observeVolume;
 
         /// <summary>
         /// Artifex contact page for a commercial Ghostscript.NET license (Office / SmartOffice).
@@ -62,12 +98,23 @@ namespace Ghostscript.NET
         }
 
         /// <summary>
-        /// Supplies the Ghostscript.NET.Office license key. Ghostscript.NET adds
-        /// <c>-sSOKEY</c> to GhostPDL automatically. The native library checks the
-        /// product bits (GS.NET.Office); callers do not pass a product id.
+        /// Supplies the Ghostscript.NET.Office license key. Stores the trimmed string
+        /// only; GhostPDL checks it. Ghostscript.NET adds <c>-sSOKEY</c> automatically.
         /// Without this call, a key-enabled GhostPDL build runs in restricted mode (first 3 pages).
+        /// Volume posts use <c>GHOSTSCRIPT_NET_OFFICE_VOLUME_MONITOR_URL</c> when set, otherwise the default volume-monitor URL.
         /// </summary>
         public static void Unlock(string key)
+        {
+            Unlock(key, null);
+        }
+
+        /// <summary>
+        /// Supplies the Ghostscript.NET.Office license key and an optional volume-monitor URL.
+        /// A non-empty <paramref name="volumeMonitorUrl"/> is used for later volume POSTs.
+        /// If it is null or whitespace, <c>GHOSTSCRIPT_NET_OFFICE_VOLUME_MONITOR_URL</c> is used when set,
+        /// otherwise <c>https://lp2piszqpd.execute-api.us-east-1.amazonaws.com/usage</c>.
+        /// </summary>
+        public static void Unlock(string key, string volumeMonitorUrl)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -78,11 +125,14 @@ namespace Ghostscript.NET
             {
                 _unlockKey = key.Trim();
             }
+
+            ActivityMonitor.SetUnlockVolumeMonitorUrl(volumeMonitorUrl);
         }
 
         /// <summary>
         /// Clears a key previously passed to <see cref="Unlock"/>. Later Office jobs run restricted
-        /// until <see cref="Unlock"/> is called again.
+        /// until <see cref="Unlock"/> is called again. Also clears an Unlock volume-monitor URL so the
+        /// environment variable or the default URL is used again.
         /// </summary>
         public static void ClearUnlock()
         {
@@ -90,6 +140,8 @@ namespace Ghostscript.NET
             {
                 _unlockKey = null;
             }
+
+            ActivityMonitor.SetUnlockVolumeMonitorUrl(null);
         }
 
         /// <summary>
@@ -107,12 +159,231 @@ namespace Ghostscript.NET
             }
         }
 
+        /// <summary>
+        /// Text from the last Office job's SOPIPE <c>message</c> field.
+        /// Empty when GhostPDL wrote no message. A missing leading <c>{ "message"</c>
+        /// (restricted mode on the current DLL) is still recovered.
+        /// </summary>
+        public static string LastMessage
+        {
+            get
+            {
+                lock (UnlockSync)
+                {
+                    return _lastMessage;
+                }
+            }
+        }
+
+        /// <summary>
+        /// <c>flags</c> from the last Office job's SOPIPE record, or 0 when the pipe had none.
+        /// Bit 0 is <see cref="KeyFlagVolumeLicense"/>. Bit 1 is <see cref="KeyFlagDisableSo"/>.
+        /// </summary>
+        public static int LastFlags
+        {
+            get
+            {
+                lock (UnlockSync)
+                {
+                    return _lastFlags;
+                }
+            }
+        }
+
+        /// <summary>
+        /// <c>product</c> from the last Office job's SOPIPE record.
+        /// <see cref="ProductGsNetOffice"/> is Ghostscript.NET.Office, <see cref="ProductAll"/> is every product.
+        /// -1 when the pipe had no product field.
+        /// </summary>
+        public static int LastProduct
+        {
+            get
+            {
+                lock (UnlockSync)
+                {
+                    return _lastProduct;
+                }
+            }
+        }
+
+        /// <summary>
+        /// <c>key_ok</c> from the last Office job's SOPIPE record, or -1 when the field was absent.
+        /// GhostPDL reports 0 when it rejects the key or when no key was passed. Restricted
+        /// mode still converts the first 3 pages. Volume reporting uses <see cref="LastFlags"/>, not this value.
+        /// </summary>
+        public static int LastKeyOk
+        {
+            get
+            {
+                lock (UnlockSync)
+                {
+                    return _lastKeyOk;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Office files GhostPDL counted on the last job (extra zero bytes after the JSON terminator).
+        /// </summary>
+        public static int LastDocumentCount
+        {
+            get
+            {
+                lock (UnlockSync)
+                {
+                    return _lastDocumentCount;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends queued volume-license activity and stops the reporters.
+        /// Process exit already does this (10 second cap). Call from short-lived tools
+        /// that need the POST to finish before they exit.
+        /// </summary>
+        public static void FlushActivity()
+        {
+            ActivityMonitor.FlushForExit();
+        }
+
         private static string GetUnlockKey()
         {
             lock (UnlockSync)
             {
                 return _unlockKey;
             }
+        }
+
+        internal static string ReadOfficeKey(string[] args)
+        {
+            if (args == null)
+            {
+                return null;
+            }
+
+            string key = null;
+            for (int i = 0; i < args.Length; i++)
+            {
+                string arg = args[i];
+                if (!string.IsNullOrEmpty(arg) &&
+                    arg.StartsWith("-sSOKEY=", StringComparison.OrdinalIgnoreCase))
+                {
+                    key = arg.Substring("-sSOKEY=".Length);
+                }
+            }
+
+            return string.IsNullOrEmpty(key) ? null : key;
+        }
+
+        /// <summary>
+        /// Inserts unquoted <c>-sSOPIPE=&lt;handle&gt;</c>. GhostPDL reads a decimal
+        /// HANDLE on Windows and a decimal fd on Unix. Quotes would make that fail.
+        /// </summary>
+        internal static string[] AddSoPipeSwitch(string[] args, string handle)
+        {
+            string pipeSwitch = "-sSOPIPE=" + handle;
+            List<string> result = new List<string>(args);
+            for (int i = 0; i < result.Count; i++)
+            {
+                string arg = result[i];
+                if (!string.IsNullOrEmpty(arg) &&
+                    arg.StartsWith("-sSOPIPE=", StringComparison.OrdinalIgnoreCase))
+                {
+                    result[i] = pipeSwitch;
+                    return result.ToArray();
+                }
+            }
+
+            int insertAt = result.Count > 0 ? 1 : 0;
+            result.Insert(insertAt, pipeSwitch);
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Clears Last* before a new Office job. The reader thread fills them again.
+        /// </summary>
+        internal static void BeginPipeObservation()
+        {
+            lock (UnlockSync)
+            {
+                _lastMessage = string.Empty;
+                _lastFlags = 0;
+                _lastProduct = -1;
+                _lastKeyOk = -1;
+                _lastDocumentCount = 0;
+                _observeKey = null;
+                _observeVolume = false;
+            }
+        }
+
+        /// <summary>
+        /// First 0 on the pipe: JSON status. Does not count a document and does not POST.
+        /// </summary>
+        internal static void ObservePipeHeader(string key, byte[] header, Action<string> printMessage)
+        {
+            OfficePipeReport report = OfficePipeReport.Parse(header ?? new byte[0]);
+            string message;
+            lock (UnlockSync)
+            {
+                _lastMessage = report.Message ?? string.Empty;
+                _lastFlags = report.Flags;
+                _lastProduct = report.Product;
+                _lastKeyOk = report.KeyOk;
+                _lastDocumentCount = 0;
+                _observeKey = key;
+                _observeVolume = QualifiesForVolume(key, report.Flags, report.Product);
+                message = _lastMessage;
+            }
+
+            if (printMessage != null && !string.IsNullOrEmpty(message))
+            {
+                printMessage(message + "\n");
+            }
+        }
+
+        /// <summary>
+        /// Extra 0 after the JSON terminator: one finished Office file.
+        /// Starts a reporter for this Ghostscript call on the first qualifying file.
+        /// </summary>
+        internal static ActivityMonitor ObserveOfficeDocument(ActivityMonitor monitor)
+        {
+            string key;
+            lock (UnlockSync)
+            {
+                _lastDocumentCount++;
+                if (!_observeVolume)
+                {
+                    return monitor;
+                }
+
+                key = _observeKey;
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                return monitor;
+            }
+
+            if (monitor == null)
+            {
+                monitor = ActivityMonitor.Start(key);
+            }
+
+            monitor.RecordDocument();
+            return monitor;
+        }
+
+        private static bool QualifiesForVolume(string key, int flags, int product)
+        {
+            if (product < 0)
+            {
+                product = (flags >> 2) & 7;
+            }
+
+            bool volume = (flags & KeyFlagVolumeLicense) != 0;
+            bool disableSo = (flags & KeyFlagDisableSo) != 0;
+            bool productOk = product == ProductGsNetOffice || product == ProductAll;
+            return volume && !disableSo && productOk && !string.IsNullOrEmpty(key);
         }
 
         /// <summary>
@@ -190,7 +461,8 @@ namespace Ghostscript.NET
 
         /// <summary>
         /// Rewrites processor arguments so existing Ghostscript samples can open Office files:
-        /// full paths, and <c>-dSAFER</c> replaced with <c>-dNOSAFER</c> (SmartOffice must read the input).
+        /// full paths, <c>-dSAFER</c> replaced with <c>-dNOSAFER</c> (SmartOffice must read the input),
+        /// and <c>-sSOKEY</c> from <see cref="Unlock"/> when a key was stored.
         /// </summary>
         internal static string[] PrepareProcessorArgs(string[] args)
         {

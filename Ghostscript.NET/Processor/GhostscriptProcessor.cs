@@ -304,10 +304,17 @@ namespace Ghostscript.NET.Processor
                 throw new ArgumentOutOfRangeException("args");
             }
 
-            if (GhostscriptOffice.ContainsOfficeFile(args))
+            // Office files need GhostPDL, -dNOSAFER, and an SOPIPE reader that is
+            // already waiting before gsapi_init_with_args. gsapi_init still blocks
+            // until every file in this call is done; the reader and volume POST
+            // run on other threads during that call.
+            bool officeJob = GhostscriptOffice.ContainsOfficeFile(args);
+            string officeKey = null;
+            if (officeJob)
             {
                 EnsureGhostPdlLibrary();
                 args = GhostscriptOffice.PrepareProcessorArgs(args);
+                officeKey = GhostscriptOffice.ReadOfficeKey(args);
             }
 
             // Prepare arguments: if the native gsapi_set_arg_encoding API is supported
@@ -315,6 +322,7 @@ namespace Ghostscript.NET.Processor
             // (UTF-16LE on Windows, UTF-8 on non-Windows). Otherwise fall back to
             // calling the managed string[] version of gsapi_init_with_args.
 
+            OfficePipeSession soPipe = null;
             _isRunning = true;
 
             IntPtr instance = IntPtr.Zero;
@@ -328,7 +336,15 @@ namespace Ghostscript.NET.Processor
 
             try
             {
+                // Capture the caller's stdio before the SOPIPE reader starts so a
+                // JSON message during gsapi_init can be forwarded.
                 _stdIO_Callback = stdIO_callback;
+
+                if (officeJob)
+                {
+                    soPipe = new OfficePipeSession(officeKey, PrintOfficeMessage);
+                    args = GhostscriptOffice.AddSoPipeSwitch(args, soPipe.ClientHandle);
+                }
 
                 _internalStdIO_Callback = new GhostscriptProcessorInternalStdIOHandler(
                                                 new StdInputEventHandler(OnStdIoInput), 
@@ -439,17 +455,55 @@ namespace Ghostscript.NET.Processor
             }
             finally
             {
-                _gs.gsapi_delete_instance(instance);
+                try
+                {
+                    _gs.gsapi_delete_instance(instance);
+                }
+                finally
+                {
+                    // Close our copy of the write handle after GhostPDL has dropped
+                    // its copy. The reader then sees EOF. Does not wait for HTTP.
+                    FinishSoPipe(soPipe);
 
-                GC.Collect();
+                    GC.Collect();
 
-                _isRunning = false;
+                    _isRunning = false;
 
-                this.OnCompleted(new GhostscriptProcessorEventArgs());
+                    this.OnCompleted(new GhostscriptProcessorEventArgs());
+                }
             }
         }
 
         #endregion
+
+        private void PrintOfficeMessage(string message)
+        {
+            if (_stdIO_Callback != null && !string.IsNullOrEmpty(message))
+            {
+                _stdIO_Callback.StdOut(message);
+            }
+        }
+
+        private static void FinishSoPipe(OfficePipeSession soPipe)
+        {
+            if (soPipe == null)
+            {
+                return;
+            }
+
+            try
+            {
+                soPipe.Finish();
+            }
+            catch
+            {
+                // A pipe failure must not hide the Ghostscript result.
+            }
+            finally
+            {
+                soPipe.Dispose();
+            }
+        }
 
         #region StopProcessing
 
