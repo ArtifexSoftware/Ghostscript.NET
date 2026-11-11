@@ -4,7 +4,7 @@ Optional NuGet package that ships Ghostscript and GhostPDL native libraries for 
 
 ## Included assets
 
-This package tracks Ghostscript **10.08.0**. NuGet represents the package version as `10.8.0` because numeric version components cannot contain leading zeroes.
+This package tracks Ghostscript **10.08.0**. The NuGet package version is `10.8.2` (updated Linux `libgpdl.so`). NuGet cannot use `10.08.x` because numeric version components cannot contain leading zeroes.
 
 | RID | Included files | Status |
 |---|---|---|
@@ -19,8 +19,8 @@ The `ghostscript.version` metadata file next to each native library allows `Ghos
 ## Usage
 
 ```xml
-<PackageReference Include="Ghostscript.NET" Version="1.3.6" />
-<PackageReference Include="Ghostscript.NativeAssets" Version="10.8.0" />
+<PackageReference Include="Ghostscript.NET" Version="1.3.8" />
+<PackageReference Include="Ghostscript.NativeAssets" Version="10.8.2" />
 ```
 
 > Package versions are managed in the repository `Versions.props` file.

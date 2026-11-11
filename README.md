@@ -30,6 +30,7 @@ Install-Package Ghostscript.NativeAssets
 - [API overview](#api-overview)
 - [Finding the Ghostscript native library](#finding-the-ghostscript-native-library)
 - [Office files (GhostPDL)](#office-files-ghostpdl)
+- [Environment variables](#environment-variables)
 - [PDF/A-3 conversion](#pdfa-3-conversion)
 - [Documentation](#documentation)
 - [License](#license)
@@ -69,11 +70,11 @@ Ghostscript.NET resolves the native library in this order:
 **Option A — NuGet native assets (recommended for seamless installs)**
 
 ```xml
-<PackageReference Include="Ghostscript.NET" Version="1.3.6" />
-<PackageReference Include="Ghostscript.NativeAssets" Version="10.8.0" />
+<PackageReference Include="Ghostscript.NET" Version="1.3.8" />
+<PackageReference Include="Ghostscript.NativeAssets" Version="10.8.2" />
 ```
 
-> Package versions are managed in `Versions.props`. `Ghostscript.NativeAssets` currently includes Ghostscript 10.08.0 (`gsdll` / `libgs` and `gpdldll` / `libgpdl`) for `win-x64`, `win-x86`, and `linux-x64`. NuGet uses `10.8.0` because numeric version components cannot contain leading zeroes.
+> Package versions are managed in `Versions.props`. `Ghostscript.NativeAssets` 10.8.2 currently includes Ghostscript 10.08.0 (`gsdll` / `libgs` and `gpdldll` / `libgpdl`) for `win-x64`, `win-x86`, and `linux-x64`, with an updated Linux `libgpdl.so`. NuGet cannot use `10.08.x` because numeric version components cannot contain leading zeroes.
 
 **Option B — system install (Windows)**
 
@@ -106,9 +107,9 @@ dotnet add package Ghostscript.NET
 **PackageReference**
 
 ```xml
-<PackageReference Include="Ghostscript.NET" Version="1.3.6" />
+<PackageReference Include="Ghostscript.NET" Version="1.3.8" />
 <!-- Optional: app-local Ghostscript (gsdll / libgs) and GhostPDL (gpdldll / libgpdl) -->
-<PackageReference Include="Ghostscript.NativeAssets" Version="10.8.0" />
+<PackageReference Include="Ghostscript.NativeAssets" Version="10.8.2" />
 ```
 
 ---
@@ -415,11 +416,23 @@ rasterizer.Open("input.pdf", dll);
 
 Standard Ghostscript (`gsdll64.dll`) cannot open Word, Excel, or PowerPoint files. Office support uses **GhostPDL** (`gpdldll64.dll` / `gpdldll32.dll` / `libgpdl.so`).
 
-`Ghostscript.NativeAssets` 10.8.0 ships GhostPDL next to Ghostscript (`gpdldll` on Windows, `libgpdl` on Linux). Referencing that package is enough for Ghostscript.NET to find GhostPDL. If you are not using NativeAssets, place the library next to the application, under `runtimes/<rid>/native/`, or set `GHOSTPDL_DLL` (or `GPDL_DLL`) to its full path.
+`Ghostscript.NativeAssets` 10.8.2 ships GhostPDL next to Ghostscript (`gpdldll` on Windows, `libgpdl` on Linux). Referencing that package is enough for Ghostscript.NET to find GhostPDL. If you are not using NativeAssets, place the library next to the application, under `runtimes/<rid>/native/`, or set `GHOSTPDL_DLL` (or `GPDL_DLL`) to its full path.
 
 After that, **existing Ghostscript.NET processor code does not need to change**: if the argument list includes an Office file, `GhostscriptProcessor` loads GhostPDL automatically (and ignores `-dSAFER` for that job). `CreateForInput` is optional. If `gsdll64.dll` sits beside GhostPDL, the viewer/rasterizer uses it to display the converted PDF.
 
-Call `GhostscriptOffice.Unlock(key)` once with your Ghostscript.NET.Office key. Without `Unlock`, conversion is limited to the first 3 pages.
+Call `GhostscriptOffice.Unlock(key)` once with your Ghostscript.NET.Office key. Without `Unlock`, conversion is limited to the first 3 pages. A caller can also pass `-sSOKEY` directly; Ghostscript.NET forwards that value when `Unlock` was not called.
+
+Each Office job passes `-sSOPIPE` (a decimal pipe handle, with no quotes). A reader thread is already waiting. While GhostPDL converts, it writes one JSON object and a zero byte, then one more zero byte for each Office file. `gsapi_delete_instance` runs only after that call returns, and the pipe is closed then:
+
+| Member | Meaning |
+|---|---|
+| `GhostscriptOffice.LastMessage` | `message`. Empty when the key is accepted. |
+| `GhostscriptOffice.LastFlags` | `flags`. Bit 0 is a volume license (`KeyFlagVolumeLicense`). Bit 1 disables SmartOffice (`KeyFlagDisableSo`). |
+| `GhostscriptOffice.LastProduct` | `product`. `1` is Ghostscript.NET.Office, `7` is all products. `-1` if the pipe sent no record. |
+| `GhostscriptOffice.LastKeyOk` | `key_ok`, or `-1` if it was absent. `0` when GhostPDL rejects the key or when no key was passed. |
+| `GhostscriptOffice.LastDocumentCount` | Office files opened in that call. |
+
+A non-empty `LastMessage` is written to the processor stdout callback when the JSON arrives, not after the job. Ghostscript.NET posts volume-license usage itself and does not decode the key. Each Ghostscript call has its own reporter. When `flags` has the volume bit, SmartOffice is enabled, and `product` is 1 or 7, the first `{"key_code","document_count"}` is sent as soon as the first Office file is counted. Further counts from that call go out about every 10 seconds while GhostPDL is still running, and the remainder is sent when that call's pipe closes. The next call starts a new reporter. `GhostscriptOffice.FlushActivity()` waits for reporters that are still sending. The POST URL is `GhostscriptOffice.Unlock(key, volumeMonitorUrl)` if that argument is set, else `GHOSTSCRIPT_NET_OFFICE_VOLUME_MONITOR_URL`, else `https://lp2piszqpd.execute-api.us-east-1.amazonaws.com/usage`. Set `GHOSTSCRIPT_NET_OFFICE_ACTIVITY_VERBOSE=1` to print the send log.
 
 **Convert Office to PDF**
 
@@ -446,7 +459,7 @@ for (int page = 1; page <= rasterizer.PageCount; page++)
 
 **Run GhostPDL with any device**
 
-Existing `GhostscriptProcessor` samples keep working. Pass an Office path in the argument list. With `Ghostscript.NativeAssets` 10.8.0, GhostPDL is already next to the app:
+Existing `GhostscriptProcessor` samples keep working. Pass an Office path in the argument list. With `Ghostscript.NativeAssets` 10.8.2, GhostPDL is already next to the app:
 
 ```csharp
 using Ghostscript.NET;
@@ -470,6 +483,30 @@ Use **full paths** for Office input and output. GhostPDL allows only one interpr
 Supported extensions include `.doc`, `.docx`, `.xls`, `.xlsx`, `.ppt`, `.pptx`, `.odt`, `.ods`, `.odp`, `.rtf`, and `.csv`.
 
 Maintainers who produce the native libraries see **Ghostscript.NET.Office/BUILD.md**.
+
+---
+
+## Environment variables
+
+### Library
+
+These are read by Ghostscript.NET at runtime.
+
+| Variable | Description |
+|---|---|
+| `GHOSTPDL_DLL` | Full path to the GhostPDL native library (`gpdldll64.dll`, `gpdldll32.dll`, or `libgpdl.so`). Checked first when locating GhostPDL. |
+| `GPDL_DLL` | Alias for `GHOSTPDL_DLL`. Used only when `GHOSTPDL_DLL` is empty. |
+| `GHOSTSCRIPT_NET_OFFICE_VOLUME_MONITOR_URL` | Volume-monitor POST URL when `GhostscriptOffice.Unlock(key, volumeMonitorUrl)` did not pass a URL. If this is also unset, posts go to `https://lp2piszqpd.execute-api.us-east-1.amazonaws.com/usage`. |
+| `GHOSTSCRIPT_NET_OFFICE_ACTIVITY_VERBOSE` | Set to `1` to print volume-monitor send logs to stdout. |
+
+### Samples and tests
+
+These are not read by the library. Application code should call `GhostscriptOffice.Unlock(key)` (and optionally pass `volumeMonitorUrl`) instead of relying on `GHOSTSCRIPT_NET_OFFICE_KEY`.
+
+| Variable | Description |
+|---|---|
+| `GHOSTSCRIPT_NET_OFFICE_KEY` | Office unlock key used by `OfficeSupportSample`, `VolumeLicenseSample`, and live Office tests. |
+| `GHOSTSCRIPT_NET_RUN_PRINTER` | Set to `1` to run `SendToPrinterSample`. Otherwise that sample skips so it does not wait on a printer dialog. |
 
 ---
 
